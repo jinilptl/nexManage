@@ -1,0 +1,53 @@
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# === Environment files ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === Logs ===
+logs/
+*.log
+log.txt
+
+# === Build output ===
+dist/
+build/
+coverage/
+
+# === Editor/IDE ===
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# === System Files ===
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# === Client-side ===
+client/node_modules/
+client/build/
+client/.env
+client/.env.local
+
+# === Server-side ===
+server/node_modules/
+server/dist/
+server/.env
+server/.env.local
+
+
+# === Misc ===
+*.pem
+*.key
+*.crt
