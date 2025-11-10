@@ -18,6 +18,17 @@ teamRouter.route("/allteams").get(verifyToken,roleChecker(["super_admin","admin"
 teamRouter.route("/getteams/:id").get(verifyToken,getSingleTeam)
 
 
+// pending routes
+teamRouter.route("/updateteam/:id")
+teamRouter.route("/deleteteam/:id")
+
+// pendig for member add in team 
+teamRouter.route("/addmember")
+teamRouter.route("/updatemember")
+teamRouter.route("/removemember")
+teamRouter.route("/allmember")
+
+
 
 
 
