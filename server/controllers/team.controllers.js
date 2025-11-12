@@ -54,9 +54,8 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "All teams fetched successfully", teamList));
 });
 
-
 const getTeamById = asyncHandler(async (req, res) => {
-  const { id: teamId } = req.params;
+  const { teamId } = req.params;
 
   // Validate team ID
   if (!teamId) {
@@ -76,12 +75,10 @@ const getTeamById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Team fetched successfully", teamDoc));
 });
 
-
-
 const updateTeamDetails = asyncHandler(async (req, res) => {
   // Extract updated details and team ID from request
   const { teamName, description } = req.body;
-  const teamId = req.params.id;
+  const teamId = req.params.teamId;
 
   // Validate input fields
   if (!teamName || !description) {
@@ -112,10 +109,9 @@ const updateTeamDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Team updated successfully", updatedTeamDoc));
 });
 
-
 const deleteTeamById = asyncHandler(async (req, res) => {
   // Extract team ID from request parameters
-  const teamId = req.params.id;
+  const teamId = req.params.teamId;
 
   // Validate team ID
   if (!teamId) {
@@ -143,8 +139,6 @@ const deleteTeamById = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Team deleted successfully", deletedTeamDoc));
 });
-
-
 
 // member add , update , delete , all member
 const addTeamMember = asyncHandler(async (req, res) => {
@@ -202,23 +196,19 @@ const addTeamMember = asyncHandler(async (req, res) => {
   );
 
   const addedTeamMember = populatedTeamDoc.members.find(
-    (member) =>
-      member.user && member.user._id.toString() === userId.toString()
+    (member) => member.user && member.user._id.toString() === userId.toString()
   );
 
   if (!addedTeamMember) {
     throw new ApiError(404, "Newly added member not found after populate");
   }
 
-
   // ✅ Send welcome email after successful addition
 
   try {
-
     //  { right now not available .. but we will fix it whenavalable
     //   se use login url right now ...
     //  const teamLink = `https://app.nexmanage.tech/team/${teamId}`;}
-
 
     const teamLink = `${process.env.CLIENT_URL}/`;
     const htmlMessage = team_member_added_email_template(
@@ -241,14 +231,16 @@ const addTeamMember = asyncHandler(async (req, res) => {
   }
 
   // Send API response
-  return res.status(200).json(
-    new ApiResponse(
-     200,
-     "Member added successfully and welcome email sent",
-    addedTeamMember,)
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Member added successfully and welcome email sent",
+        addedTeamMember
+      )
+    );
 });
-
 
 const getTeamMembers = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
@@ -272,13 +264,146 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
+      new ApiResponse(200, "All team members fetched successfully", teamDoc)
+    );
+});
+
+const updateTeamMember = asyncHandler(async (req, res) => {
+  const teamId = req.params.teamId;
+  const memberId = req.params.memberId;
+  const { roleInTeam, status } = req.body;
+
+  // Validate required fields
+  if (!teamId) {
+    throw new ApiError(400, "Team ID is required");
+  }
+
+  if (!memberId) {
+    throw new ApiError(400, "Member ID is required");
+  }
+
+  if (!roleInTeam || !status) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  // Find the team
+  const teamDoc = await TeamModel.findById(teamId);
+  if (!teamDoc) {
+    throw new ApiError(404, "Team not found");
+  }
+
+  // Check if member exists in the team
+  const existingMember = teamDoc.members.find(
+    (member) => member.user.toString() === memberId.toString()
+  );
+
+  console.log("Existing member:", existingMember);
+
+  if (!existingMember) {
+    throw new ApiError(404, "Member not found in this team");
+  }
+
+  // Update member values
+  existingMember.roleInTeam = roleInTeam;
+  existingMember.status = status;
+
+  console.log("Updated values:", { roleInTeam, status });
+
+  // Save changes
+  await teamDoc.save();
+
+  // Fetch updated team with populated member info
+  const updatedTeamDoc = await TeamModel.findById(teamId).populate(
+    "members.user",
+    "name email"
+  );
+
+  const updatedMember = updatedTeamDoc.members.find(
+    (member) => member.user._id.toString() === memberId.toString()
+  );
+
+  // Respond with success message
+  return res.status(200).json(
+    new ApiResponse(200, "Member updated successfully", updatedMember)
+  );
+});
+
+const removeTeamMember = asyncHandler(async (req, res) => {
+  const teamId = req.params.teamId;
+  const memberId = req.params.memberId;
+
+  // Validate input params
+  if (!teamId) {
+    throw new ApiError(400, "Team ID is required");
+  }
+
+  if (!memberId) {
+    throw new ApiError(400, "Member ID is required");
+  }
+
+  // Find the team
+  const teamDoc = await TeamModel.findById(teamId).populate(
+    "members.user",
+    "name email"
+  );
+
+  if (!teamDoc) {
+    throw new ApiError(404, "Team not found");
+  }
+
+  // Check if member exists in the team
+  const existingMember = teamDoc.members.find(
+    (member) => member.user._id.toString() === memberId.toString()
+  );
+
+  if (!existingMember) {
+    throw new ApiError(404, "Member not found in this team");
+  }
+
+  // Capture removed member details before deletion
+  const removedMemberDetails = {
+    userId: existingMember.user._id,
+    name: existingMember.user.name,
+    email: existingMember.user.email,
+    roleInTeam: existingMember.roleInTeam,
+  };
+
+  // Remove member using MongoDB $pull
+  const removeResult = await TeamModel.updateOne(
+    { _id: teamId },
+    { $pull: { members: { user: memberId } } }
+  );
+
+  console.log("Member removal acknowledged:", removeResult.acknowledged);
+
+  if (!removeResult.acknowledged) {
+    throw new ApiError(500, "Internal server error while removing member");
+  }
+
+  // Optional: fetch updated team members
+  const updatedTeamDoc = await TeamModel.findById(teamId).populate(
+    "members.user",
+    "name email"
+  );
+
+  // Build response payload
+  const responsePayload = {
+    removedMember: removedMemberDetails,
+    updatedMembers: updatedTeamDoc?.members || [],
+  };
+
+  // Return response
+  return res
+    .status(200)
+    .json(
       new ApiResponse(
         200,
-        "All team members fetched successfully",
-        teamDoc
+        "Member removed from team successfully",
+        responsePayload
       )
     );
 });
+
 
 
 export {
@@ -288,5 +413,7 @@ export {
   updateTeamDetails,
   deleteTeamById,
   addTeamMember,
-  getTeamMembers
+  getTeamMembers,
+  updateTeamMember,
+  removeTeamMember
 };
