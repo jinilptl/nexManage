@@ -8,6 +8,7 @@ import Navigation from './components/Navigation'
 import Dashboard from './components/Dashboard'
 import DashboardPage from './pages/DashBoard/DashboardPage'
 import TeamsPage from './pages/DashBoard/TeamsPage'
+import ProjectPage from './pages/DashBoard/ProjectPage'
 
 const App = () => {
 
@@ -26,6 +27,7 @@ const App = () => {
          
             <Route index element={<Dashboard />} />
             <Route path='/dashboard/teams' element={<TeamsPage />} />
+            <Route path='/dashboard/project' element={<ProjectPage />} />
          
          
          
