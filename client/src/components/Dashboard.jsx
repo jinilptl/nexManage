@@ -10,15 +10,40 @@ import {
   FileText,
   Users,
 } from "lucide-react";
+import DashboardHearderCard from "./DashboardHearderCard";
 
 export default function Dashboard() {
-  // Static demo values (just placeholders)
-  const stats = {
-    activeProjects: 6,
-    assignedTasks: 12,
-    completedThisWeek: 8,
-    pendingReview: 3,
-  };
+  const DashBoardCardData = [
+    {
+      heading: "Active Projects",
+      mainIcon: <FolderKanban className="h-4 w-4 text-blue-600" />,
+      data: 6,
+      text: "+2 this month",
+      textColor: "text-green-600",
+    },
+
+    {
+      heading: "Tasks Assigned to Me",
+      mainIcon: <CheckCircle2 className="h-4 w-4 text-green-600" />,
+      data: 12,
+      text: "5 active tasks",
+      textColor: "text-gray-500",
+    },
+    {
+      heading: "Completed This Week",
+      mainIcon: <Clock className="h-4 w-4 text-purple-600" />,
+      data: 8,
+      text: "Great progress!",
+      textColor: "text-gray-500",
+    },
+    {
+      heading: "Pending Reviews",
+      mainIcon: <AlertCircle className="h-4 w-4 text-orange-600" />,
+      data: 3,
+      text: "Needs attention",
+      textColor: "text-gray-500",
+    },
+  ];
 
   const tasks = [
     { label: "To Do", color: "bg-slate-500", count: 3 },
@@ -28,28 +53,70 @@ export default function Dashboard() {
   ];
 
   const recentActivity = [
-    { name: "Aarav Mehta", action: "completed task", item: "UI design for homepage", time: "2h ago" },
-    { name: "Riya Shah", action: "commented on", item: "Project dashboard revamp", time: "3h ago" },
-    { name: "Dev Patel", action: "created project", item: "API Refactor", time: "1 day ago" },
-    { name: "Nisha Kumar", action: "updated task", item: "Mobile UI Testing", time: "2 days ago" },
+    {
+      name: "Aarav Mehta",
+      action: "completed task",
+      item: "UI design for homepage",
+      time: "2h ago",
+    },
+    {
+      name: "Riya Shah",
+      action: "commented on",
+      item: "Project dashboard revamp",
+      time: "3h ago",
+    },
+    {
+      name: "Dev Patel",
+      action: "created project",
+      item: "API Refactor",
+      time: "1 day ago",
+    },
+    {
+      name: "Nisha Kumar",
+      action: "updated task",
+      item: "Mobile UI Testing",
+      time: "2 days ago",
+    },
   ];
 
   const deadlines = [
     { key: "WEB-1", title: "Login Page Redesign", dueIn: 2, priority: "high" },
-    { key: "API-3", title: "Auth Middleware Update", dueIn: 4, priority: "medium" },
+    {
+      key: "API-3",
+      title: "Auth Middleware Update",
+      dueIn: 4,
+      priority: "medium",
+    },
   ];
 
   const projects = [
-    { id: 1, name: "Website Revamp", icon: <FolderKanban className="w-4 h-4" />, progress: 72 },
-    { id: 2, name: "Mobile App", icon: <Users className="w-4 h-4" />, progress: 45 },
-    { id: 3, name: "API Integration", icon: <FileText className="w-4 h-4" />, progress: 90 },
+    {
+      id: 1,
+      name: "Website Revamp",
+      icon: <FolderKanban className="w-4 h-4" />,
+      progress: 72,
+    },
+    {
+      id: 2,
+      name: "Mobile App",
+      icon: <Users className="w-4 h-4" />,
+      progress: 45,
+    },
+    {
+      id: 3,
+      name: "API Integration",
+      icon: <FileText className="w-4 h-4" />,
+      progress: 90,
+    },
   ];
 
   return (
     <div className="space-y-6 p-4 md:p-6">
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-1">Welcome back, Boss 👋</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-1">
+          Welcome back, Boss 👋
+        </h1>
         <p className="text-gray-600">
           Here's what's happening with your projects today.
         </p>
@@ -58,58 +125,15 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm  ">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-600">Active Projects</h4>
-            <FolderKanban className="h-4 w-4 text-blue-600" />
-          </div>
-          <div className="mt-3 text-2xl font-semibold text-gray-900">
-            {stats.activeProjects}
-          </div>
-          <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> +2 this month
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm  ">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-600">
-              Tasks Assigned to Me
-            </h4>
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-          </div>
-          <div className="mt-3 text-2xl font-semibold text-gray-900">
-            {stats.assignedTasks}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">5 active tasks</p>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm  ">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-600">
-              Completed This Week
-            </h4>
-            <Clock className="h-4 w-4 text-purple-600" />
-          </div>
-          <div className="mt-3 text-2xl font-semibold text-gray-900">
-            {stats.completedThisWeek}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Great progress!</p>
-        </div>
-
-        {/* Card 4 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm  ">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-600">Pending Reviews</h4>
-            <AlertCircle className="h-4 w-4 text-orange-600" />
-          </div>
-          <div className="mt-3 text-2xl font-semibold text-gray-900">
-            {stats.pendingReview}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Needs attention</p>
-        </div>
+        {DashBoardCardData.map((card) => (
+          <DashboardHearderCard
+            heading={card.heading}
+            mainIcon={card.mainIcon}
+            data={card.data}
+            text={card.text}
+            textColor={card.textColor}
+          />
+        ))}
       </div>
 
       {/* Middle Grid */}
@@ -126,9 +150,7 @@ export default function Dashboard() {
               <div key={idx}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${task.color}`}
-                    ></div>
+                    <div className={`w-3 h-3 rounded-full ${task.color}`}></div>
                     <span className="text-sm text-gray-700">{task.label}</span>
                   </div>
                   <span className="text-sm text-gray-500">{task.count}</span>
@@ -174,9 +196,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
           </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Tasks due within 7 days
-          </p>
+          <p className="text-sm text-gray-500 mb-4">Tasks due within 7 days</p>
 
           {deadlines.map((d, i) => (
             <div

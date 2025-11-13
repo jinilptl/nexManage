@@ -3,16 +3,10 @@ import { Outlet } from "react-router-dom";
 import Navigation from "../../components/Navigation";
 import { useEffect, useState } from "react";
 
-export default function DashboardLayout() {
+export default function DashboardPage() {
     const [collapsed, setCollapsed] = useState(false);
      const [mobileOpen, setMobileOpen] = useState(false);
-     useEffect(()=>{
-      console.log("collaps is --> ", collapsed);
-
-      console.log("is mobile open value --> ", mobileOpen);
-      
-      
-     },[collapsed,mobileOpen])
+     
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}

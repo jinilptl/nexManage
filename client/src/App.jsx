@@ -6,7 +6,8 @@ import ResetPasswordPage from './pages/ForgotPassword/ResetPasswordPage'
 import { useSelector } from 'react-redux'
 import Navigation from './components/Navigation'
 import Dashboard from './components/Dashboard'
-import DashboardLayout from './pages/DashBoard/DashboardLayout'
+import DashboardPage from './pages/DashBoard/DashboardPage'
+import TeamsPage from './pages/DashBoard/TeamsPage'
 
 const App = () => {
 
@@ -21,9 +22,10 @@ const App = () => {
         <Route path="/" element={<HomePage/>} />
         <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage/>} />
-         <Route path='/dashboard' element={<DashboardLayout/>}>
+         <Route path='/dashboard' element={<DashboardPage/>}>
          
             <Route index element={<Dashboard />} />
+            <Route path='/dashboard/teams' element={<TeamsPage />} />
          
          
          
