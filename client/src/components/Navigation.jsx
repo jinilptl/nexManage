@@ -14,9 +14,9 @@ import {
   X,
 } from "lucide-react";
 
-export default function Navigation({collapsed,setCollapsed}) {
+export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileOpen}) {
   
-  const [mobileOpen, setMobileOpen] = useState(false);
+ 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);

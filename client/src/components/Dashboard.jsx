@@ -58,7 +58,7 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 shadow-sm  ">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-gray-600">Active Projects</h4>
             <FolderKanban className="h-4 w-4 text-blue-600" />
@@ -72,7 +72,7 @@ export default function Dashboard() {
         </div>
 
         {/* Card 2 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 shadow-sm  ">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-gray-600">
               Tasks Assigned to Me
@@ -86,7 +86,7 @@ export default function Dashboard() {
         </div>
 
         {/* Card 3 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 shadow-sm  ">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-gray-600">
               Completed This Week
@@ -100,7 +100,7 @@ export default function Dashboard() {
         </div>
 
         {/* Card 4 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 shadow-sm  ">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-gray-600">Pending Reviews</h4>
             <AlertCircle className="h-4 w-4 text-orange-600" />
@@ -115,7 +115,7 @@ export default function Dashboard() {
       {/* Middle Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* My Tasks */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">My Tasks</h3>
           <p className="text-sm text-gray-500 mb-4">
             Quick overview of your assigned tasks
@@ -139,7 +139,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Recent Activity
           </h3>
@@ -170,7 +170,7 @@ export default function Dashboard() {
       {/* Bottom Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Deadlines */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
           </h3>
@@ -181,16 +181,16 @@ export default function Dashboard() {
           {deadlines.map((d, i) => (
             <div
               key={i}
-              className={`p-3 rounded-lg border mb-2 ${
+              className={`p-3 rounded-lg   mb-2 ${
                 d.dueIn <= 1
-                  ? "border-red-300 bg-red-50 text-red-700"
-                  : "border-blue-200 bg-blue-50 text-blue-700"
+                  ? " -red-300 bg-red-50 text-red-700"
+                  : " -blue-200 bg-blue-50 text-blue-700"
               }`}
             >
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium bg-white border px-2 py-0.5 rounded">
+                    <span className="text-xs font-medium bg-white   px-2 py-0.5 rounded">
                       {d.key}
                     </span>
                     <span className="text-sm">{d.title}</span>
@@ -208,7 +208,7 @@ export default function Dashboard() {
         </div>
 
         {/* Project Progress */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Project Progress
           </h3>
