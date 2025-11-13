@@ -6,9 +6,10 @@ import {
   FolderKanban,
   MoreVertical,
 } from "lucide-react";
+import CreateTeamModal from "../../components/CreateTeamModal";
 
 export default function TeamsPage() {
-  // Dummy array for UI preview (replace with real data later)
+  // Dummy teams array
   const teams = [
     {
       id: 1,
@@ -32,59 +33,73 @@ export default function TeamsPage() {
     },
     {
       id: 3,
-      name: "Development Team",
-      description: "Handles frontend and backend engineering",
-      members: 8,
-      projects: 5,
-      lead: "Sarah",
-      createdAt: "Feb 14, 2024",
+      name: "Testing Team",
+      description: "Ensures quality and bug-free releases",
+      members: 5,
+      projects: 2,
+      lead: "Alex",
+      createdAt: "March 05, 2024",
       status: "active",
     },
   ];
-  const [filterTeams, setFilterTeams] = useState(teams ? teams : []);
+
+  const [filterTeams, setFilterTeams] = useState(teams);
   const [searchInput, setSearchInput] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
+  // which dropdown is open?
+  const [openMenuId, setOpenMenuId] = useState(null);
+  
+
+  // filter search
   useEffect(() => {
-    const filterData = teams.filter((team) => {
-      return team.name.toLowerCase().includes(searchInput.toLowerCase());
-    });
-
-    setFilterTeams(filterData);
-    
+    const filtered = teams.filter((team) =>
+      team.name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilterTeams(filtered);
   }, [searchInput]);
 
+  // click outside to close dropdown
+  useEffect(() => {
+    const handler = () => setOpenMenuId(null);
+    window.addEventListener("click", handler);
+    return () => window.removeEventListener("click", handler);
+  }, []);
+
   return (
-    <div className="pt-16 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6">
-      {/* Page Header */}
+    <div className="mt-4 md:pt-16 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6">
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-gray-900 mb-2 text-xl font-bold">Teams</h1>
           <p className="text-gray-600">Manage and organize your teams</p>
         </div>
 
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm hover:bg-blue-700">
+        <button
+          onClick={() => setModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm hover:bg-blue-700"
+        >
           <Plus className="w-4 h-4" />
           Create Team
         </button>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-md  p-6">
+      <div className="bg-white rounded-lg shadow-md p-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             placeholder="Search teams..."
             className="w-full pl-10 pr-4 py-2 shadow-md rounded-md focus:ring-2 ring-blue-500 outline-none"
-            onChange={(e) => {
-              setSearchInput(e.target.value);
-            }}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
       </div>
 
-      {/* Empty State if no teams exist */}
+      {/* Empty State */}
       {filterTeams.length === 0 && (
-        <div className="bg-white rounded-lg shadow-md  py-16 text-center">
+        <div className="bg-white rounded-lg shadow-md py-16 text-center">
           <div className="max-w-md mx-auto">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <UsersIcon className="w-8 h-8 text-gray-400" />
@@ -96,7 +111,10 @@ export default function TeamsPage() {
               Create your first team to get started.
             </p>
 
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm hover:bg-blue-700">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm hover:bg-blue-700"
+            >
               <Plus className="w-4 h-4" />
               Create Team
             </button>
@@ -106,22 +124,58 @@ export default function TeamsPage() {
 
       {/* Teams Grid */}
       {filterTeams.length > 0 && (
-        <div className="grid md:mt-10  grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid md:mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filterTeams.map((team) => (
             <div
               key={team.id}
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition"
             >
               <div className="p-6">
-                {/* Top Row */}
+
+                {/* Top Row: Icon + Dropdown */}
                 <div className="flex items-start justify-between">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <UsersIcon className="w-6 h-6 text-blue-600" />
                   </div>
 
-                  <button className="p-1 hover:bg-gray-100 rounded-md">
-                    <MoreVertical className="w-5 h-5 text-gray-600" />
-                  </button>
+                  {/* 3 dots + clickable dropdown */}
+                  <div
+                    className="relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      className="p-1 hover:bg-gray-100 rounded-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === team.id ? null : team.id);
+                      }}
+                    >
+                      <MoreVertical className="w-5 h-5 text-gray-600" />
+                    </button>
+
+                    {openMenuId === team.id && (
+                      <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg  z-50 animate-fadeIn">
+
+                        <button  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                          View Team
+                        </button>
+
+                        <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                          Update Team
+                        </button>
+
+                        <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                          Manage Members
+                        </button>
+
+                        <div className="border-t"></div>
+
+                        <button className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 text-sm">
+                          Archive Team
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Team Name */}
@@ -131,12 +185,12 @@ export default function TeamsPage() {
                 </p>
 
                 <div className="mt-6 space-y-4">
+
                   {/* Team Lead */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                       Team Lead
                     </p>
-
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
                       <span className="text-sm text-gray-900">{team.lead}</span>
@@ -156,14 +210,14 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  {/* Members Preview (Static UI Circles) */}
+                  {/* Members Preview */}
                   <div>
                     <span className="text-xs text-gray-500 uppercase tracking-wider">
                       Members
                     </span>
 
                     <div className="flex -space-x-2 mt-2">
-                      <div className="w-8 h-8 bg-gray-200 border-2 border-white rounded-full overflow-hidden"></div>
+                      <div className="w-8 h-8 bg-gray-200 border-2 border-white rounded-full"></div>
                       <div className="w-8 h-8 bg-gray-300 border-2 border-white rounded-full"></div>
                       <div className="w-8 h-8 bg-gray-400 border-2 border-white rounded-full"></div>
                       <div className="w-8 h-8 bg-gray-500 border-2 border-white rounded-full"></div>
@@ -191,6 +245,9 @@ export default function TeamsPage() {
           ))}
         </div>
       )}
+
+      {/* Create Team Modal */}
+      <CreateTeamModal open={modalOpen} setOpen={setModalOpen} />
     </div>
   );
 }
