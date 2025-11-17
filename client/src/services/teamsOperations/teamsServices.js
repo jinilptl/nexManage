@@ -29,7 +29,7 @@ const {
 
 //works
 
-export const createTeamService = (teamData, token, navigate) => {
+export const createTeamService = (teamData, token,setOpen) => {
   return async (dispatch, getState) => {
     dispatch(setTeamsLoading(true));
 
@@ -52,7 +52,7 @@ export const createTeamService = (teamData, token, navigate) => {
         // ADD NEW TEAM
         dispatch(setTeams([...oldTeams, response.data.data]));
 
-        navigate("/dashboard/teams");
+         setOpen(false)
       }
     } catch (error) {
       logger("---- error in createTeam teamsServices ----", error);
@@ -64,44 +64,42 @@ export const createTeamService = (teamData, token, navigate) => {
   };
 };
 
-
 // works
 
 export const fetchTeamsService = (token, role) => {
-    return async (dispatch) => {
-        dispatch(setTeamsLoading(true));
-        try {
-            const endpoint =
-                role === "admin" || role === "super_admin"
-                    ? GET_ALL_TEAMS       // admin endpoints
-                    : GET_USER_TEAMS;     // member endpoints
+  return async (dispatch) => {
+    dispatch(setTeamsLoading(true));
+    try {
+      const endpoint =
+        role === "admin" || role === "super_admin"
+          ? GET_ALL_TEAMS // admin endpoints
+          : GET_USER_TEAMS; // member endpoints
 
-            const response = await axiosInstance.get(endpoint, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+      const response = await axiosInstance.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-            // logger("---- fetchTeamsService response ----", response.data.data);
+      // logger("---- fetchTeamsService response ----", response.data.data);
 
-            if (response.data.success) {
-                dispatch(setTeams(response.data.data));
-                toast.success("Teams fetched successfully!");
-            }
-        } catch (error) {
-            console.log("Error fetching teams:", error);
-            toast.error(error.response?.data?.message || "Failed to fetch teams.");
-        } finally {
-            dispatch(setTeamsLoading(false));
-        }
-    };
+      if (response.data.success) {
+        dispatch(setTeams(response.data.data));
+        toast.success("Teams fetched successfully!");
+      }
+    } catch (error) {
+      console.log("Error fetching teams:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch teams.");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
 };
-
 
 //works
 
 export const fetchSingleTeamService = (teamId, token) => {
   return async (dispatch) => {
     try {
-      dispatch(setSelectedTeamData(null));  // clear old data (optional UI polish)
+      dispatch(setSelectedTeamData(null)); // clear old data (optional UI polish)
 
       const response = await axiosInstance.get(`${GET_TEAM}/${teamId}`, {
         headers: {
@@ -110,12 +108,52 @@ export const fetchSingleTeamService = (teamId, token) => {
       });
       logger("---- fetchSingleTeamService response ----", response.data.data);
 
-      if(response.data.success){
+      if (response.data.success) {
         dispatch(setSelectedTeamData(response.data.data));
       }
-
     } catch (err) {
       console.log("Error fetching single team:", err);
     }
   };
 };
+
+// works 
+
+export const deleteTeamService = (teamId, token) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setTeamsLoading(true));
+
+      const response = await axiosInstance.post(`${DELETE_TEAM}/${teamId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      logger("---- response from deleteTeam teamsServices ----", response);
+
+      if (response.data.success) {
+        toast.success("Team deleted successfully!");
+
+        const oldTeams = getState().teams.list;
+        const updatedTeams = oldTeams.filter((team) => team._id !== teamId);
+
+        dispatch(setTeams(updatedTeams));
+
+        const selectedTeamId = getState().teams.selectedTeam.id;
+        if (selectedTeamId === teamId) {
+          dispatch(setSelectedTeamId(null));
+          dispatch(setSelectedTeamData(null));
+        }
+      }
+    } catch (error) {
+      logger("---- error in deleteTeam teamsServices ----", error);
+      toast.error(error.response?.data?.message || "Failed to delete team.");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};
+
+

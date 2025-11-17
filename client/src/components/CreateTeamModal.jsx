@@ -4,7 +4,7 @@ import { createTeamService } from "../services/teamsOperations/teamsServices";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function CreateTeamModal({ open, setOpen }) {
+export default function CreateTeamModal({ open, setOpen,update }) {
   if (!open) return null;
   const dispatch=useDispatch();
   const navigate=useNavigate()
@@ -27,7 +27,11 @@ export default function CreateTeamModal({ open, setOpen }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("---- form data to create team ----", inputData);
-    dispatch(createTeamService(inputData,token,navigate))
+    dispatch(createTeamService(inputData,token,setOpen))
+    setInputData({
+      teamName: "",
+      description: "",
+    });
   }
 
   return (
@@ -43,7 +47,7 @@ export default function CreateTeamModal({ open, setOpen }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            Create New Team
+           {update ? "Update Team" : "Create New Team"}
           </h2>
           <button
             onClick={() => setOpen(false)}
@@ -89,7 +93,7 @@ export default function CreateTeamModal({ open, setOpen }) {
             </button>
 
             <button type="submit"  className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700">
-              Create Team
+              {update ? "Update Team" : "Create Team"}
             </button>
           </div>
         </form>

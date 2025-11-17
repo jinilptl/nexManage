@@ -44,12 +44,12 @@ export default function TeamsPage() {
   console.log("---- openMenuId state ----", openMenuId);
 
   // filter search
-  // useEffect(() => {
-  //   const filtered = teams.filter((team) =>
-  //     team.name.toLowerCase().includes(searchInput.toLowerCase())
-  //   );
-  //   setFilterTeams(filtered);
-  // }, [searchInput]);
+  useEffect(() => {
+    const filtered = teams.filter((team) =>
+      team.teamName.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilterTeams(filtered);
+  }, [searchInput]);
 
   // click outside to close dropdown
   useEffect(() => {
