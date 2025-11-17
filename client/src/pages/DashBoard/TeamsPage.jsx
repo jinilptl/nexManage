@@ -8,58 +8,48 @@ import {
 } from "lucide-react";
 import CreateTeamModal from "../../components/CreateTeamModal";
 import TeamDetailModal from "../../components/TeamDetailModal";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSingleTeamService, fetchTeamsService } from "../../services/teamsOperations/teamsServices";
+import { setSelectedTeamId } from "../../Redux_Config/Slices/teamsSlice";
 
 export default function TeamsPage() {
-  // Dummy teams array
-  const teams = [
-    {
-      id: 1,
-      name: "Design Team",
-      description: "Responsible for UI/UX and brand visuals",
-      members: 6,
-      projects: 3,
-      lead: "John Doe",
-      createdAt: "Jan 10, 2024",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Development Team",
-      description: "Handles frontend and backend engineering",
-      members: 8,
-      projects: 5,
-      lead: "Sarah",
-      createdAt: "Feb 14, 2024",
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Testing Team",
-      description: "Ensures quality and bug-free releases",
-      members: 5,
-      projects: 2,
-      lead: "Alex",
-      createdAt: "March 05, 2024",
-      status: "active",
-    },
-  ];
+  const { list } = useSelector((state) => state.teams);
+  const token = useSelector((state) => state.auth.token);
+  const role = useSelector((state) => state.auth.user.role);
+  const dispatch = useDispatch();
+
+  const teams = list;
+  console.log("---- teams from redux state ----", teams);
 
   const [filterTeams, setFilterTeams] = useState(teams);
+  console.log("---- filterTeams state ----", filterTeams);
+
+  useEffect(() => {
+    if (token && role) {
+      dispatch(fetchTeamsService(token, role));
+    }
+  }, [token, role]);
+
+  useEffect(() => {
+    console.log("Updated team list ---> ", list);
+    setFilterTeams(list);
+  }, [list]);
+
   const [searchInput, setSearchInput] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const[openTeamModal,setOpenTeamModal]=useState(false)
+  const [openTeamModal, setOpenTeamModal] = useState(false);
 
   // which dropdown is open?
   const [openMenuId, setOpenMenuId] = useState(null);
-  
+  console.log("---- openMenuId state ----", openMenuId);
 
   // filter search
-  useEffect(() => {
-    const filtered = teams.filter((team) =>
-      team.name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    setFilterTeams(filtered);
-  }, [searchInput]);
+  // useEffect(() => {
+  //   const filtered = teams.filter((team) =>
+  //     team.name.toLowerCase().includes(searchInput.toLowerCase())
+  //   );
+  //   setFilterTeams(filtered);
+  // }, [searchInput]);
 
   // click outside to close dropdown
   useEffect(() => {
@@ -69,8 +59,11 @@ export default function TeamsPage() {
   }, []);
 
   return (
-    <div className={` md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal&& "overflow-y-hidden"}`}>
-
+    <div
+      className={` md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
+        openTeamModal && "overflow-y-hidden"
+      }`}
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -129,11 +122,10 @@ export default function TeamsPage() {
         <div className="grid md:mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filterTeams.map((team) => (
             <div
-              key={team.id}
+              key={team._id}
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition"
             >
               <div className="p-6">
-
                 {/* Top Row: Icon + Dropdown */}
                 <div className="flex items-start justify-between">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -149,16 +141,25 @@ export default function TeamsPage() {
                       className="p-1 hover:bg-gray-100 rounded-md"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOpenMenuId(openMenuId === team.id ? null : team.id);
+                        setOpenMenuId(
+                          openMenuId === team._id ? null : team._id
+                        );
                       }}
                     >
                       <MoreVertical className="w-5 h-5 text-gray-600" />
                     </button>
 
-                    {openMenuId === team.id && (
+                    {openMenuId === team._id && (
                       <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg  z-50 animate-fadeIn">
-
-                        <button onClick={()=>{setOpenTeamModal(true)}}  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                        <button
+                          onClick={() => {
+                            dispatch(fetchSingleTeamService(team._id, token));
+                            dispatch(setSelectedTeamId(team._id));
+                            setOpenTeamModal(true);
+                            setOpenMenuId(null); //  Close 3-dots menu
+                          }}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
                           View Team
                         </button>
 
@@ -173,13 +174,12 @@ export default function TeamsPage() {
                 </div>
 
                 {/* Team Name */}
-                <h2 className="text-lg font-semibold mt-3">{team.name}</h2>
+                <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                   {team.description}
                 </p>
 
                 <div className="mt-6 space-y-4">
-
                   {/* Team Lead */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
@@ -187,7 +187,8 @@ export default function TeamsPage() {
                     </p>
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
-                      <span className="text-sm text-gray-900">{team.lead}</span>
+                      {/* //add dynamicly */}
+                      <span className="text-sm text-gray-900">Jinil Patel</span>
                     </div>
                   </div>
 
@@ -195,12 +196,13 @@ export default function TeamsPage() {
                   <div className="flex items-center gap-4 text-sm pt-3 border-t border-gray-300">
                     <div className="flex items-center gap-1 text-gray-600">
                       <UsersIcon className="w-4 h-4" />
-                      <span>{team.members} members</span>
+                      <span>{team.members.length} members</span>
                     </div>
 
                     <div className="flex items-center gap-1 text-gray-600">
                       <FolderKanban className="w-4 h-4" />
-                      <span>{team.projects} projects</span>
+                      {/* make dynamic */}
+                      <span> 0 projects</span>
                     </div>
                   </div>
 
@@ -226,11 +228,14 @@ export default function TeamsPage() {
                   {/* Footer */}
                   <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
                     <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-md">
-                      {team.status === "active" ? "Active" : "Archived"}
+                      {team.isActive === true ? "Active" : "Archived"}
                     </span>
 
-                    <span className="text-xs text-gray-500">
-                      Created {team.createdAt}
+                    <span className="text-xs text-gray-500 flex flex-col gap-1">
+                      Created At{" "}
+                      <span>
+                        {new Date(team.createdAt).toLocaleDateString("en-GB")}
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -243,8 +248,11 @@ export default function TeamsPage() {
       {/* Create Team Modal */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} />
 
-      <TeamDetailModal open={openTeamModal} onClose={() => setOpenTeamModal(false)} />
-
+      <TeamDetailModal
+        open={openTeamModal}
+        onClose={() => setOpenTeamModal(false)}
+        teamId={openMenuId}
+      />
     </div>
   );
 }

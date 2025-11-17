@@ -6,24 +6,34 @@ import {
   Archive,
   UserPlus,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { setSelectedTeamId } from "../Redux_Config/Slices/teamsSlice";
 
 export default function TeamDetailModal({ open, onClose }) {
   if (!open) return null;
 
+  const selectedTeamData = useSelector((state) => state.teams.selectedTeam.data);
+
+  console.log("selected teamdata---------> ",selectedTeamData);
+  
+   const team= selectedTeamData || {};
+ 
+
+  // api call here for get data of specific team id 
   // Dummy static data
-  const team = {
-    teamName: "Frontend Avengers",
-    description:
-      "Responsible for UI, UX, dashboards and complete frontend architecture.",
-    status: "Active",
-    createdAt: "Jan 10, 2024",
-    members: [
-      { id: 1, name: "Jinil Patel", role: "team lead", status: "active" },
-      { id: 2, name: "Aarav Mehta", role: "developer", status: "active" },
-      { id: 3, name: "Priya Sharma", role: "designer", status: "inactive" },
-      { id: 4, name: "Rahul Verma", role: "tester", status: "active" },
-    ],
-  };
+  // const team = {
+  //   teamName: "Frontend Avengers",
+  //   description:
+  //     "Responsible for UI, UX, dashboards and complete frontend architecture.",
+  //   status: "Active",
+  //   createdAt: "Jan 10, 2024",
+  //   members: [
+  //     { id: 1, name: "Jinil Patel", role: "team lead", status: "active" },
+  //     { id: 2, name: "Aarav Mehta", role: "developer", status: "active" },
+  //     { id: 3, name: "Priya Sharma", role: "designer", status: "inactive" },
+  //     { id: 4, name: "Rahul Verma", role: "tester", status: "active" },
+  //   ],
+  // };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -39,7 +49,11 @@ export default function TeamDetailModal({ open, onClose }) {
 
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={()=>{
+            onClose();
+            selectedTeamData(null);
+            setSelectedTeamId(null)
+          }}
           className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
         >
           <X className="w-5 h-5" />
@@ -58,7 +72,7 @@ export default function TeamDetailModal({ open, onClose }) {
                 </button>
               </h2>
 
-              <p className="text-gray-500 mt-1 flex items-center gap-2 break-words">
+              <p className="text-gray-500 mt-1 flex items-center gap-2 wrap-break-words">
                 {team.description}
                 <button className="p-1 hover:bg-gray-100 rounded-md">
                   <Edit className="w-4 h-4 text-gray-600" />
@@ -68,7 +82,7 @@ export default function TeamDetailModal({ open, onClose }) {
 
             {/* Team Status */}
             <span className="px-3 sm:mr-8  py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium w-fit md:min-w-fit">
-              {team.status}
+              {team.isActive ? "Active" : "Inactive"}
             </span>
           </div>
 
@@ -100,7 +114,10 @@ export default function TeamDetailModal({ open, onClose }) {
 
           {/* MEMBERS LIST */}
           <div className="space-y-3">
-            {team.members.map((m) => (
+            {team.members && team.members.length === 0 && (
+              <p className="text-gray-500">No members in this team.</p>
+            )}
+            {team.members && team.members.length > 0 && team.members.map((m) => (
               <div
                 key={m.id}
                 className="p-3 rounded-lg border hover:bg-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
