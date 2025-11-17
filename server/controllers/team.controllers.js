@@ -54,6 +54,22 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "All teams fetched successfully", teamList));
 });
 
+const getUsersAllTeams = asyncHandler(async (req, res) => {
+  const userId = req.user._id; 
+ 
+  if(!userId){
+    throw new ApiError(400, "User ID is required");
+  }
+  const allTeams = await TeamModel.find({ 'members.user': userId }).populate('members.user', 'name email');
+
+  console.log("users all teams:----> ",allTeams);
+  
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User's teams fetched successfully", allTeams));
+})
+
 const getTeamById = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
 
@@ -415,5 +431,6 @@ export {
   addTeamMember,
   getTeamMembers,
   updateTeamMember,
-  removeTeamMember
+  removeTeamMember,
+  getUsersAllTeams
 };

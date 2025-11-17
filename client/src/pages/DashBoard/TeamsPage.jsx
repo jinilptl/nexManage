@@ -7,6 +7,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import CreateTeamModal from "../../components/CreateTeamModal";
+import TeamDetailModal from "../../components/TeamDetailModal";
 
 export default function TeamsPage() {
   // Dummy teams array
@@ -46,6 +47,7 @@ export default function TeamsPage() {
   const [filterTeams, setFilterTeams] = useState(teams);
   const [searchInput, setSearchInput] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const[openTeamModal,setOpenTeamModal]=useState(false)
 
   // which dropdown is open?
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -67,7 +69,7 @@ export default function TeamsPage() {
   }, []);
 
   return (
-    <div className="mt-4 md:pt-16 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6">
+    <div className={` md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal&& "overflow-y-hidden"}`}>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -156,16 +158,8 @@ export default function TeamsPage() {
                     {openMenuId === team.id && (
                       <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg  z-50 animate-fadeIn">
 
-                        <button  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                        <button onClick={()=>{setOpenTeamModal(true)}}  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
                           View Team
-                        </button>
-
-                        <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
-                          Update Team
-                        </button>
-
-                        <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
-                          Manage Members
                         </button>
 
                         <div className="border-t"></div>
@@ -248,6 +242,9 @@ export default function TeamsPage() {
 
       {/* Create Team Modal */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} />
+
+      <TeamDetailModal open={openTeamModal} onClose={() => setOpenTeamModal(false)} />
+
     </div>
   );
 }
