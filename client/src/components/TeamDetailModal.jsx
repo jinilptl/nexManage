@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Edit, Trash2, Archive, UserPlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedTeamId } from "../Redux_Config/Slices/teamsSlice";
-import { deleteTeamService } from "../services/teamsOperations/teamsServices";
+import {
+  setSelectedTeamData,
+  setSelectedTeamId,
+} from "../Redux_Config/Slices/teamsSlice";
+import {
+  deleteTeamService,
+  fetchSingleTeamService,
+} from "../services/teamsOperations/teamsServices";
 import CreateTeamModal from "./CreateTeamModal";
+import MemberModal from "./MemberModal";
 
 export default function TeamDetailModal({ open, onClose }) {
   if (!open) return null;
@@ -11,12 +18,15 @@ export default function TeamDetailModal({ open, onClose }) {
   const teamid = useSelector((state) => state.teams.selectedTeam.id);
   const dispatch = useDispatch();
   const [modalOpen, setModalOpen] = useState(false);
+  const[memberModalOpen,setMemberModalOpen]=useState(false)
+  const [membermodalmode,setMemberModalMode]=useState("add")
 
   const selectedTeamData = useSelector(
     (state) => state.teams.selectedTeam.data
   );
 
-  console.log("selected teamdata---------> ", selectedTeamData);
+  const members=useSelector((state)=>state.teams.teamMembers.list)
+  console.log("members in team detail modal ---> ",members);
 
   const team = selectedTeamData || {};
 
@@ -25,6 +35,9 @@ export default function TeamDetailModal({ open, onClose }) {
     onClose();
     dispatch(setSelectedTeamId(null));
   };
+
+ console.log("teams---> ", team.members);
+ 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -40,8 +53,8 @@ export default function TeamDetailModal({ open, onClose }) {
         <button
           onClick={() => {
             onClose();
-            selectedTeamData(null);
-            setSelectedTeamId(null);
+            dispatch(setSelectedTeamData(null));
+            dispatch(setSelectedTeamId(null));
           }}
           className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
         >
@@ -70,10 +83,14 @@ export default function TeamDetailModal({ open, onClose }) {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 mt-4">
-            <button onClick={()=>{
-              setModalOpen(true)
-              
-            }} className="px-3 py-2 rounded-md bg-blue-600 text-white text-sm flex items-center gap-2 hover:bg-blue-700">
+            <button
+              onClick={() => {
+                setModalOpen(true);
+                dispatch(setSelectedTeamId(teamid));
+                dispatch(fetchSingleTeamService(teamid, token));
+              }}
+              className="px-3 py-2 rounded-md bg-blue-600 text-white text-sm flex items-center gap-2 hover:bg-blue-700"
+            >
               <Edit className="w-4 h-4" /> Update Team
             </button>
 
@@ -83,7 +100,8 @@ export default function TeamDetailModal({ open, onClose }) {
 
             <button
               onClick={() => {
-               confirm("Are you sure you want to delete this team?") && handleDeleteTeam();
+                confirm("Are you sure you want to delete this team?") &&
+                  handleDeleteTeam();
               }}
               className="px-3 py-2 rounded-md bg-red-100 text-red-700 text-sm flex items-center gap-2"
             >
@@ -97,7 +115,13 @@ export default function TeamDetailModal({ open, onClose }) {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold">Team Members</h3>
 
-            <button className="px-3 py-2 rounded-md bg-blue-50 text-blue-700 text-sm flex items-center gap-2 hover:bg-blue-100">
+            <button
+              onClick={() => {
+                setMemberModalMode("add")
+                setMemberModalOpen(true);
+              }}
+              className="px-3 py-2 rounded-md bg-blue-50 text-blue-700 text-sm flex items-center gap-2 hover:bg-blue-100"
+            >
               <UserPlus className="w-4 h-4" /> Add Member
             </button>
           </div>
@@ -107,27 +131,27 @@ export default function TeamDetailModal({ open, onClose }) {
             {team.members && team.members.length === 0 && (
               <p className="text-gray-500">No members in this team.</p>
             )}
-            {team.members &&
-              team.members.length > 0 &&
-              team.members.map((m) => (
+              { members &&
+              members.length > 0 &&
+              members.map((m) => (
                 <div
-                  key={m.id}
+                  key={m._id}
                   className="p-3 rounded-lg border hover:bg-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   {/* LEFT SIDE */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {/* Avatar */}
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
-                      {m.name.charAt(0)}
+                      {m.user.name[0].toUpperCase()}
                     </div>
 
                     {/* Name + Role */}
                     <div className="flex flex-col min-w-0">
                       <p className="font-medium text-gray-900 truncate">
-                        {m.name}
+                        {m.user.name.slice(0,1).toUpperCase() + m.user.name.slice(1)}
                       </p>
                       <p className="text-sm text-gray-500 capitalize truncate">
-                        {m.role}
+                        {m.roleInTeam}
                       </p>
                     </div>
 
@@ -157,7 +181,10 @@ export default function TeamDetailModal({ open, onClose }) {
           </div>
         </div>
       </div>
-      <CreateTeamModal open={modalOpen} setOpen={setModalOpen} update={true}   />
+      <CreateTeamModal open={modalOpen} setOpen={setModalOpen} mode="update" />
+
+      <MemberModal open={memberModalOpen} onClose={setMemberModalOpen} mode={membermodalmode} />
+
     </div>
   );
 }

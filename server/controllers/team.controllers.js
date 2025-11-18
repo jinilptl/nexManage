@@ -79,7 +79,7 @@ const getTeamById = asyncHandler(async (req, res) => {
   }
 
   // Find team by ID
-  const teamDoc = await TeamModel.findById(teamId);
+  const teamDoc = await TeamModel.findById(teamId).populate("members.user", "name email role");
 
   if (!teamDoc) {
     throw new ApiError(404, "No team found with the provided ID");
@@ -159,7 +159,9 @@ const deleteTeamById = asyncHandler(async (req, res) => {
 // member add , update , delete , all member
 const addTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
-  const { email, roleInTeam } = req.body;
+  const { email, roleInTeam, status } = req.body;
+  console.log(email,roleInTeam,status);
+  
 
   // Validate inputs
   if (!email || !roleInTeam) {
@@ -178,7 +180,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "This team is archived");
   }
 
-  // Find user by email
+  // Find user
   const userDoc = await UserModel.findOne({ email });
   if (!userDoc) {
     throw new ApiError(404, "User not found");
@@ -186,26 +188,38 @@ const addTeamMember = asyncHandler(async (req, res) => {
 
   const userId = userDoc._id;
 
-  // // Check for duplicate membership
-  // const isMemberAlreadyPresent = teamDoc.members.find(
-  //   (member) => member.user.toString() === userId.toString()
-  // );
-  // if (isMemberAlreadyPresent) {
-  //   throw new ApiError(409, "This member is already part of the team");
-  // }
+  // Check duplicate membership
+  const isMemberAlreadyPresent = teamDoc.members.find(
+    (member) => member.user.toString() === userId.toString()
+  );
+  if (isMemberAlreadyPresent) {
+    throw new ApiError(409, "This member is already part of the team");
+  }
 
-  // Create new member record
+  // 🔥 TEAMLEAD CHECK HERE — only 1 allowed
+  const isTeamLeadAlreadyPresent = teamDoc.members.find(
+    (member) => member.roleInTeam === "team lead"
+  );
+
+  if (roleInTeam === "team lead" && isTeamLeadAlreadyPresent) {
+    throw new ApiError(
+      400,
+      "Only one team lead is allowed in this team. Please update existing team lead first."
+    );
+  }
+
+  // Create new member
   const newTeamMember = {
     user: userId,
     roleInTeam: roleInTeam || "developer",
     joinedAt: Date.now(),
-    status: "active",
+    status: status || "active",
   };
 
   teamDoc.members.push(newTeamMember);
   await teamDoc.save();
 
-  // Populate new member data for response
+  // Populate new member
   const populatedTeamDoc = await TeamModel.findById(teamId).populate(
     "members.user",
     "name email"
@@ -219,13 +233,8 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Newly added member not found after populate");
   }
 
-  // ✅ Send welcome email after successful addition
-
+  // Send welcome email
   try {
-    //  { right now not available .. but we will fix it whenavalable
-    //   se use login url right now ...
-    //  const teamLink = `https://app.nexmanage.tech/team/${teamId}`;}
-
     const teamLink = `${process.env.CLIENT_URL}/`;
     const htmlMessage = team_member_added_email_template(
       userDoc.name || "New Member",
@@ -240,13 +249,11 @@ const addTeamMember = asyncHandler(async (req, res) => {
       message: htmlMessage,
     });
 
-    console.log(`✅ Email sent successfully to ${userDoc.email}`);
+    console.log(`✅ Email sent to ${userDoc.email}`);
   } catch (emailError) {
-    console.error("❌ Failed to send welcome email:", emailError.message);
-    // Don’t throw error here — main process succeeded
+    console.error("❌ Email sending failed:", emailError.message);
   }
 
-  // Send API response
   return res
     .status(200)
     .json(
@@ -257,6 +264,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
       )
     );
 });
+
 
 const getTeamMembers = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;

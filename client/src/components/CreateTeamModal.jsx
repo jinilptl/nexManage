@@ -1,18 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
-import { createTeamService } from "../services/teamsOperations/teamsServices";
-import { useDispatch } from "react-redux";
+import { createTeamService, updateTeamService } from "../services/teamsOperations/teamsServices";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function CreateTeamModal({ open, setOpen,update }) {
+export default function CreateTeamModal({ open, setOpen,mode }) {
   if (!open) return null;
-  const dispatch=useDispatch();
+  const dispatch=useDispatch()
   const navigate=useNavigate()
   const token=localStorage.getItem("token");
+  const teamdata=useSelector((state)=>state.teams.selectedTeam.data)
+  
+
+  
+  
   const [inputData, setInputData] = React.useState({
     teamName: "",
     description: "",
   });
+
+  useEffect(()=>{
+    if(mode==="update" && teamdata){
+      setInputData({
+        teamName:teamdata?.teamName,
+        description:teamdata?.description
+      })
+    }
+  },[mode,teamdata])
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +40,16 @@ export default function CreateTeamModal({ open, setOpen,update }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("---- form data to create team ----", inputData);
-    dispatch(createTeamService(inputData,token,setOpen))
+    console.log("input data is ---> ", inputData);
+    
+    if(mode==="update"){
+      // Dispatch update team action here
+      dispatch( updateTeamService(teamdata._id,inputData,token,setOpen)
+)
+    }
+    else{
+      dispatch(createTeamService(inputData,token,setOpen))
+    }
     setInputData({
       teamName: "",
       description: "",
@@ -47,7 +69,7 @@ export default function CreateTeamModal({ open, setOpen,update }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-           {update ? "Update Team" : "Create New Team"}
+           {mode === "update" ? "Update Team" : "Create New Team"}
           </h2>
           <button
             onClick={() => setOpen(false)}
@@ -65,6 +87,7 @@ export default function CreateTeamModal({ open, setOpen,update }) {
               type="text"
               value={inputData.teamName}
               onChange={handleOnChange}
+               
               name="teamName"
               className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none"
               placeholder="Enter team name"
@@ -77,6 +100,7 @@ export default function CreateTeamModal({ open, setOpen,update }) {
             value={inputData.description}
             onChange={handleOnChange} 
             name="description"
+            
               className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none"
               placeholder="Short team description"
               rows="3"
@@ -93,7 +117,7 @@ export default function CreateTeamModal({ open, setOpen,update }) {
             </button>
 
             <button type="submit"  className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700">
-              {update ? "Update Team" : "Create Team"}
+              {mode === "update" ? "Update Team" : "Create Team"}
             </button>
           </div>
         </form>

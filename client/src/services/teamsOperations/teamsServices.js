@@ -6,6 +6,7 @@ import {
   setTeams,
   setSelectedTeamId,
   setSelectedTeamData,
+  setTeamMembers,
 } from "../../Redux_Config/Slices/teamsSlice";
 
 let logger = console.log;
@@ -29,7 +30,7 @@ const {
 
 //works
 
-export const createTeamService = (teamData, token,setOpen) => {
+export const createTeamService = (teamData, token, setOpen) => {
   return async (dispatch, getState) => {
     dispatch(setTeamsLoading(true));
 
@@ -52,7 +53,7 @@ export const createTeamService = (teamData, token,setOpen) => {
         // ADD NEW TEAM
         dispatch(setTeams([...oldTeams, response.data.data]));
 
-         setOpen(false)
+        setOpen(false);
       }
     } catch (error) {
       logger("---- error in createTeam teamsServices ----", error);
@@ -106,7 +107,6 @@ export const fetchSingleTeamService = (teamId, token) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      logger("---- fetchSingleTeamService response ----", response.data.data);
 
       if (response.data.success) {
         dispatch(setSelectedTeamData(response.data.data));
@@ -117,7 +117,7 @@ export const fetchSingleTeamService = (teamId, token) => {
   };
 };
 
-// works 
+// works
 
 export const deleteTeamService = (teamId, token) => {
   return async (dispatch, getState) => {
@@ -156,4 +156,109 @@ export const deleteTeamService = (teamId, token) => {
   };
 };
 
+// update team
 
+//works
+export const updateTeamService = (teamId, updatedData, token, setOpen) => {
+  return async (dispatch, getState) => {
+    dispatch(setTeamsLoading(true));
+    try {
+      const response = await axiosInstance.post(
+        `${UPDATE_TEAM}/${teamId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("response in team update service---> ", response.data.data);
+      if (response.data.success) {
+        dispatch(setSelectedTeamData(response.data.data));
+        setOpen(false);
+        const { list } = getState().teams;
+        const updatedList = list.map((team) =>
+          team._id === teamId ? response.data.data : team
+        );
+        dispatch(setTeams(updatedList));
+        toast.success("Team updated successfully!");
+      }
+    } catch (error) {
+      logger("---- error in updateTeam teamsServices ----", error);
+      toast.error(error.response?.data?.message || "Failed to update team.");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};
+
+// TEAM MEMBERS SERVICES CAN BE ADDED HERE
+
+// works
+
+export const addTeamMemberService = (teamId, memberData, token, onClose) => {
+  return async (dispatch, getState) => {
+    dispatch(setTeamsLoading(true));
+
+    try {
+      const response = await axiosInstance.post(
+        `${ADD_TEAM_MEMBER}/${teamId}`,
+        memberData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      logger("add member response ---> ", response);
+
+      if (response.data.success) {
+        toast.success("Member added successfully!");
+
+        const newMember = response.data.data;
+        const prevMembers = getState().teams.teamMembers.list;
+
+        dispatch(setTeamMembers([...prevMembers, newMember]));
+        onClose();
+      }
+    } catch (error) {
+      logger("error add member ---> ", error);
+      toast.error(error.response?.data?.message || "Failed to add member.");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};
+
+// works
+
+export const fetchTeamMembersService = (teamId, token) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setTeamsLoading(true));
+
+      const response = await axiosInstance.get(
+        `${GET_TEAM_MEMBERS}/${teamId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      console.log("all members response", response.data);
+      if (response.data.success) {
+        toast.success("Members fetched successfully!");
+        dispatch(setTeamMembers(response.data.data.members));
+      }
+    } catch (error) {
+      console.log("error in fetchTeamMembersService", error);
+      toast.error(error.response?.data?.message || "Failed to fetch members.");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};

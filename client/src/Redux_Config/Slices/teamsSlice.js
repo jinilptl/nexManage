@@ -41,6 +41,8 @@ const teamsSlice = createSlice({
 
     // TEAM MEMBERS
     setTeamMembers(state, action) {
+      console.log("action.payload---> ", action.payload);
+      
       state.teamMembers.list = action.payload;
     },
   },

@@ -9,7 +9,11 @@ import {
 import CreateTeamModal from "../../components/CreateTeamModal";
 import TeamDetailModal from "../../components/TeamDetailModal";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSingleTeamService, fetchTeamsService } from "../../services/teamsOperations/teamsServices";
+import {
+  fetchSingleTeamService,
+  fetchTeamMembersService,
+  fetchTeamsService,
+} from "../../services/teamsOperations/teamsServices";
 import { setSelectedTeamId } from "../../Redux_Config/Slices/teamsSlice";
 
 export default function TeamsPage() {
@@ -19,10 +23,8 @@ export default function TeamsPage() {
   const dispatch = useDispatch();
 
   const teams = list;
-  console.log("---- teams from redux state ----", teams);
 
   const [filterTeams, setFilterTeams] = useState(teams);
-  console.log("---- filterTeams state ----", filterTeams);
 
   useEffect(() => {
     if (token && role) {
@@ -31,7 +33,6 @@ export default function TeamsPage() {
   }, [token, role]);
 
   useEffect(() => {
-    console.log("Updated team list ---> ", list);
     setFilterTeams(list);
   }, [list]);
 
@@ -41,7 +42,6 @@ export default function TeamsPage() {
 
   // which dropdown is open?
   const [openMenuId, setOpenMenuId] = useState(null);
-  console.log("---- openMenuId state ----", openMenuId);
 
   // filter search
   useEffect(() => {
@@ -157,6 +157,7 @@ export default function TeamsPage() {
                             dispatch(setSelectedTeamId(team._id));
                             setOpenTeamModal(true);
                             setOpenMenuId(null); //  Close 3-dots menu
+                            dispatch(fetchTeamMembersService(team._id, token));
                           }}
                           className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
                         >
