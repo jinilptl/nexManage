@@ -18,9 +18,7 @@ const HomePage = () => {
 
   const submitHandler=(e)=>{
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Email:", email);
-    console.log("Password:", password)
+    
    dispatch( loginUserService(email,password,navigate))
    setEmail("");
    setPassword("")

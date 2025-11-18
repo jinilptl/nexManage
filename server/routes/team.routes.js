@@ -9,15 +9,14 @@ import {
   getTeamMembers,
   updateTeamMember,
   removeTeamMember,
+  getUsersAllTeams,
 } from "../controllers/team.controllers.js";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
 
 const teamRouter = express.Router();
 
-
 // ✅ TEAM ROUTES
-
 
 // Create a new team
 teamRouter
@@ -38,9 +37,10 @@ teamRouter.route("/update-team/:teamId").post(verifyToken, updateTeamDetails);
 // Delete a team
 teamRouter.route("/delete-team/:teamId").post(verifyToken, deleteTeamById);
 
+// Get all teams of a user
+teamRouter.route("/user-teams").get(verifyToken, getUsersAllTeams);
 
 // ✅ TEAM MEMBER ROUTES
-
 
 // Add a new member to a team
 teamRouter.route("/add-member/:teamId").post(verifyToken, addTeamMember);

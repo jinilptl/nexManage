@@ -15,7 +15,7 @@ export default function ResetPasswordPage() {
 
   const { token } = useParams();
 
-  // console.log("reset token is ----> ",token);
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
