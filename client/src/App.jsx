@@ -13,9 +13,7 @@ const App = () => {
 
   const {user,token}=useSelector((state)=>state.auth)
 
-  console.log("-------- user in app --------",user.name);
-  console.log("-------- token in app ---------",token.slice(0,35)+"...");
-  
+ 
   return (
     <div>
       <Routes>

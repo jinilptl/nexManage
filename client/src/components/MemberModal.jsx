@@ -27,7 +27,7 @@ export default function MemberModal({ open, mode = "add", onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("input value data is ----> ", inputValue);
+    
     if (mode === "add") {
       handleAddMember(inputValue);
     } else {

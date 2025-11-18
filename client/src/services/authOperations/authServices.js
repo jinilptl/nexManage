@@ -28,7 +28,7 @@ export function loginUserService(email, password, navigate) {
         { email, password },
         { withCredentials: true }
       );
-      Logger("login response from service", Login_response.data);
+      // Logger("login response from service", Login_response.data);
 
       if (Login_response.data.success) {
         let token = Login_response.data.data.token;
@@ -41,7 +41,7 @@ export function loginUserService(email, password, navigate) {
         navigate("/dashboard");
       }
     } catch (error) {
-      Logger("login error from service", error);
+      // Logger("login error from service", error);
       toast.error(error.response.data.message||"error while login")
       dispatch(setLoading(false));
     } finally {
@@ -60,9 +60,9 @@ export function forgotPasswordService(email) {
         { email },
         { withCredentials: true }
       );
-      Logger("forgot password response from service", forgot_password_response);
+      // Logger("forgot password response from service", forgot_password_response);
     } catch (error) {
-      Logger("forgot password error from service", error);
+      // Logger("forgot password error from service", error);
       dispatch(setLoading(false));
     } finally {
       dispatch(setLoading(false));
@@ -80,9 +80,9 @@ export function resetPasswordService(newPassword, token) {
         { withCredentials: true }
       );
 
-      Logger("reset password response from service", resetPassword_response);
+      // Logger("reset password response from service", resetPassword_response);
     } catch (error) {
-      Logger("reset password error from service", error);
+      // Logger("reset password error from service", error);
       dispatch(setLoading(false));
     } finally {
       dispatch(setLoading(false));

@@ -26,7 +26,7 @@ export default function TeamDetailModal({ open, onClose }) {
   );
 
   const members=useSelector((state)=>state.teams.teamMembers.list)
-  console.log("members in team detail modal ---> ",members);
+  
 
   const team = selectedTeamData || {};
 
@@ -36,7 +36,6 @@ export default function TeamDetailModal({ open, onClose }) {
     dispatch(setSelectedTeamId(null));
   };
 
- console.log("teams---> ", team.members);
  
 
   return (

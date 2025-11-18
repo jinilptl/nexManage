@@ -40,7 +40,7 @@ export default function CreateTeamModal({ open, setOpen,mode }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("input data is ---> ", inputData);
+    
     
     if(mode==="update"){
       // Dispatch update team action here

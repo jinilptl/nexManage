@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
   const handleSubmit=(e)=>{
     e.preventDefault();
 
-    console.log("email is --->", email);
+    
      dispatch(forgotPasswordService(email))
     
   }

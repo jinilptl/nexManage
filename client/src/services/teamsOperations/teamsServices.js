@@ -42,7 +42,7 @@ export const createTeamService = (teamData, token, setOpen) => {
         withCredentials: true,
       });
 
-      logger("---- response from createTeam teamsServices ----", response);
+      // logger("---- response from createTeam teamsServices ----", response);
 
       if (response.data.success) {
         toast.success("Team created successfully!");
@@ -56,7 +56,7 @@ export const createTeamService = (teamData, token, setOpen) => {
         setOpen(false);
       }
     } catch (error) {
-      logger("---- error in createTeam teamsServices ----", error);
+      // logger("---- error in createTeam teamsServices ----", error);
 
       toast.error(error.response?.data?.message || "Failed to create team.");
     } finally {
@@ -87,7 +87,7 @@ export const fetchTeamsService = (token, role) => {
         toast.success("Teams fetched successfully!");
       }
     } catch (error) {
-      console.log("Error fetching teams:", error);
+    //  logger("Error fetching teams:", error);
       toast.error(error.response?.data?.message || "Failed to fetch teams.");
     } finally {
       dispatch(setTeamsLoading(false));
@@ -112,7 +112,7 @@ export const fetchSingleTeamService = (teamId, token) => {
         dispatch(setSelectedTeamData(response.data.data));
       }
     } catch (err) {
-      console.log("Error fetching single team:", err);
+      // logger("Error fetching single team:", err);
     }
   };
 };
@@ -131,7 +131,7 @@ export const deleteTeamService = (teamId, token) => {
         withCredentials: true,
       });
 
-      logger("---- response from deleteTeam teamsServices ----", response);
+      // logger("---- response from deleteTeam teamsServices ----", response);
 
       if (response.data.success) {
         toast.success("Team deleted successfully!");
@@ -148,7 +148,7 @@ export const deleteTeamService = (teamId, token) => {
         }
       }
     } catch (error) {
-      logger("---- error in deleteTeam teamsServices ----", error);
+      // logger("---- error in deleteTeam teamsServices ----", error);
       toast.error(error.response?.data?.message || "Failed to delete team.");
     } finally {
       dispatch(setTeamsLoading(false));
@@ -174,7 +174,7 @@ export const updateTeamService = (teamId, updatedData, token, setOpen) => {
         }
       );
 
-      console.log("response in team update service---> ", response.data.data);
+      // logger("response in team update service---> ", response.data.data);
       if (response.data.success) {
         dispatch(setSelectedTeamData(response.data.data));
         setOpen(false);
@@ -186,7 +186,7 @@ export const updateTeamService = (teamId, updatedData, token, setOpen) => {
         toast.success("Team updated successfully!");
       }
     } catch (error) {
-      logger("---- error in updateTeam teamsServices ----", error);
+      // logger("---- error in updateTeam teamsServices ----", error);
       toast.error(error.response?.data?.message || "Failed to update team.");
     } finally {
       dispatch(setTeamsLoading(false));
@@ -214,7 +214,7 @@ export const addTeamMemberService = (teamId, memberData, token, onClose) => {
         }
       );
 
-      logger("add member response ---> ", response);
+      // logger("add member response ---> ", response);
 
       if (response.data.success) {
         toast.success("Member added successfully!");
@@ -226,7 +226,7 @@ export const addTeamMemberService = (teamId, memberData, token, onClose) => {
         onClose();
       }
     } catch (error) {
-      logger("error add member ---> ", error);
+      // logger("error add member ---> ", error);
       toast.error(error.response?.data?.message || "Failed to add member.");
     } finally {
       dispatch(setTeamsLoading(false));
@@ -249,13 +249,13 @@ export const fetchTeamMembersService = (teamId, token) => {
         }
       );
 
-      console.log("all members response", response.data);
+      // logger("all members response", response.data);
       if (response.data.success) {
         toast.success("Members fetched successfully!");
         dispatch(setTeamMembers(response.data.data.members));
       }
     } catch (error) {
-      console.log("error in fetchTeamMembersService", error);
+      // logger("error in fetchTeamMembersService", error);
       toast.error(error.response?.data?.message || "Failed to fetch members.");
     } finally {
       dispatch(setTeamsLoading(false));
