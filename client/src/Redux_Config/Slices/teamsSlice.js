@@ -38,11 +38,12 @@ const teamsSlice = createSlice({
     setSelectedTeamData(state, action) {
       state.selectedTeam.data = action.payload;
     },
+    setSelectedTeamLoading(state, action) {
+      state.selectedTeam.loading = action.payload;
+    },
 
     // TEAM MEMBERS
     setTeamMembers(state, action) {
-      
-      
       state.teamMembers.list = action.payload;
     },
   },
@@ -54,6 +55,7 @@ export const {
 
   setSelectedTeamId,
   setSelectedTeamData,
+  setSelectedTeamLoading,
 
   setTeamMembers,
 } = teamsSlice.actions;

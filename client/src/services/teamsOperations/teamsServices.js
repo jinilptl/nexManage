@@ -262,3 +262,68 @@ export const fetchTeamMembersService = (teamId, token) => {
     }
   };
 };
+
+
+
+//works
+export const updateTeamMemberService = (teamId, memberId, updatedData, token,onClose,setMember) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setTeamsLoading(true));
+
+      const response = await axiosInstance.post(
+        `${UPDATE_TEAM_MEMBER}/${teamId}/${memberId}`,
+        updatedData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        }
+      );
+      logger("update member response", response.data);
+
+      if (response.data.success) {
+        toast.success("Member updated successfully!");
+        dispatch(setTeamMembers(response.data.data.allMembers));  // updated list
+        onClose(false)
+        // it is an member id for resetting the selected member in modal after update
+        setMember(null)
+      }
+
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update member");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};
+
+//in progress 
+
+export const removeTeamMemberService = (teamId, memberId, token) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setTeamsLoading(true));
+
+      const response = await axiosInstance.post(
+        `${REMOVE_TEAM_MEMBER}/${teamId}/${memberId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+         
+      logger("remove member response", response.data);
+      if (response.data.success) {
+        toast.success("Member removed successfully");
+        dispatch(setTeamMembers(response.data.data.allMembers));
+      }
+      
+    } catch (error) {
+      logger("---- error in removeTeamMember ----", error);
+      toast.error(error.response?.data?.message || "Failed to remove member");
+    } finally {
+      dispatch(setTeamsLoading(false));
+    }
+  };
+};
+
