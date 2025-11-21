@@ -5,19 +5,21 @@ import {
   updateTeamService,
 } from "../../../services/teamsOperations/teamsServices";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import ModalSmallLoader from "../../Lodders/ModalSmallLoader"; // ⭐ IMPORT SMALL LOADER
+import ModalSmallLoader from "../../Lodders/ModalSmallLoader"; 
 
 export default function CreateTeamModal({ open, setOpen, mode }) {
   if (!open) return null;
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
+  // 🔥 Only modal-specific loaders (perfect for modals)
+  const creating = useSelector((state) => state.teams.actions.creatingTeam);
+  const updating = useSelector((state) => state.teams.actions.updatingTeam);
+
+  const modalLoading = creating || updating; // merged modal loading state
+
   const teamdata = useSelector((state) => state.teams.selectedTeam.data);
-  const loading = useSelector((state) => state.teams.loading); // ⭐ GET LOADING STATE
 
   const [inputData, setInputData] = React.useState({
     teamName: "",
@@ -49,12 +51,12 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      
+    <div className="fixed inset-0 z-99999 flex items-center justify-center">
+
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={() => !loading && setOpen(false)}
+        className="absolute inset-0  bg-black/40 backdrop-blur-sm"
+        onClick={() => !modalLoading && setOpen(false)}
       />
 
       {/* MODAL BOX */}
@@ -62,10 +64,10 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
 
         {/* CLOSE BUTTON */}
         <button
-          disabled={loading}
-          onClick={() => !loading && setOpen(false)}
+          disabled={modalLoading}
+          onClick={() => !modalLoading && setOpen(false)}
           className={`absolute top-4 right-4 p-2 rounded-md hover:bg-gray-100 
-          ${loading && "opacity-40 cursor-not-allowed"}`}
+          ${modalLoading && "opacity-40 cursor-not-allowed"}`}
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
@@ -75,8 +77,8 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
           {mode === "update" ? "Update Team" : "Create New Team"}
         </h2>
 
-        {/* SMALL LOADER */}
-        {loading && <ModalSmallLoader />}
+        {/* SMALL MODAL LOADER */}
+        {modalLoading && <ModalSmallLoader />}
 
         {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -87,10 +89,10 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
               type="text"
               name="teamName"
               value={inputData.teamName}
-              disabled={loading}
+              disabled={modalLoading}
               onChange={handleChange}
               className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
-              ${loading && "bg-gray-100 cursor-not-allowed"}`}
+              ${modalLoading && "bg-gray-100 cursor-not-allowed"}`}
               placeholder="Enter team name"
             />
           </div>
@@ -101,34 +103,34 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
             <textarea
               name="description"
               value={inputData.description}
-              disabled={loading}
+              disabled={modalLoading}
               onChange={handleChange}
               className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
-              ${loading && "bg-gray-100 cursor-not-allowed"}`}
+              ${modalLoading && "bg-gray-100 cursor-not-allowed"}`}
               placeholder="Short team description"
               rows="3"
             />
           </div>
 
-          {/* BUTTONS */}
+          {/* FOOTER BUTTONS */}
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
-              disabled={loading}
-              onClick={() => !loading && setOpen(false)}
+              disabled={modalLoading}
+              onClick={() => !modalLoading && setOpen(false)}
               className={`px-4 py-2 text-sm rounded-md border bg-gray-100 hover:bg-gray-200 
-              ${loading && "opacity-40 cursor-not-allowed"}`}
+              ${modalLoading && "opacity-40 cursor-not-allowed"}`}
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={modalLoading}
               className={`px-4 py-2 text-sm rounded-md text-white 
-              ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+              ${modalLoading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
             >
-              {loading ? (
+              {modalLoading ? (
                 <span className="flex items-center gap-2">
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Saving...

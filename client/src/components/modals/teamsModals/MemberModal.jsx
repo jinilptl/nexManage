@@ -1,15 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTeamMemberService, updateTeamMemberService } from "../../../services/teamsOperations/teamsServices";
+import {
+  addTeamMemberService,
+  updateTeamMemberService,
+} from "../../../services/teamsOperations/teamsServices";
 import ButtonLoader from "../../Lodders/ButtonLoader";
 
-export default function MemberModal({ open, mode = "add", onClose, member, setMember }) {
+export default function MemberModal({
+  open,
+  mode = "add",
+  onClose,
+  member,
+  setMember,
+}) {
   if (!open) return null;
 
   const dispatch = useDispatch();
+
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
   const token = useSelector((state) => state.auth.token);
-  const loading = useSelector((state) => state.teams.loading);
+
+  // ⭐ CORRECT loaders
+  const adding = useSelector((state) => state.teams.actions.addingMember);
+  const updating = useSelector((state) => state.teams.actions.updatingMember);
+
+  // current loader based on mode
+  const loading = mode === "add" ? adding : updating;
 
   const [inputValue, setInputValue] = useState({
     email: "",
@@ -26,7 +42,7 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
     }
   }, [mode, member]);
 
-  const handleChnage = (e) => {
+  const handleChange = (e) => {
     setInputValue((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -56,8 +72,9 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-5000 flex items-center justify-center">
 
+      {/* MODAL BOX */}
       <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-md p-6 animate-fadeIn">
 
         {/* HEADER */}
@@ -69,7 +86,9 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
           <button
             disabled={loading}
             onClick={() => !loading && onClose(false)}
-            className={`text-gray-500 hover:text-gray-700 ${loading && "opacity-40 cursor-not-allowed"}`}
+            className={`text-gray-500 hover:text-gray-700 ${
+              loading && "opacity-40 cursor-not-allowed"
+            }`}
           >
             ✕
           </button>
@@ -77,15 +96,15 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
 
         {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          
-          {/* ADD MODE → EMAIL FIELD */}
+
+          {/* EMAIL FIELD (Add only) */}
           {mode === "add" && (
             <div>
               <label className="text-sm text-gray-600">Member Email</label>
               <input
                 type="email"
                 value={inputValue.email}
-                onChange={handleChnage}
+                onChange={handleChange}
                 name="email"
                 placeholder="Enter member email"
                 required
@@ -102,7 +121,7 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
             <select
               name="roleInTeam"
               value={inputValue.roleInTeam}
-              onChange={handleChnage}
+              onChange={handleChange}
               disabled={loading}
               className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
                 ${loading && "opacity-50 cursor-not-allowed"}`}
@@ -123,7 +142,7 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
             <select
               name="status"
               value={inputValue.status}
-              onChange={handleChnage}
+              onChange={handleChange}
               disabled={loading}
               className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
                 ${loading && "opacity-50 cursor-not-allowed"}`}
@@ -135,7 +154,7 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
 
           {/* FOOTER BUTTONS */}
           <div className="mt-6 flex items-center justify-end gap-3">
-            
+
             <button
               type="button"
               disabled={loading}
@@ -157,13 +176,15 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
                   <ButtonLoader />
                   Processing…
                 </>
+              ) : mode === "add" ? (
+                "Add Member"
               ) : (
-                mode === "add" ? "Add Member" : "Update Member"
+                "Update Member"
               )}
             </button>
+
           </div>
         </form>
-
       </div>
     </div>
   );

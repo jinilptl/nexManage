@@ -6,8 +6,10 @@ import {
   FolderKanban,
   MoreVertical,
 } from "lucide-react";
+
 import CreateTeamModal from "../../components/modals/teamsModals/CreateTeamModal";
 import TeamDetailModal from "../../components/modals/teamsModals/TeamDetailModal";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSingleTeamService,
@@ -16,49 +18,69 @@ import {
 } from "../../services/teamsOperations/teamsServices";
 import { setSelectedTeamId } from "../../Redux_Config/Slices/teamsSlice";
 
-//  Loaders
+// Loaders
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
 import ButtonLoader from "../../components/Lodders/ButtonLoader";
+import ModalSmallLoader from "../../components/Lodders/ModalSmallLoader";
 
 export default function TeamsPage() {
-  const { list, loading } = useSelector((state) => state.teams);
-  const token = useSelector((state) => state.auth.token);
-  const role = useSelector((state) => state.auth.user.role);
   const dispatch = useDispatch();
 
-  const teams = list;
+  const { list, loading } = useSelector((state) => state.teams);
+  const teamLoading = useSelector((state) => state.teams.selectedTeam.loading);
+  const membersLoading = useSelector((state) => state.teams.teamMembers.loading);
 
-  const [filterTeams, setFilterTeams] = useState(teams);
+  const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
+
+  const token = useSelector((state) => state.auth.token);
+  const role = useSelector((state) => state.auth.user.role);
+
+  const [filterTeams, setFilterTeams] = useState(list);
   const [searchInput, setSearchInput] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [openTeamModal, setOpenTeamModal] = useState(false);
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
-  // FETCH ALL TEAMS
+  /* ---------------- FETCH ALL TEAMS ---------------- */
   useEffect(() => {
-    if (token && role) dispatch(fetchTeamsService(token, role));
+    if (token && role) {
+      dispatch(fetchTeamsService(token, role));
+    }
   }, [token, role]);
 
-  // update filtered list on redux update
   useEffect(() => {
     setFilterTeams(list);
   }, [list]);
 
-  // search filter
+  /* ---------------- SEARCH FILTER ---------------- */
   useEffect(() => {
-    const filtered = teams.filter((team) =>
+    const filtered = list.filter((team) =>
       team.teamName.toLowerCase().includes(searchInput.toLowerCase())
     );
     setFilterTeams(filtered);
   }, [searchInput]);
 
-  // close dropdown when clicking outside
+  /* ---------------- CLOSE DROPDOWN ---------------- */
   useEffect(() => {
     const handler = () => setOpenMenuId(null);
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, []);
+
+  /* ---------------- OPEN TEAM MODAL AFTER FETCH ---------------- */
+  useEffect(() => {
+    if (!teamLoading && !membersLoading && selectedTeamId) {
+      setOpenTeamModal(true);
+    }
+  }, [teamLoading, membersLoading, selectedTeamId]);
+
+  useEffect(()=>{
+   if(openTeamModal || modalOpen)
+    document.body.style.overflow= 'hidden';
+   else
+    document.body.style.overflow= 'auto';
+  },[openTeamModal, modalOpen])
 
   return (
     <div
@@ -66,10 +88,18 @@ export default function TeamsPage() {
         openTeamModal && "overflow-y-hidden"
       }`}
     >
-      {/* GLOBAL PAGE LOADER */}
+      {/* MAIN PAGE LOADER */}
       {loading && <NexManageLoader />}
 
-      {/* Header */}
+      {/* VIEW TEAM LOADER */}
+      {(teamLoading || membersLoading) && (
+  <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+    <ModalSmallLoader />
+  </div>
+)}
+
+
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-gray-900 mb-2 text-xl font-bold">Teams</h1>
@@ -81,7 +111,7 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm 
-             ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"} `}
+             ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -89,7 +119,7 @@ export default function TeamsPage() {
         )}
       </div>
 
-      {/* Search Bar */}
+      {/* SEARCH BAR */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -104,13 +134,14 @@ export default function TeamsPage() {
         </div>
       </div>
 
-      {/* Empty State */}
+      {/* EMPTY STATE */}
       {filterTeams.length === 0 && (
         <div className="bg-white rounded-lg shadow-md py-16 text-center">
           <div className="max-w-md mx-auto">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <UsersIcon className="w-8 h-8 text-gray-400" />
             </div>
+
             <h3 className="text-gray-900 mb-2 text-lg font-semibold">
               No teams found
             </h3>
@@ -136,7 +167,7 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {/* Teams Grid */}
+      {/* TEAMS GRID */}
       {filterTeams.length > 0 && (
         <div className="grid md:mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filterTeams.map((team) => (
@@ -146,13 +177,13 @@ export default function TeamsPage() {
                 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               <div className="p-6">
-                {/* Icon + Dropdown */}
+                {/* TOP ROW */}
                 <div className="flex items-start justify-between">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <UsersIcon className="w-6 h-6 text-blue-600" />
                   </div>
 
-                  {/* 3-dots menu */}
+                  {/* MENU BUTTON */}
                   <div className="relative" onClick={(e) => e.stopPropagation()}>
                     <button
                       disabled={loading}
@@ -172,17 +203,16 @@ export default function TeamsPage() {
                       <MoreVertical className="w-5 h-5 text-gray-600" />
                     </button>
 
-                    {/* MENU DROPDOWN */}
+                    {/* DROPDOWN */}
                     {openMenuId === team._id && !loading && (
                       <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg z-50 animate-fadeIn">
                         <button
                           disabled={loading}
                           onClick={() => {
                             if (!loading) {
+                              dispatch(setSelectedTeamId(team._id));
                               dispatch(fetchSingleTeamService(team._id, token));
                               dispatch(fetchTeamMembersService(team._id, token));
-                              dispatch(setSelectedTeamId(team._id));
-                              setOpenTeamModal(true);
                               setOpenMenuId(null);
                             }
                           }}
@@ -204,27 +234,24 @@ export default function TeamsPage() {
                   </div>
                 </div>
 
-                {/* Team Name */}
+                {/* TEAM NAME */}
                 <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                   {team.description}
                 </p>
 
+                {/* STATS */}
                 <div className="mt-6 space-y-4">
-                  {/* Lead */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                       Team Lead
                     </p>
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
-                      <span className="text-sm text-gray-900">
-                        Jinil Patel
-                      </span>
+                      <span className="text-sm text-gray-900">Jinil Patel</span>
                     </div>
                   </div>
 
-                  {/* Stats */}
                   <div className="flex items-center gap-4 text-sm pt-3 border-t border-gray-300">
                     <div className="flex items-center gap-1 text-gray-600">
                       <UsersIcon className="w-4 h-4" />
@@ -237,26 +264,7 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  {/* Members Preview */}
-                  <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider">
-                      Members
-                    </span>
-
-                    <div className="flex -space-x-2 mt-2">
-                      <div className="w-8 h-8 bg-gray-200 border-2 border-white rounded-full"></div>
-                      <div className="w-8 h-8 bg-gray-300 border-2 border-white rounded-full"></div>
-                      <div className="w-8 h-8 bg-gray-400 border-2 border-white rounded-full"></div>
-                      <div className="w-8 h-8 bg-gray-500 border-2 border-white rounded-full"></div>
-                      <div className="w-8 h-8 bg-gray-600 border-2 border-white rounded-full"></div>
-
-                      <div className="w-8 h-8 bg-gray-100 border-2 border-white rounded-full flex items-center justify-center text-xs text-gray-600">
-                        +3
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer */}
+                  {/* FOOTER */}
                   <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
                     <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-md">
                       {team.isActive ? "Active" : "Archived"}
@@ -281,8 +289,10 @@ export default function TeamsPage() {
 
       <TeamDetailModal
         open={openTeamModal}
-        onClose={() => setOpenTeamModal(false)}
-        teamId={openMenuId}
+        onClose={() => {
+          setOpenTeamModal(false);
+          dispatch(setSelectedTeamId(null));
+        }}
       />
     </div>
   );
