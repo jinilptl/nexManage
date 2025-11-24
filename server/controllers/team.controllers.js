@@ -1,4 +1,4 @@
-import { Team as TeamModel } from "../models/team.models.js";
+import { Team, Team as TeamModel } from "../models/team.models.js";
 import { User as UserModel } from "../models/user.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -34,20 +34,23 @@ const createNewTeam = asyncHandler(async (req, res) => {
     teamName,
     description,
     createdby: creatorId,
-  });
+  })
 
   if (!createdTeamDoc) {
     throw new ApiError(500, "Internal server error while creating team");
   }
 
+  const populatedTeamDoc = await TeamModel.findById(createdTeamDoc._id).populate("createdby","name email").populate("members.user", "name email roleInTeam");
+
+
   return res
     .status(201)
-    .json(new ApiResponse(201, "Team created successfully", createdTeamDoc));
+    .json(new ApiResponse(201, "Team created successfully", populatedTeamDoc));
 });
 
 const getAllTeams = asyncHandler(async (req, res) => {
   // Fetch all teams
-  const teamList = await TeamModel.find();
+  const teamList = await TeamModel.find().populate("createdby","name email").populate("members.user", "name email roleInTeam");
 
   return res
     .status(200)
@@ -60,7 +63,7 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
   if(!userId){
     throw new ApiError(400, "User ID is required");
   }
-  const allTeams = await TeamModel.find({ 'members.user': userId }).populate('members.user', 'name email');
+  const allTeams = await TeamModel.find({ 'members.user': userId }).populate("createdby","name email").populate('members.user', 'name email');
 
   console.log("users all teams:----> ",allTeams);
   
@@ -79,7 +82,7 @@ const getTeamById = asyncHandler(async (req, res) => {
   }
 
   // Find team by ID
-  const teamDoc = await TeamModel.findById(teamId).populate("members.user", "name email role");
+  const teamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate("members.user", "name email role");
 
   if (!teamDoc) {
     throw new ApiError(404, "No team found with the provided ID");
@@ -117,7 +120,7 @@ const updateTeamDetails = asyncHandler(async (req, res) => {
   await teamDoc.save();
 
   // Fetch updated team details
-  const updatedTeamDoc = await TeamModel.findById(teamId);
+  const updatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate("members.user", "name email roleInTeam");
 
   // Send success response
   return res
@@ -141,7 +144,7 @@ const deleteTeamById = asyncHandler(async (req, res) => {
   }
 
   // Delete the team
-  const deletedTeamDoc = await TeamModel.findByIdAndDelete(teamId);
+  const deletedTeamDoc = await TeamModel.findByIdAndDelete(teamId).populate("createdby","name email").populate("members.user", "name email roleInTeam");
 
   // Respond based on deletion result
   if (!deletedTeamDoc) {
@@ -196,7 +199,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(409, "This member is already part of the team");
   }
 
-  // 🔥 TEAMLEAD CHECK HERE — only 1 allowed
+  // TEAMLEAD CHECK HERE — only 1 allowed
   const isTeamLeadAlreadyPresent = teamDoc.members.find(
     (member) => member.roleInTeam === "team lead"
   );
@@ -220,7 +223,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
   await teamDoc.save();
 
   // Populate new member
-  const populatedTeamDoc = await TeamModel.findById(teamId).populate(
+  const populatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
     "members.user",
     "name email"
   );
@@ -337,7 +340,7 @@ const updateTeamMember = asyncHandler(async (req, res) => {
 
   await teamDoc.save();
 
-  const updatedTeamDoc = await TeamModel.findById(teamId).populate(
+  const updatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
     "members.user",
     "name email"
   );
@@ -369,7 +372,7 @@ const removeTeamMember = asyncHandler(async (req, res) => {
   }
 
   // Find the team
-  const teamDoc = await TeamModel.findById(teamId).populate(
+  const teamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
     "members.user",
     "name email"
   );

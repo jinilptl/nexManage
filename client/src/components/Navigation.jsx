@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { Link, NavLink, useParams } from "react-router-dom";
+import LogoutModal from "./modals/authModal/LogOutModal";
 
 export default function Navigation({
   collapsed,
@@ -23,6 +24,7 @@ export default function Navigation({
 }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isActiveLink, setIsActiveLink] = useState("/dashboard");
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
 
@@ -35,9 +37,7 @@ export default function Navigation({
     { label: "Settings", icon: Settings, to: "/dashboard/settings" },
   ];
 
-    const params=useParams()
-    console.log("params --> ",params);
-    
+
 
   return (
     <>
@@ -141,7 +141,14 @@ export default function Navigation({
                 Settings
               </button>
               <div className="border-t border-slate-700" />
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500">
+              <button
+                onClick={() => {
+                  console.log("true");
+
+                  setLogoutModalOpen(true);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
+              >
                 <LogOut className="w-4 h-4" />
                 Sign Out
               </button>
@@ -229,7 +236,12 @@ export default function Navigation({
                 Settings
               </button>
               <div className="border-t border-slate-700" />
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500">
+              <button
+                onClick={() => {
+                  setLogoutModalOpen(true);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
+              >
                 <LogOut className="w-4 h-4" />
                 Sign Out
               </button>
@@ -237,6 +249,11 @@ export default function Navigation({
           )}
         </div>
       </div>
+      <LogoutModal
+        open={logoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        
+      />
     </>
   );
 }

@@ -5,19 +5,19 @@ const teamsSlice = createSlice({
 
   initialState: {
     list: [],
-    loading: false,          // only for GET ALL TEAMS page loader
+    loading: false, // only for GET ALL TEAMS page loader
     error: null,
 
     selectedTeam: {
       id: null,
       data: null,
-      loading: false,        // loader for view modal fetch
+      loading: false, // loader for view modal fetch
       error: null,
     },
 
     teamMembers: {
       list: [],
-      loading: false,        // loader for get members
+      loading: false, // loader for get members
       error: null,
     },
 
@@ -29,7 +29,7 @@ const teamsSlice = createSlice({
       addingMember: false,
       updatingMember: false,
       removingMember: false,
-    }
+    },
   },
 
   reducers: {
@@ -80,6 +80,14 @@ const teamsSlice = createSlice({
     setRemoveMemberLoading(state, action) {
       state.actions.removingMember = action.payload;
     },
+
+    // after logout
+
+    clearTeams(state) {
+      state.list = [];
+      state.selectedTeam = { id: null, data: null };
+      state.teamMembers = { list: [] };
+    },
   },
 });
 
@@ -105,6 +113,9 @@ export const {
   setAddMemberLoading,
   setUpdateMemberLoading,
   setRemoveMemberLoading,
+
+  // Clear teams on logout
+  clearTeams,
 } = teamsSlice.actions;
 
 export default teamsSlice.reducer;

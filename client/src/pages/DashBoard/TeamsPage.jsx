@@ -28,7 +28,9 @@ export default function TeamsPage() {
 
   const { list, loading } = useSelector((state) => state.teams);
   const teamLoading = useSelector((state) => state.teams.selectedTeam.loading);
-  const membersLoading = useSelector((state) => state.teams.teamMembers.loading);
+  const membersLoading = useSelector(
+    (state) => state.teams.teamMembers.loading
+  );
 
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
 
@@ -75,12 +77,40 @@ export default function TeamsPage() {
     }
   }, [teamLoading, membersLoading, selectedTeamId]);
 
-  useEffect(()=>{
-   if(openTeamModal || modalOpen)
-    document.body.style.overflow= 'hidden';
-   else
-    document.body.style.overflow= 'auto';
-  },[openTeamModal, modalOpen])
+  useEffect(() => {
+    if (openTeamModal || modalOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto";
+  }, [openTeamModal, modalOpen]);
+
+  const capitalizedName = (name)=>{
+    let firstName =
+        name.split(" ")[0].slice(0, 1).toUpperCase() +
+        name.split(" ")[0].slice(1).toLowerCase();
+      let lastName =
+        name.split(" ")[1].slice(0, 1).toUpperCase() +
+        name.split(" ")[1].slice(1).toLowerCase();
+
+      return `${firstName} ${lastName}`;
+  }
+
+
+  const findTeamLeadName = (team) => {
+   
+    const lead = team.members.find(
+      (member) => member.roleInTeam === "team lead"
+    );
+    if (lead) {
+      return capitalizedName(lead.user.name)
+    }
+  };
+  
+
+  const findCreatedBy = (team)=>{
+    if(team.createdby){
+      return capitalizedName(team.createdby.name)
+    }
+    
+  }
 
   return (
     <div
@@ -93,11 +123,10 @@ export default function TeamsPage() {
 
       {/* VIEW TEAM LOADER */}
       {(teamLoading || membersLoading) && (
-  <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-    <ModalSmallLoader />
-  </div>
-)}
-
+        <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <ModalSmallLoader />
+        </div>
+      )}
 
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -111,7 +140,11 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm 
-             ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+             ${
+               loading
+                 ? "bg-blue-300 cursor-not-allowed"
+                 : "bg-blue-600 hover:bg-blue-700 text-white"
+             }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -156,7 +189,11 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"}`}
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-blue-700"
+                    }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
                   {loading ? "Loading..." : "Create Team"}
@@ -184,7 +221,10 @@ export default function TeamsPage() {
                   </div>
 
                   {/* MENU BUTTON */}
-                  <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       disabled={loading}
                       className={`p-1 rounded-md ${
@@ -212,7 +252,9 @@ export default function TeamsPage() {
                             if (!loading) {
                               dispatch(setSelectedTeamId(team._id));
                               dispatch(fetchSingleTeamService(team._id, token));
-                              dispatch(fetchTeamMembersService(team._id, token));
+                              dispatch(
+                                fetchTeamMembersService(team._id, token)
+                              );
                               setOpenMenuId(null);
                             }
                           }}
@@ -246,10 +288,18 @@ export default function TeamsPage() {
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                       Team Lead
                     </p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
-                      <span className="text-sm text-gray-900">Jinil Patel</span>
-                    </div>
+                    {findTeamLeadName(team) ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+                        <span className="text-sm text-gray-900">
+                          {findTeamLeadName(team)}
+                        </span>
+                      </div>
+                    ) : (
+                       <span className="text-sm text-gray-900">
+                          No team Lead available now
+                        </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4 text-sm pt-3 border-t border-gray-300">
@@ -274,6 +324,15 @@ export default function TeamsPage() {
                       Created At
                       <span>
                         {new Date(team.createdAt).toLocaleDateString("en-GB")}
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="p-1 flex justify-center">
+                     <span className="text-xs text-gray-500 flex  gap-1">
+                      Created By :
+                      <span className=" font-semibold whitespace-nowrap">
+                        {findCreatedBy(team)}
                       </span>
                     </span>
                   </div>
