@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -13,26 +13,34 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { Link, NavLink, useParams } from "react-router-dom";
+import LogoutModal from "./modals/authModal/LogOutModal";
 
-export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileOpen}) {
-  
- 
+export default function Navigation({
+  collapsed,
+  setCollapsed,
+  mobileOpen,
+  setMobileOpen,
+}) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isActiveLink, setIsActiveLink] = useState("/dashboard");
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
 
   const menuItems = [
-    { label: "Dashboard", icon: LayoutDashboard },
-    { label: "Projects", icon: FolderKanban },
-    { label: "Teams", icon: Users },
-    { label: "Analytics", icon: BarChart3 },
-    { label: "Notifications", icon: Bell },
-    { label: "Settings", icon: Settings },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+    { label: "Projects", icon: FolderKanban, to: "/dashboard/projects" },
+    { label: "Teams", icon: Users, to: "/dashboard/teams" },
+    { label: "Analytics", icon: BarChart3, to: "/dashboard/analytics" },
+    { label: "Notifications", icon: Bell, to: "/dashboard/notifications" },
+    { label: "Settings", icon: Settings, to: "/dashboard/settings" },
   ];
+
+
 
   return (
     <>
-
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900 text-white border-b border-slate-700">
         <div className="flex items-center justify-between p-4">
@@ -51,8 +59,6 @@ export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileO
           </button>
         </div>
       </div>
-
-
 
       {/* Desktop Sidebar */}
       <div
@@ -85,17 +91,19 @@ export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileO
         {/* Navigation */}
         <nav className="flex-1 p-2 overflow-y-auto">
           {menuItems.map((item, idx) => (
-            <button
+            <Link
+              to={item.to}
               key={idx}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${
                 collapsed
                   ? "justify-center"
                   : "text-slate-300 hover:bg-slate-700 hover:text-white"
-              }`}
+              } ${isActiveLink === item.to ? "bg-slate-700 text-white" : ""}`}
+              onClick={() => setIsActiveLink(item.to)}
             >
               <item.icon className="w-5 h-5" />
               {!collapsed && <span className="text-sm">{item.label}</span>}
-            </button>
+            </Link>
           ))}
         </nav>
 
@@ -133,7 +141,14 @@ export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileO
                 Settings
               </button>
               <div className="border-t border-slate-700" />
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500">
+              <button
+                onClick={() => {
+                  console.log("true");
+
+                  setLogoutModalOpen(true);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
+              >
                 <LogOut className="w-4 h-4" />
                 Sign Out
               </button>
@@ -205,32 +220,40 @@ export default function Navigation({collapsed,setCollapsed,mobileOpen,setMobileO
           </button>
 
           {/* Dropdown inside Drawer */}
-          {userMenuOpen &&(
+          {userMenuOpen && (
             <div className="absolute bottom-14 left-2 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-lg text-sm animate-fadeIn">
-              <div className={`px-4  py-2 font-semibold border-b border-slate-700`}>
+              <div
+                className={`px-4  py-2 font-semibold border-b border-slate-700`}
+              >
                 My Account
               </div>
               <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Profile 
+                Profile
               </button>
               <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
               </button>
               <div className="border-t border-slate-700" />
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500">
+              <button
+                onClick={() => {
+                  setLogoutModalOpen(true);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
+              >
                 <LogOut className="w-4 h-4" />
                 Sign Out
               </button>
             </div>
           )}
-
-
-         
-          
         </div>
       </div>
+      <LogoutModal
+        open={logoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        
+      />
     </>
   );
 }

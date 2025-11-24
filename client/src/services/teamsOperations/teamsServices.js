@@ -1,15 +1,26 @@
 import axiosInstance from "../../utils/axios_instance";
 import toast from "react-hot-toast";
 import TEAMS_END_POINTS from "./teamsEndPoints";
+
 import {
-  setTeamsLoading,
   setTeams,
+  setTeamsLoading,
+
   setSelectedTeamId,
   setSelectedTeamData,
-  setTeamMembers,
-} from "../../Redux_Config/Slices/teamsSlice";
+  setSelectedTeamLoading,
 
-let logger = console.log;
+  setTeamMembers,
+  setTeamMembersLoading,
+
+  setCreateTeamLoading,
+  setUpdateTeamLoading,
+  setDeleteTeamLoading,
+
+  setAddMemberLoading,
+  setUpdateMemberLoading,
+  setRemoveMemberLoading,
+} from "../../Redux_Config/Slices/teamsSlice";
 
 const {
   CREATE_TEAM,
@@ -19,75 +30,69 @@ const {
   UPDATE_TEAM,
   GET_USER_TEAMS,
 
-  //  teams member
   ADD_TEAM_MEMBER,
   REMOVE_TEAM_MEMBER,
   GET_TEAM_MEMBERS,
   UPDATE_TEAM_MEMBER,
 } = TEAMS_END_POINTS;
 
-// FUNCTION TO CREATE A NEW TEAM
+let logger = console.log;
 
-//works
-
-export const createTeamService = (teamData, token, setOpen) => {
+/* =====================================================
+   🚀 CREATE TEAM
+===================================================== */
+export const createTeamService = (teamData, token, onClose) => {
   return async (dispatch, getState) => {
-    dispatch(setTeamsLoading(true));
+    
+    dispatch(setCreateTeamLoading(true));
 
     try {
-      const response = await axiosInstance.post(CREATE_TEAM, teamData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-
-      // logger("---- response from createTeam teamsServices ----", response);
+      const response = await axiosInstance.post(
+        CREATE_TEAM,
+        teamData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
 
       if (response.data.success) {
         toast.success("Team created successfully!");
 
-        // GET LATEST TEAMS LIST
         const oldTeams = getState().teams.list;
-
-        // ADD NEW TEAM
         dispatch(setTeams([...oldTeams, response.data.data]));
 
-        setOpen(false);
+        onClose(false);
       }
     } catch (error) {
-      // logger("---- error in createTeam teamsServices ----", error);
-
       toast.error(error.response?.data?.message || "Failed to create team.");
     } finally {
-      dispatch(setTeamsLoading(false));
+      dispatch(setCreateTeamLoading(false));
     }
   };
 };
 
-// works
-
+/* =====================================================
+   🚀 FETCH ALL TEAMS
+===================================================== */
 export const fetchTeamsService = (token, role) => {
   return async (dispatch) => {
     dispatch(setTeamsLoading(true));
+
     try {
       const endpoint =
         role === "admin" || role === "super_admin"
-          ? GET_ALL_TEAMS // admin endpoints
-          : GET_USER_TEAMS; // member endpoints
+          ? GET_ALL_TEAMS
+          : GET_USER_TEAMS;
 
       const response = await axiosInstance.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // logger("---- fetchTeamsService response ----", response.data.data);
-
       if (response.data.success) {
         dispatch(setTeams(response.data.data));
-        toast.success("Teams fetched successfully!");
       }
     } catch (error) {
-    //  logger("Error fetching teams:", error);
       toast.error(error.response?.data?.message || "Failed to fetch teams.");
     } finally {
       dispatch(setTeamsLoading(false));
@@ -95,170 +100,215 @@ export const fetchTeamsService = (token, role) => {
   };
 };
 
-//works
-
+/* =====================================================
+   🚀 FETCH SINGLE TEAM (VIEW MODAL)
+===================================================== */
 export const fetchSingleTeamService = (teamId, token) => {
   return async (dispatch) => {
-    try {
-      dispatch(setSelectedTeamData(null)); // clear old data (optional UI polish)
+    dispatch(setSelectedTeamLoading(true));
+    dispatch(setSelectedTeamData(null));
 
-      const response = await axiosInstance.get(`${GET_TEAM}/${teamId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    try {
+      const response = await axiosInstance.get(
+        `${GET_TEAM}/${teamId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (response.data.success) {
         dispatch(setSelectedTeamData(response.data.data));
       }
-    } catch (err) {
-      // logger("Error fetching single team:", err);
+    } catch (error) {
+      toast.error("Failed to fetch team details.");
+    } finally {
+      dispatch(setSelectedTeamLoading(false));
     }
   };
 };
 
-// works
-
+/* =====================================================
+   🚀 DELETE TEAM
+===================================================== */
 export const deleteTeamService = (teamId, token) => {
   return async (dispatch, getState) => {
+
+    dispatch(setDeleteTeamLoading(true));
+
     try {
-      dispatch(setTeamsLoading(true));
-
-      const response = await axiosInstance.post(`${DELETE_TEAM}/${teamId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-
-      // logger("---- response from deleteTeam teamsServices ----", response);
+      const response = await axiosInstance.post(
+        `${DELETE_TEAM}/${teamId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (response.data.success) {
         toast.success("Team deleted successfully!");
 
-        const oldTeams = getState().teams.list;
-        const updatedTeams = oldTeams.filter((team) => team._id !== teamId);
+        const updatedTeams = getState().teams.list.filter(
+          (t) => t._id !== teamId
+        );
 
         dispatch(setTeams(updatedTeams));
-
-        const selectedTeamId = getState().teams.selectedTeam.id;
-        if (selectedTeamId === teamId) {
-          dispatch(setSelectedTeamId(null));
-          dispatch(setSelectedTeamData(null));
-        }
+        dispatch(setSelectedTeamId(null));
+        dispatch(setSelectedTeamData(null));
       }
     } catch (error) {
-      // logger("---- error in deleteTeam teamsServices ----", error);
       toast.error(error.response?.data?.message || "Failed to delete team.");
     } finally {
-      dispatch(setTeamsLoading(false));
+      dispatch(setDeleteTeamLoading(false));
     }
   };
 };
 
-// update team
-
-//works
-export const updateTeamService = (teamId, updatedData, token, setOpen) => {
+/* =====================================================
+   🚀 UPDATE TEAM
+===================================================== */
+export const updateTeamService = (teamId, updatedData, token, onClose) => {
   return async (dispatch, getState) => {
-    dispatch(setTeamsLoading(true));
+
+    dispatch(setUpdateTeamLoading(true));
+
     try {
       const response = await axiosInstance.post(
         `${UPDATE_TEAM}/${teamId}`,
         updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // logger("response in team update service---> ", response.data.data);
       if (response.data.success) {
-        dispatch(setSelectedTeamData(response.data.data));
-        setOpen(false);
-        const { list } = getState().teams;
-        const updatedList = list.map((team) =>
-          team._id === teamId ? response.data.data : team
-        );
-        dispatch(setTeams(updatedList));
         toast.success("Team updated successfully!");
+
+        dispatch(setSelectedTeamData(response.data.data));
+
+        const updatedList = getState().teams.list.map((t) =>
+          t._id === teamId ? response.data.data : t
+        );
+
+        dispatch(setTeams(updatedList));
+        onClose(false);
       }
     } catch (error) {
-      // logger("---- error in updateTeam teamsServices ----", error);
       toast.error(error.response?.data?.message || "Failed to update team.");
     } finally {
-      dispatch(setTeamsLoading(false));
+      dispatch(setUpdateTeamLoading(false));
     }
   };
 };
 
-// TEAM MEMBERS SERVICES CAN BE ADDED HERE
+/* =====================================================
+   🚀 FETCH TEAM MEMBERS
+===================================================== */
+export const fetchTeamMembersService = (teamId, token) => {
+  return async (dispatch) => {
 
-// works
+    dispatch(setTeamMembersLoading(true));
 
+    try {
+      const response = await axiosInstance.get(
+        `${GET_TEAM_MEMBERS}/${teamId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        dispatch(setTeamMembers(response.data.data.members));
+      }
+    } catch (error) {
+      toast.error("Failed to fetch team members.");
+    } finally {
+      dispatch(setTeamMembersLoading(false));
+    }
+  };
+};
+
+/* =====================================================
+   🚀 ADD TEAM MEMBER
+===================================================== */
 export const addTeamMemberService = (teamId, memberData, token, onClose) => {
   return async (dispatch, getState) => {
-    dispatch(setTeamsLoading(true));
+
+    dispatch(setAddMemberLoading(true));
 
     try {
       const response = await axiosInstance.post(
         `${ADD_TEAM_MEMBER}/${teamId}`,
         memberData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // logger("add member response ---> ", response);
-
       if (response.data.success) {
-        toast.success("Member added successfully!");
+        toast.success("Member added!");
 
-        const newMember = response.data.data;
-        const prevMembers = getState().teams.teamMembers.list;
+        const oldMembers = getState().teams.teamMembers.list;
+        dispatch(setTeamMembers([...oldMembers, response.data.data]));
 
-        dispatch(setTeamMembers([...prevMembers, newMember]));
-        onClose();
+        onClose(false);
       }
     } catch (error) {
-      // logger("error add member ---> ", error);
       toast.error(error.response?.data?.message || "Failed to add member.");
     } finally {
-      dispatch(setTeamsLoading(false));
+      dispatch(setAddMemberLoading(false));
     }
   };
 };
 
-// works
-
-export const fetchTeamMembersService = (teamId, token) => {
+/* =====================================================
+   🚀 UPDATE MEMBER
+===================================================== */
+export const updateTeamMemberService = (
+  teamId,
+  memberId,
+  updatedData,
+  token,
+  onClose,
+  setMember
+) => {
   return async (dispatch) => {
-    try {
-      dispatch(setTeamsLoading(true));
+    dispatch(setUpdateMemberLoading(true));
 
-      const response = await axiosInstance.get(
-        `${GET_TEAM_MEMBERS}/${teamId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
+    try {
+      const response = await axiosInstance.post(
+        `${UPDATE_TEAM_MEMBER}/${teamId}/${memberId}`,
+        updatedData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // logger("all members response", response.data);
       if (response.data.success) {
-        toast.success("Members fetched successfully!");
-        dispatch(setTeamMembers(response.data.data.members));
+        toast.success("Member updated!");
+
+        dispatch(setTeamMembers(response.data.data.allMembers));
+        onClose(false);
+        setMember(null);
       }
     } catch (error) {
-      // logger("error in fetchTeamMembersService", error);
-      toast.error(error.response?.data?.message || "Failed to fetch members.");
+      toast.error(error.response?.data?.message || "Failed to update member.");
     } finally {
-      dispatch(setTeamsLoading(false));
+      dispatch(setUpdateMemberLoading(false));
+    }
+  };
+};
+
+/* =====================================================
+   🚀 REMOVE MEMBER
+===================================================== */
+export const removeTeamMemberService = (teamId, memberId, token) => {
+  return async (dispatch) => {
+
+    dispatch(setRemoveMemberLoading(true));
+
+    try {
+      const response = await axiosInstance.post(
+        `${REMOVE_TEAM_MEMBER}/${teamId}/${memberId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success("Member removed!");
+        dispatch(setTeamMembers(response.data.data.allMembers));
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to remove member.");
+    } finally {
+      dispatch(setRemoveMemberLoading(false));
     }
   };
 };
