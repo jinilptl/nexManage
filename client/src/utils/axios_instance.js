@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const Base_Url=import.meta.env.VITE_BASE_URL
-console.log("backend baseurl is -------",Base_Url);
+// console.log("backend baseurl is -------",Base_Url);
 
 
 const axiosInstance = axios.create({

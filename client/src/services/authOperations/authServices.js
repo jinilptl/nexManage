@@ -2,11 +2,13 @@ import axiosInstance from "../../utils/axios_instance";
 import toast from "react-hot-toast";
 import AUTH_END_POINTS from "./authEndPoints";
 import {
-  setLoading,
+  setAuthLoading,
   setToken,
   setUser,
   setIsLogin,
+  clearAuth,
 } from "../../Redux_Config/Slices/authSlice";
+import { clearTeams } from "../../Redux_Config/Slices/teamsSlice";
 
 let Logger = console.log;
 
@@ -21,14 +23,14 @@ const {
 
 export function loginUserService(email, password, navigate) {
   return async (dispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setAuthLoading(true));
     try {
       const Login_response = await axiosInstance.post(
         LOGIN,
         { email, password },
         { withCredentials: true }
       );
-      Logger("login response from service", Login_response.data);
+      // Logger("login response from service", Login_response.data);
 
       if (Login_response.data.success) {
         let token = Login_response.data.data.token;
@@ -41,18 +43,18 @@ export function loginUserService(email, password, navigate) {
         navigate("/dashboard");
       }
     } catch (error) {
-      Logger("login error from service", error);
+      // Logger("login error from service", error);
       toast.error(error.response.data.message||"error while login")
-      dispatch(setLoading(false));
+      dispatch(setAuthLoading(false));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setAuthLoading(false));
     }
   };
 }
 
 export function forgotPasswordService(email) {
   return async (dispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setAuthLoading(true));
 
     try {
       const forgot_password_response = await axiosInstance.post(
@@ -60,19 +62,19 @@ export function forgotPasswordService(email) {
         { email },
         { withCredentials: true }
       );
-      Logger("forgot password response from service", forgot_password_response);
+      // Logger("forgot password response from service", forgot_password_response);
     } catch (error) {
-      Logger("forgot password error from service", error);
-      dispatch(setLoading(false));
+      // Logger("forgot password error from service", error);
+      dispatch(setAuthLoading(false));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setAuthLoading(false));
     }
   };
 }
 
 export function resetPasswordService(newPassword, token) {
   return async (dispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setAuthLoading(true));
     try {
       const resetPassword_response = await axiosInstance.post(
         `${RESET_PASSWORD}/${token}`,
@@ -80,12 +82,43 @@ export function resetPasswordService(newPassword, token) {
         { withCredentials: true }
       );
 
-      Logger("reset password response from service", resetPassword_response);
+      // Logger("reset password response from service", resetPassword_response);
     } catch (error) {
-      Logger("reset password error from service", error);
-      dispatch(setLoading(false));
+      // Logger("reset password error from service", error);
+      dispatch(setAuthLoading(false));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setAuthLoading(false));
     }
   };
 }
+
+export const logoutService = (token, navigate) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setAuthLoading(true));
+
+      await axiosInstance.post(
+        LOGOUT,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      // Redux clear
+      dispatch(clearAuth());
+      dispatch(clearTeams());
+      localStorage.removeItem("user")
+      localStorage.removeItem("token")
+      toast.success("Logged out successfully!");
+      navigate("/");
+
+    } catch (error) {
+      toast.error("Logout failed!");
+    } finally {
+      dispatch(setAuthLoading(false));
+    }
+  };
+};
+

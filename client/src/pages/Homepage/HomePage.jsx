@@ -18,9 +18,7 @@ const HomePage = () => {
 
   const submitHandler=(e)=>{
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Email:", email);
-    console.log("Password:", password)
+    
    dispatch( loginUserService(email,password,navigate))
    setEmail("");
    setPassword("")
@@ -126,6 +124,7 @@ const HomePage = () => {
                 onChange={(e)=>{setEmail(e.target.value)}}
                 placeholder="you@company.com"
                 className="w-full border rounded-lg p-3 text-sm focus:ring-blue-500"
+                required
               />
             </div>
 
@@ -141,9 +140,12 @@ const HomePage = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e)=>{setPassword(e.target.value)}}
-                  placeholder="••••••••"
+                  placeholder="enter your password"
                   className="w-full border rounded-lg p-3 text-sm pr-10"
                   autoComplete="password"
+                  minLength={6}
+                  maxLength={20}
+                  required
                 />
 
                 <button

@@ -34,6 +34,7 @@ const memberSubSchema = new mongoose.Schema(
   { _id: false }
 );
 
+
 const teamSchema = new mongoose.Schema({
   teamName: { type: String, required: true, unique: true },
   description: { type: String, required: true },
@@ -47,7 +48,7 @@ const teamSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-});
+},{timestamps:true});
 
 const Team = mongoose.model("Team", teamSchema);
 
