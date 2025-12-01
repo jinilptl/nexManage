@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-//  sub schema for project module
+
+// SUB-SCHEMA: projectMembers
+
 
 const projectMembersSchema = new mongoose.Schema(
   {
@@ -24,28 +26,30 @@ const projectMembersSchema = new mongoose.Schema(
       default: "contributor",
     },
 
-    
+    // null = directly added (NOT from any team)
     addedFromTeam: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Team", 
-      default: null, 
+      ref: "Team",
+      default: null,
     },
 
     addedAt: {
       type: Date,
-      default: Date.now, 
+      default: Date.now,
     },
 
     status: {
       type: String,
       enum: ["active", "removed"],
-      default: "active", 
+      default: "active",
     },
   },
   { _id: false }
 );
 
-//main schema for project
+
+// MAIN PROJECT SCHEMA
+
 
 const projectSchema = new mongoose.Schema(
   {
@@ -57,34 +61,43 @@ const projectSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: false,
       trim: true,
+      default: "",
     },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true, 
+      required: true,
     },
 
-    // in future.. so check please ... this features keep or not in our module teams 
-      // MULTIPLE TEAMS CAN WORK ON SAME PROJECT
-    // a project MUST belong to at least 1 team
+    // Determines project mode (team / personal / mixed)
+    projectType: {
+      type: String,
+      enum: ["team", "personal", "mixed"],
+      default: "team",
+    },
+
+    // OPTIONAL TEAMS
     teams: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
-        required: true, 
       },
     ],
 
+    // project manager (optional but usually creator)
     projectManager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null, 
+      default: null,
     },
 
-    projectMembers: [projectMembersSchema], 
+    // all project members (team or custom manually added)
+    projectMembers: {
+      type: [projectMembersSchema],
+      default: [],
+    },
 
     status: {
       type: String,

@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.routes.js';
 import teamRouter from './routes/team.routes.js';
-import projectrouter from './routes/project.routes.js';
+import projectRouter from './routes/project.routes.js';
 
 const app= express();
 
@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/user",authRouter)
 app.use("/api/v1/team",teamRouter)
-app.use("/api/v1/project",projectrouter)
+app.use("/api/v1/project",projectRouter)
 
 
 // error handler global formate
