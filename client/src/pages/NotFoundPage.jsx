@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFoundPage() {
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 relative overflow-hidden">
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 relative overflow-hidden">
 
       {/* Blurry Background Balls */}
       <div className="absolute w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -top-10 -left-16 animate-pulse"></div>
