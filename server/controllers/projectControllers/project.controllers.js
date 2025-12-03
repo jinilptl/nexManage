@@ -85,11 +85,11 @@ const createProject = asyncHandler(async (req, res) => {
     }
   });
 
-  console.log("map result for uniquememeber---> ", uniqueMembersMap);
+  // console.log("map result for uniquememeber---> ", uniqueMembersMap);
 
   autoMembers = Array.from(uniqueMembersMap.values());
 
-  console.log("converted in to array result in map ---> ", autoMembers);
+  // console.log("converted in to array result in map ---> ", autoMembers);
 
   // If creator already exists from team → update their role
   const existingCreator = autoMembers.find(
@@ -141,6 +141,37 @@ const getAllProjects = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "All projects fetched successfully", projects));
 });
+
+
+
+
+const getUserProjects = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized: User not found");
+  }
+
+  const projects = await ProjectModel.find({
+    $or: [
+      { createdBy: userId },
+      { projectManager: userId },
+      { "projectMembers.user": userId }
+    ]
+  })
+    .populate("createdBy", "name email")
+    .populate("projectManager", "name email")
+    .populate("teams", "teamName")
+    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.addedFromTeam", "teamName")
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, "User projects fetched successfully", projects)
+  );
+});
+
+
 
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -272,6 +303,9 @@ const updateProject = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Project updated successfully", project));
 });
+
+
+
 
 const deleteProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -426,4 +460,6 @@ export {
   updateProject,
   updateProjectStatus,
   deleteProject,
+  getUserProjects,
+  updateProjectManager
 };

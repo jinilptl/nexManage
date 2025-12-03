@@ -3,9 +3,13 @@ import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewa
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
 import {
   createProject,
+  deleteProject,
   getAllProjects,
   getSingleProject,
+  getUserProjects,
   updateProject,
+  updateProjectManager,
+  updateProjectStatus,
 } from "../controllers/projectControllers/project.controllers.js";
 import {
   addProjectMember,
@@ -24,9 +28,22 @@ projectRouter.route("/get-all-projects").get(verifyToken, getAllProjects);
 projectRouter
   .route("/get-project/:projectId")
   .get(verifyToken, getSingleProject);
+
+projectRouter
+  .route("/get-my-projects")
+  .get(verifyToken, getUserProjects);
 projectRouter
   .route("/update-project/:projectId")
   .post(verifyToken, updateProject);
+
+
+  // this is are not checked by postman right now ..
+
+  projectRouter.route("/delete-project/:projectId").delete(verifyToken,deleteProject)
+
+  projectRouter.route("/update-project-status/:projectId").post(verifyToken,updateProjectStatus)
+
+  projectRouter.route("/update-project-manager/:projectId").post(verifyToken,updateProjectManager)
 
 // members routes
 
