@@ -8,19 +8,13 @@ export default function ViewProjectModal({
   open,
   onClose,
   project,
-  onEditProject,
-  onAddMember,
-  onArchive,
-  onDelete,
-  onEditMember,
-  onRemoveMember,
 }) {
   if (!open || !project) return null;
 
-  // Stop background scroll
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "auto";
-  }, [open]);
+//   // Stop background scroll
+//   useEffect(() => {
+//     document.body.style.overflow = open ? "hidden" : "auto";
+//   }, [open]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -73,7 +67,7 @@ export default function ViewProjectModal({
           {/* ACTION BUTTONS */}
           <div className="mt-5 flex flex-wrap gap-2">
             <button
-              onClick={() => onEditProject(project)}
+              
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700"
             >
               <Settings className="w-4 h-4" />
@@ -81,7 +75,7 @@ export default function ViewProjectModal({
             </button>
 
             <button
-              onClick={() => onAddMember(project)}
+              
               className="px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700"
             >
               <UserPlus className="w-4 h-4" />
@@ -89,7 +83,7 @@ export default function ViewProjectModal({
             </button>
 
             <button
-              onClick={() => onArchive(project)}
+             
               className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600"
             >
               <Archive className="w-4 h-4" />
@@ -97,7 +91,7 @@ export default function ViewProjectModal({
             </button>
 
             <button
-              onClick={() => onDelete(project)}
+             
               className="px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700"
             >
               <Trash2 className="w-4 h-4" />
@@ -161,8 +155,8 @@ export default function ViewProjectModal({
               {project.projectMembers?.map((member, index) => (
                 <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
                   
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">{member.user?.name[0].toUpperCase()}</div>
                     <div>
                       <p className="text-sm font-semibold">{member.user?.name || "Unknown User"}</p>
                       <p className="text-xs text-gray-500 capitalize">{member.roleInProject}</p>
@@ -172,7 +166,7 @@ export default function ViewProjectModal({
                   <div className="flex items-center gap-2">
                     {/* Edit Member */}
                     <button
-                      onClick={() => onEditMember(member)}
+                      
                       className="p-1 hover:bg-gray-200 rounded-md"
                     >
                       <Pencil className="w-4 h-4 text-blue-600" />
@@ -180,7 +174,7 @@ export default function ViewProjectModal({
 
                     {/* Remove Member */}
                     <button
-                      onClick={() => onRemoveMember(member)}
+               
                       className="p-1 hover:bg-gray-200 rounded-md"
                     >
                       <Trash2 className="w-4 h-4 text-red-600" />
