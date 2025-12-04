@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { createProjectService } from "../../services/projectsOperations/projectsServices";
 
 export default function ProjectModal({
   open,
@@ -7,62 +9,68 @@ export default function ProjectModal({
   mode = "create", // "create" | "edit"
   initialData = {},
   teamsList = [],
-  onSubmit,
 }) {
   const isEdit = mode === "edit";
+  // console.log(teamsList);
 
-  // --------------------------
-  // Form State
-  // --------------------------
-  const [form, setForm] = useState({
+  const {token}=useSelector((state)=>state.auth)
+
+  // console.log("token in project", token);
+  
+
+  const dispatch=useDispatch()
+
+  
+
+  const [formData, setFormData] = useState({
     projectName: "",
     description: "",
-    projectType: "team", // team | personal | mixed
+    projectType: "personal",
     teams: [],
   });
 
-  // --------------------------
-  // Prefill in edit mode
-  // --------------------------
-  useEffect(() => {
-    if (isEdit && initialData) {
-      setForm({
-        projectName: initialData.projectName || "",
-        description: initialData.description || "",
-        projectType: initialData.projectType || "team",
-        teams: initialData.teams || [],
-      });
-    }
-  }, [isEdit, initialData]);
+  const handleOnchnage = (e) => {
+    const { name, value } = e.target;
 
-  // --------------------------
-  // Handle input
-  // --------------------------
-  const updateField = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const toggleTeam = (teamId) => {
-    setForm((prev) => {
-      const selected = prev.teams.includes(teamId)
-        ? prev.teams.filter((id) => id !== teamId)
-        : [...prev.teams, teamId];
-
-      return { ...prev, teams: selected };
+    setFormData((prev) => {
+      return { ...prev, [name]: value };
     });
   };
 
-  // --------------------------
-  // Submit handler
-  // --------------------------
-  const handleSubmit = () => {
-    onSubmit(form);
+  const toggleTeam = (teamId) => {
+    setFormData((prev) => {
+      let selectedTeam = prev.teams.includes(teamId)
+        ? prev.teams.filter((team) => team !== teamId)
+        : [...prev.teams, teamId];
+
+      console.log("selected teams is --> ", selectedTeam);
+
+      return { ...prev, teams: selectedTeam };
+    });
+
+
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+
+    dispatch(createProjectService(formData,token,onClose))
+
+    setFormData({
+    projectName: "",
+    description: "",
+    projectType: "personal",
+    teams: [],
+  })
+
+  };
+
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4  md:0 pt-20">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4  md:pt-0 pt-20">
       <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 animate-fadeIn">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
@@ -74,15 +82,17 @@ export default function ProjectModal({
           </button>
         </div>
 
-        {/* FORM BODY */}
-        <div className="space-y-4">
+        {/* formData BODY */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Project Name */}
           <div>
             <label className="block text-sm mb-1">Project Name</label>
             <input
               type="text"
-              value={form.projectName}
-              onChange={(e) => updateField("projectName", e.target.value)}
+              value={formData.projectName}
+              onChange={handleOnchnage}
+              required
+              name="projectName"
               className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 ring-blue-500"
               placeholder="Enter project name"
             />
@@ -92,8 +102,9 @@ export default function ProjectModal({
           <div>
             <label className="block text-sm mb-1">Description</label>
             <textarea
-              value={form.description}
-              onChange={(e) => updateField("description", e.target.value)}
+              value={formData.description}
+              onChange={handleOnchnage}
+              name="description"
               className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 ring-blue-500"
               placeholder="Short description..."
               rows={3}
@@ -104,8 +115,10 @@ export default function ProjectModal({
           <div>
             <label className="block text-sm mb-1">Project Type</label>
             <select
-              value={form.projectType}
-              onChange={(e) => updateField("projectType", e.target.value)}
+              value={formData.projectType}
+              onChange={handleOnchnage}
+              name="projectType"
+              required
               className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 ring-blue-500"
             >
               <option value="team">Team Project</option>
@@ -115,7 +128,7 @@ export default function ProjectModal({
           </div>
 
           {/* Teams (only when not personal) */}
-          {form.projectType !== "personal" && (
+          {formData.projectType !== "personal" && (
             <div>
               <label className="block text-sm mb-2">Select Teams</label>
 
@@ -131,7 +144,7 @@ export default function ProjectModal({
                   >
                     <input
                       type="checkbox"
-                      checked={form.teams.includes(team._id)}
+                      checked={formData.teams.includes(team._id)}
                       onChange={() => toggleTeam(team._id)}
                     />
                     <span>{team.teamName}</span>
@@ -140,24 +153,24 @@ export default function ProjectModal({
               </div>
             </div>
           )}
-        </div>
 
-        {/* FOOTER */}
-        <div className="flex justify-end mt-6 gap-3">
-          <button
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
+          {/* buttons */}
+          <div className="flex justify-end mt-6 gap-3">
+            <button
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
 
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {isEdit ? "Update" : "Create"}
-          </button>
-        </div>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              {isEdit ? "Update" : "Create"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

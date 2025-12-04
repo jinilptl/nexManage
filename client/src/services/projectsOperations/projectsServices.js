@@ -27,5 +27,32 @@ const {
   DELETE_PROJECT,
 } = PROJECTS_END_POINTS;
 
+// CREATE PROJECT
 
+export const createProjectService = (projectData, token, onClose) => {
+  return async (dispatch, getState) => {
+    dispatch(setCreateProjectLoading(true));
 
+    try {
+      const response = await axiosInstance.post(CREATE_PROJECT, projectData, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+
+      console.log("create project response ---> ", response.data);
+
+      if (response.data.success) {
+        toast.success("Project created successfully!");
+
+        const oldProjects = getState().projects.myProjects;
+        dispatch(setProjects([response.data.data, ...oldProjects]));
+
+        onClose(false);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create project.");
+    } finally {
+      dispatch(setCreateProjectLoading(false));
+    }
+  };
+};

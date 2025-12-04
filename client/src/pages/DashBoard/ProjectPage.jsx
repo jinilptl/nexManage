@@ -4,10 +4,19 @@ import ProjectCard from "../../components/projects/ProjectCard";
 import ProjectFilters from "../../components/projects/ProjectFilters";
 import { dummyProjects,dummyTeams } from "../../assets/dummyData/dummyData";
 import ProjectModal from "../../components/projects/ProjectModal";
+import { useSelector } from "react-redux";
+import ViewProjectModal from "../../components/projects/ViewProjectModal";
 
 export default function ProjectsPage() {
   const projects = dummyProjects; // Replace with API later
   const [showModal,setShowModal]=useState(false)
+  const [viewModal, setViewModal] = useState(false);
+const [selectedProject, setSelectedProject] = useState(null);
+
+
+   const {list} = useSelector((state)=>state.teams)
+  
+  
 
   return (
     <div className="pt-16 px-4 md:px-6 pb-10 space-y-6">
@@ -33,7 +42,17 @@ export default function ProjectsPage() {
       {projects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
+           <ProjectCard
+  key={project._id}
+  project={project}
+  loading={false}
+  onView={(p) => {
+    setSelectedProject(p);
+    setViewModal(true);
+  }}
+
+/>
+
           ))}
         </div>
       ) : (
@@ -46,10 +65,15 @@ export default function ProjectsPage() {
   open={showModal}
   onClose={() => setShowModal(false)}
   mode="create"
-  teamsList={dummyTeams}
-  onSubmit={(data) => console.log("Create Data:", data)}
+  teamsList={list}
+
 />
 
+<ViewProjectModal
+  open={viewModal}
+  onClose={() => setViewModal(false)}
+  project={selectedProject}
+/>
 
     </div>
   );
