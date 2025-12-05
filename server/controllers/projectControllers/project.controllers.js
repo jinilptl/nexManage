@@ -301,9 +301,17 @@ const updateProject = asyncHandler(async (req, res) => {
 
   await project.save();
 
+  const updatedProject=await ProjectModel.findById(projectId)
+    .populate("createdBy", "name email")
+    .populate("projectManager", "name email")
+    .populate("teams", "teamName")
+    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.addedFromTeam", "teamName")
+    .exec();
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Project updated successfully", project));
+    .json(new ApiResponse(200, "Project updated successfully", updatedProject));
 });
 
 

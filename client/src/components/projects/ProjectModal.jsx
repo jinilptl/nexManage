@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createProjectService } from "../../services/projectsOperations/projectsServices";
+import {
+  createProjectService,
+  updateProjectService,
+} from "../../services/projectsOperations/projectsServices";
 
 export default function ProjectModal({
   open,
   onClose,
-  mode = "create", // "create" | "edit"
+  mode = "create",
   initialData = {},
   teamsList = [],
 }) {
   const isEdit = mode === "edit";
-  // console.log(teamsList);
 
-  const {token}=useSelector((state)=>state.auth)
+  const { token } = useSelector((state) => state.auth);
+  const projectId = useSelector((state) => state.projects.selectedProject.id);
+  const dispatch = useDispatch();
 
-  // console.log("token in project", token);
-  
-
-  const dispatch=useDispatch()
-
-  
 
   const [formData, setFormData] = useState({
     projectName: "",
@@ -29,49 +27,69 @@ export default function ProjectModal({
     teams: [],
   });
 
+  useEffect(() => {
+    if (!open) return;
+
+    if (isEdit && initialData) {
+      setFormData({
+        projectName: initialData.projectName ?? "",
+        description: initialData.description ?? "",
+        projectType: initialData.projectType ?? "personal",
+        teams: initialData?.teams?.map((t) => t?._id || t) ?? [],
+      });
+    } 
+  }, [open, isEdit, initialData]);
+
+  useEffect(() => {
+    const escHandler = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", escHandler);
+    return () => window.removeEventListener("keydown", escHandler);
+  }, [onClose]);
+
   const handleOnchnage = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => {
-      return { ...prev, [name]: value };
-    });
+    if (name === "projectType" && value === "personal") {
+      return setFormData((prev) => ({
+        ...prev,
+        projectType: value,
+        teams: [],
+      }));
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const toggleTeam = (teamId) => {
     setFormData((prev) => {
-      let selectedTeam = prev.teams.includes(teamId)
-        ? prev.teams.filter((team) => team !== teamId)
+      let selected = prev.teams.includes(teamId)
+        ? prev.teams.filter((id) => id !== teamId)
         : [...prev.teams, teamId];
 
-      console.log("selected teams is --> ", selectedTeam);
-
-      return { ...prev, teams: selectedTeam };
+      return { ...prev, teams: selected };
     });
-
-
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-
-    dispatch(createProjectService(formData,token,onClose))
-
-    setFormData({
-    projectName: "",
-    description: "",
-    projectType: "personal",
-    teams: [],
-  })
-
+    if (isEdit) {
+      dispatch(updateProjectService(projectId, formData, token, onClose));
+    } else {
+      dispatch(createProjectService(formData, token, onClose));
+    }
   };
-
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4  md:pt-0 pt-20">
-      <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 animate-fadeIn">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4 md:pt-0 pt-20"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 animate-fadeIn"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">
@@ -82,9 +100,8 @@ export default function ProjectModal({
           </button>
         </div>
 
-        {/* formData BODY */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Project Name */}
+          {/* Name */}
           <div>
             <label className="block text-sm mb-1">Project Name</label>
             <input
@@ -111,7 +128,7 @@ export default function ProjectModal({
             />
           </div>
 
-          {/* Project Type */}
+          {/* Type */}
           <div>
             <label className="block text-sm mb-1">Project Type</label>
             <select
@@ -127,7 +144,7 @@ export default function ProjectModal({
             </select>
           </div>
 
-          {/* Teams (only when not personal) */}
+          {/* Teams */}
           {formData.projectType !== "personal" && (
             <div>
               <label className="block text-sm mb-2">Select Teams</label>
@@ -154,9 +171,10 @@ export default function ProjectModal({
             </div>
           )}
 
-          {/* buttons */}
+          {/* Buttons */}
           <div className="flex justify-end mt-6 gap-3">
             <button
+              type="button"
               className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
               onClick={onClose}
             >

@@ -6,7 +6,7 @@ const PROJECTS_END_POINTS = {
     GET_ALL_PROJECTS: '/v1/project/get-all-projects', // THIS IS SECURE ENDPOINT FOR ONLY ADMINS ANS SUPERS ADMIN
     GET_PROJECT: '/v1/project/get-project',
     GET_USER_PROJECTS: '/v1/project/get-my-projects',
-    UPDATE_PROJECT: '/v1/project/update-project/:projectId',
+    UPDATE_PROJECT: '/v1/project/update-project',
     DELETE_PROJECT: '/v1/project/delete-project/:projectId',
 
     // PROJECTS member endpoints ?

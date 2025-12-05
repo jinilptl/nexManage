@@ -6,7 +6,8 @@ import ProjectModal from "../../components/projects/ProjectModal";
 import { useDispatch, useSelector } from "react-redux";
 import ViewProjectModal from "../../components/projects/ViewProjectModal";
 import { fetchAllProjectsService, fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
-import { setSelectedProjectId } from "../../Redux_Config/Slices/projectsSlice";
+import { setSelectedProjectData, setSelectedProjectId } from "../../Redux_Config/Slices/projectsSlice";
+import { fetchTeamsService } from "../../services/teamsOperations/teamsServices";
 
 export default function ProjectsPage() {
  
@@ -27,6 +28,7 @@ export default function ProjectsPage() {
   useEffect(() => {
     if (token && user) {
       dispatch(fetchAllProjectsService(token, user?.role));
+      dispatch(fetchTeamsService(token,user?.role))
     }
   }, [token, user]);
 
@@ -38,7 +40,7 @@ export default function ProjectsPage() {
                 dispatch(fetchSingleProjectService(project._id,token))
                 setViewModal(true);
               }
-console.log("selected projjetc ===> ",selectedProject);
+// console.log("selected projjetc ===> ",selectedProject);
 
   return (
     <div className="pt-16 px-4 md:px-6 pb-10 space-y-6">
@@ -89,7 +91,10 @@ console.log("selected projjetc ===> ",selectedProject);
 
       <ViewProjectModal
         open={viewModal}
-        onClose={() => setViewModal(false)}
+        onClose={() =>{ setViewModal(false)
+          dispatch(setSelectedProjectId(null))
+          dispatch(setSelectedProjectData(null))
+        }}
         project={selectedProject.data}
       />
     </div>

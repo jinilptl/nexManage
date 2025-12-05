@@ -46,7 +46,7 @@ export const createProjectService = (projectData, token, onClose) => {
 
         const oldProjects = getState().projects.myProjects;
         dispatch(setProjects([response.data.data, ...oldProjects]));
-
+      dispatch(fetchAllProjectsService(token,getState().auth.user.role))
         onClose(false);
       }
     } catch (error) {
@@ -133,11 +133,14 @@ export const updateProjectService = (
     dispatch(setUpdateProjectLoading(true));
 
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.post(
         `${UPDATE_PROJECT}/${projectId}`,
         updatedData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      console.log("update responcse==> ",response);
+      
 
       if (response.data.success) {
         toast.success("Project updated successfully!");
@@ -150,6 +153,9 @@ export const updateProjectService = (
           p._id === projectId ? response.data.data : p
         );
         dispatch(setMyProjects(updatedList));
+        dispatch(setProjects(updatedList));
+
+        dispatch(fetchAllProjectsService(token,getState().auth.user.role))
 
         onClose(false);
       }
