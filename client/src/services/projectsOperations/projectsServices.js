@@ -106,9 +106,11 @@ export const fetchSingleProjectService = (projectId, token) => {
       const response = await axiosInstance.get(`${GET_PROJECT}/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+              // console.log("response is --> ",response);
+              
       if (response.data.success) {
         dispatch(setSelectedProjectData(response.data.data));
+        toast.success("succesfully fetched single project")
       }
     } catch (error) {
       toast.error("Failed to fetch project details.");

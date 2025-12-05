@@ -199,6 +199,8 @@ const getSingleProject = asyncHandler(async (req, res) => {
     );
 });
 
+
+
 const updateProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { projectName, description, projectType, teams, status } = req.body;

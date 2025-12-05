@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { 
   X, Users, Calendar, FolderKanban, 
   Pencil, Trash2, UserPlus, Settings, Archive, 
 } from "lucide-react";
+import ProjectModal from "./ProjectModal";
 
 export default function ViewProjectModal({
   open,
@@ -10,7 +11,16 @@ export default function ViewProjectModal({
   project,
 }) {
   if (!open || !project) return null;
+  const [editModal,setEditModal]=useState(false)
 
+  const handleEdit=()=>{
+    console.log("edit btn click");
+    setEditModal(true)
+
+    console.log("edit modal ---> ",editModal);
+    
+    
+  }
 //   // Stop background scroll
 //   useEffect(() => {
 //     document.body.style.overflow = open ? "hidden" : "auto";
@@ -67,7 +77,10 @@ export default function ViewProjectModal({
           {/* ACTION BUTTONS */}
           <div className="mt-5 flex flex-wrap gap-2">
             <button
-              
+              onClick={()=>{
+                // setEditModal(true)
+                handleEdit()
+              }}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700"
             >
               <Settings className="w-4 h-4" />
@@ -209,6 +222,8 @@ export default function ViewProjectModal({
 
         </div>
       </div>
+
+      <ProjectModal open={editModal} onClose={() => setEditModal(false)} mode="edit"/>
     </div>
   );
 }

@@ -4,7 +4,7 @@ const PROJECTS_END_POINTS = {
 
     CREATE_PROJECT: '/v1/project/create-project',
     GET_ALL_PROJECTS: '/v1/project/get-all-projects', // THIS IS SECURE ENDPOINT FOR ONLY ADMINS ANS SUPERS ADMIN
-    GET_PROJECT: '/v1/project/get-project/:projectId',
+    GET_PROJECT: '/v1/project/get-project',
     GET_USER_PROJECTS: '/v1/project/get-my-projects',
     UPDATE_PROJECT: '/v1/project/update-project/:projectId',
     DELETE_PROJECT: '/v1/project/delete-project/:projectId',

@@ -2,25 +2,26 @@ import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import ProjectCard from "../../components/projects/ProjectCard";
 import ProjectFilters from "../../components/projects/ProjectFilters";
-import { dummyProjects, dummyTeams } from "../../assets/dummyData/dummyData";
 import ProjectModal from "../../components/projects/ProjectModal";
 import { useDispatch, useSelector } from "react-redux";
 import ViewProjectModal from "../../components/projects/ViewProjectModal";
-import { fetchAllProjectsService } from "../../services/projectsOperations/projectsServices";
+import { fetchAllProjectsService, fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
+import { setSelectedProjectId } from "../../Redux_Config/Slices/projectsSlice";
 
 export default function ProjectsPage() {
  
   const [showModal, setShowModal] = useState(false);
   const [viewModal, setViewModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  // const [selectedProject, setSelectedProject] = useState(null);
 
   const { list } = useSelector((state) => state.teams);
   const { token, user } = useSelector((state) => state.auth);
   const {  allProjects } = useSelector((state) => state.projects);
+  const {selectedProject}=useSelector((state)=>state.projects)
    const projects = allProjects;
   const dispatch = useDispatch();
 
-  console.log("all project is---> ",allProjects);
+  // console.log("all project is---> ",allProjects);
   
 
   useEffect(() => {
@@ -29,10 +30,15 @@ export default function ProjectsPage() {
     }
   }, [token, user]);
 
-  useEffect(()=>{
-dispatch(fetchAllProjectsService(token, user?.role));
-    
-  },[])
+  const onViewhandler=(project) => {
+                // setSelectedProject(project);
+                
+                
+                dispatch(setSelectedProjectId(project._id))
+                dispatch(fetchSingleProjectService(project._id,token))
+                setViewModal(true);
+              }
+console.log("selected projjetc ===> ",selectedProject);
 
   return (
     <div className="pt-16 px-4 md:px-6 pb-10 space-y-6">
@@ -64,10 +70,7 @@ dispatch(fetchAllProjectsService(token, user?.role));
               key={project._id}
               project={project}
               loading={false}
-              onView={(project) => {
-                setSelectedProject(project);
-                setViewModal(true);
-              }}
+              onView={onViewhandler}
             />
           ))}
         </div>
@@ -87,7 +90,7 @@ dispatch(fetchAllProjectsService(token, user?.role));
       <ViewProjectModal
         open={viewModal}
         onClose={() => setViewModal(false)}
-        project={selectedProject}
+        project={selectedProject.data}
       />
     </div>
   );

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { MoreVertical, Users, Calendar } from "lucide-react";
 
+
+
 export default function ProjectCard({
   project,
   onView,
@@ -9,6 +11,9 @@ export default function ProjectCard({
   loading,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+
+  
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -50,6 +55,7 @@ export default function ProjectCard({
                   className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
                   onClick={() => {
                     onView(project);
+                    
                     setMenuOpen(false);
                   }}
                 >
