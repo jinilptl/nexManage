@@ -351,10 +351,10 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
   }
 
   // Only allow archive/unarchive here
-  if (!["active", "archived"].includes(status)) {
+  if (!["active", "onhold", "completed", "archived"].includes(status)) {
     throw new ApiError(
       400,
-      "Invalid status. Use this endpoint ONLY for archive or unarchive."
+      "Invalid status. Use this endpoint ONLY for active, onhold, completed, archived "
     );
   }
 
@@ -368,15 +368,24 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
   project.status = status;
   await project.save();
 
+  const updatedProjectData=await ProjectModel.findById(projectId)
+    .populate("createdBy", "name email")
+    .populate("projectManager", "name email")
+    .populate("teams", "teamName")
+    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.addedFromTeam", "teamName")
+    .exec();
+
+
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
         `Project has been ${
-          status === "archived" ? "archived" : "restored"
+          status 
         } successfully`,
-        project
+        updatedProjectData
       )
     );
 });

@@ -1,32 +1,72 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  X, Users, Calendar, FolderKanban,
-  Pencil, Trash2, UserPlus, Settings, Archive,
+  X,
+  Users,
+  Calendar,
+  FolderKanban,
+  Pencil,
+  Trash2,
+  UserPlus,
+  Settings,
+  Archive,
 } from "lucide-react";
 import ProjectModal from "./ProjectModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  archiveProjectService,
+  deleteProjectService,
+} from "../../services/projectsOperations/projectsServices";
+import toast from "react-hot-toast";
 
 export default function ViewProjectModal({ open, onClose, project }) {
   if (!open || !project) return null;
+  const dispatch = useDispatch();
+  const { id, data } = useSelector((state) => state.projects.selectedProject);
+  const token = useSelector((state) => state.auth.token);
 
   const [editModal, setEditModal] = useState(false);
   const { list } = useSelector((state) => state.teams);
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "active": return "bg-green-100 text-green-700";
-      case "onhold": return "bg-yellow-100 text-yellow-700";
-      case "completed": return "bg-blue-100 text-blue-700";
-      case "archived": return "bg-gray-200 text-gray-700";
-      default: return "bg-gray-100 text-gray-700";
+      case "active":
+        return "bg-green-100 text-green-700";
+      case "onhold":
+        return "bg-yellow-100 text-yellow-700";
+      case "completed":
+        return "bg-blue-100 text-blue-700";
+      case "archived":
+        return "bg-gray-200 text-gray-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
+  const handleDelete = () => {
+    if (confirm("are you want to delete this project??")) {
+      dispatch(deleteProjectService(id, token, onClose));
+    } else {
+      return;
+    }
+  };
+
+
+
+  const handleStatus = () => {
+    if (data.status !== "archived") {
+      if (confirm("do you want to push your project to archive mode??")) {
+        dispatch(archiveProjectService(id, "archived", token, onClose));
+      } else {
+        return;
+      }
+    }else{
+      toast.error("your project is already in archive mode")
+    }
+  };
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-center p-4 overflow-y-auto">
       <div className="w-full max-w-3xl my-10">
         <div className="bg-white rounded-xl shadow-xl w-full relative p-5 md:p-6 animate-slideUp max-h-[92vh] md:max-h-[85vh] overflow-y-auto">
-
           {/* Close */}
           <button
             onClick={onClose}
@@ -46,7 +86,9 @@ export default function ViewProjectModal({ open, onClose, project }) {
           {/* Status */}
           <div className="mt-3">
             <span
-              className={`px-3 py-1 text-xs rounded-md capitalize ${getStatusColor(project.status)}`}
+              className={`px-3 py-1 text-xs rounded-md capitalize ${getStatusColor(
+                project.status
+              )}`}
             >
               {project.status}
             </span>
@@ -65,11 +107,21 @@ export default function ViewProjectModal({ open, onClose, project }) {
               <UserPlus className="w-4 h-4" /> Add Member
             </button>
 
-            <button className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600">
+            <button
+              onClick={() => {
+                handleStatus();
+              }}
+              className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600"
+            >
               <Archive className="w-4 h-4" /> Archive
             </button>
 
-            <button className="px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700">
+            <button
+              onClick={() => {
+                handleDelete();
+              }}
+              className="px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700"
+            >
               <Trash2 className="w-4 h-4" /> Delete
             </button>
           </div>
@@ -89,7 +141,9 @@ export default function ViewProjectModal({ open, onClose, project }) {
             <div className="flex items-start gap-3">
               <Users className="w-6 h-6 text-gray-500" />
               <div>
-                <p className="text-xs text-gray-500 uppercase">Project Manager</p>
+                <p className="text-xs text-gray-500 uppercase">
+                  Project Manager
+                </p>
                 <p className="text-sm text-gray-900">
                   {project.projectManager?.name || "Not Assigned"}
                 </p>
@@ -126,7 +180,10 @@ export default function ViewProjectModal({ open, onClose, project }) {
 
             <div className="space-y-3">
               {project.projectMembers?.map((member, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
+                >
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
                       {member.user?.name?.[0]?.toUpperCase()}
@@ -172,7 +229,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
               Close
             </button>
           </div>
-
         </div>
       </div>
 

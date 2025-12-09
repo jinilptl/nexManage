@@ -25,6 +25,7 @@ const {
   GET_USER_PROJECTS,
   UPDATE_PROJECT,
   DELETE_PROJECT,
+  UPDATE_PROJECT_STATUS
 } = PROJECTS_END_POINTS;
 
 // CREATE PROJECT
@@ -163,6 +164,83 @@ export const updateProjectService = (
       toast.error(error.response?.data?.message || "Failed to update project.");
     } finally {
       dispatch(setUpdateProjectLoading(false));
+    }
+  };
+};
+
+
+
+    // DELETE PROJECT
+
+export const deleteProjectService = (projectId, token,onClose) => {
+  return async (dispatch, getState) => {
+    dispatch(setDeleteProjectLoading(true));
+
+    try {
+      const response = await axiosInstance.delete(
+        `${DELETE_PROJECT}/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` },withCredentials:true }
+      );
+
+      if (response.data.success) {
+        toast.success("Project deleted successfully!");
+
+        const updated = getState().projects.myProjects.filter(
+          (p) => p._id !== projectId
+        );
+
+        const allupdated = getState().projects.allProjects.filter(
+          (p) => p._id !== projectId
+        );
+        dispatch(setMyProjects(updated));
+        dispatch(setProjects(allupdated))
+        onClose(false)
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete project.");
+    } finally {
+      dispatch(setDeleteProjectLoading(false));
+    }
+  };
+};
+
+
+
+
+
+    // ARCHIVE / UNARCHIVE PROJECT
+
+export const archiveProjectService = (
+  projectId,
+  status,
+  token
+) => {
+  return async (dispatch, getState) => {
+    dispatch(setArchiveProjectLoading(true));
+
+    try {
+      const response = await axiosInstance.post(
+        `${UPDATE_PROJECT_STATUS}/${projectId}`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("response is ---> ",response);
+
+      
+
+      if (response.data.success) {
+        toast.success(`Project ${status === "archived" ? "archived" : "restored"}!`);
+
+        dispatch(setSelectedProjectData(response.data.data));
+        dispatch(fetchAllProjectsService(token,getState().auth.user.role))
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update project status."
+      );
+    } finally {
+      dispatch(setArchiveProjectLoading(false));
     }
   };
 };

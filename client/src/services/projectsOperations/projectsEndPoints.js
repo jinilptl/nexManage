@@ -7,7 +7,8 @@ const PROJECTS_END_POINTS = {
     GET_PROJECT: '/v1/project/get-project',
     GET_USER_PROJECTS: '/v1/project/get-my-projects',
     UPDATE_PROJECT: '/v1/project/update-project',
-    DELETE_PROJECT: '/v1/project/delete-project/:projectId',
+    DELETE_PROJECT: '/v1/project/delete-project',
+    UPDATE_PROJECT_STATUS:"/v1/project/update-project-status"
 
     // PROJECTS member endpoints ?
 
