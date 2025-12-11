@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Link, NavLink, useParams } from "react-router-dom";
+import { Link, NavLink, useLocation, useParams } from "react-router-dom";
 import LogoutModal from "./modals/authModal/LogOutModal";
 
 export default function Navigation({
@@ -23,8 +23,8 @@ export default function Navigation({
   setMobileOpen,
 }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [isActiveLink, setIsActiveLink] = useState("/dashboard");
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const location=useLocation()
 
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
 
@@ -98,8 +98,8 @@ export default function Navigation({
                 collapsed
                   ? "justify-center"
                   : "text-slate-300 hover:bg-slate-700 hover:text-white"
-              } ${isActiveLink === item.to ? "bg-slate-700 text-white" : ""}`}
-              onClick={() => setIsActiveLink(item.to)}
+              } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
+              
             >
               <item.icon className="w-5 h-5" />
               {!collapsed && <span className="text-sm">{item.label}</span>}
