@@ -4,10 +4,10 @@ const projectsSlice = createSlice({
   name: "projects",
 
   initialState: {
-    allProjects: [],          // All projects (admin or general)
-    myProjects: [],        // Only user's projects
-    loading: false,        // Loader for get all projects
-    myLoading: false,      // Loader for my projects
+    allProjects: [],     
+    myProjects: [],       
+    loading: false,       
+    myLoading: false,      
     error: null,
 
     selectedProject: {
@@ -17,19 +17,30 @@ const projectsSlice = createSlice({
       error: null,
     },
 
+    // ⭐ PROJECT MEMBERS SECTION
+    projectMembers: {
+      list: [],          // All members of selected project
+      loading: false,    // Loader for fetching members
+      error: null,
+    },
+
+    // ⭐ ACTION LOADERS
     actions: {
       creating: false,
       updating: false,
       deleting: false,
       archiving: false,
       syncing: false,
+
+      addingMember: false,
+      updatingMember: false,
+      removingMember: false,
+      activingMember:false
     },
   },
 
   reducers: {
-
-    //   ALL PROJECTS
-    
+    /* ---------------------- ALL PROJECTS ---------------------- */
     setProjects(state, action) {
       state.allProjects = action.payload;
     },
@@ -37,8 +48,7 @@ const projectsSlice = createSlice({
       state.loading = action.payload;
     },
 
-    //  * MY PROJECTS
-  
+    /* ----------------------- MY PROJECTS ---------------------- */
     setMyProjects(state, action) {
       state.myProjects = action.payload;
     },
@@ -46,9 +56,7 @@ const projectsSlice = createSlice({
       state.myLoading = action.payload;
     },
 
-   
-    //  * SELECTED PROJECT
-     
+    /* --------------------- SELECTED PROJECT ------------------- */
     setSelectedProjectId(state, action) {
       state.selectedProject.id = action.payload;
     },
@@ -59,9 +67,15 @@ const projectsSlice = createSlice({
       state.selectedProject.loading = action.payload;
     },
 
-  
-    //  * ACTION LOADERS
-    
+    /* --------------------- PROJECT MEMBERS --------------------- */
+    setProjectMembers(state, action) {
+      state.projectMembers.list = action.payload;
+    },
+    setProjectMembersLoading(state, action) {
+      state.projectMembers.loading = action.payload;
+    },
+
+    /* ---------------------- ACTION LOADERS ---------------------- */
     setCreateProjectLoading(state, action) {
       state.actions.creating = action.payload;
     },
@@ -78,26 +92,53 @@ const projectsSlice = createSlice({
       state.actions.syncing = action.payload;
     },
 
-   
-    //  * CLEAR ALL ON LOGOUT
-    
+    // ⭐ NEW MEMBER ACTION LOADERS
+    setAddMemberLoading(state, action) {
+      state.actions.addingMember = action.payload;
+    },
+    setUpdateMemberLoading(state, action) {
+      state.actions.updatingMember = action.payload;
+    },
+    setRemoveMemberLoading(state, action) {
+      state.actions.removingMember = action.payload;
+    },
+    setActiveMemberLoading(state, action) {
+      state.actions.activingMember = action.payload;
+    },
+
+    /* --------------------------- CLEAR --------------------------- */
     clearProjects(state) {
       state.allProjects = [];
       state.myProjects = [];
-      state.selectedProject = { id: null, data: null, loading: false };
+
+      state.selectedProject = {
+        id: null,
+        data: null,
+        loading: false,
+      };
+
+      state.projectMembers = {
+        list: [],
+        loading: false,
+      };
+
       state.actions = {
         creating: false,
         updating: false,
         deleting: false,
         archiving: false,
         syncing: false,
+
+        addingMember: false,
+        updatingMember: false,
+        removingMember: false,
       };
     },
   },
 });
 
 export const {
-  // All projects
+  // Projects
   setProjects,
   setProjectsLoading,
 
@@ -110,12 +151,21 @@ export const {
   setSelectedProjectData,
   setSelectedProjectLoading,
 
+  // Members
+  setProjectMembers,
+  setProjectMembersLoading,
+
   // Action loaders
   setCreateProjectLoading,
   setUpdateProjectLoading,
   setDeleteProjectLoading,
   setArchiveProjectLoading,
   setSyncProjectLoading,
+
+  setAddMemberLoading,
+  setUpdateMemberLoading,
+  setRemoveMemberLoading,
+  setActiveMemberLoading,
 
   // Clear all
   clearProjects,

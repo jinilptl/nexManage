@@ -12,6 +12,7 @@ import {
   updateProjectStatus,
 } from "../controllers/projectControllers/project.controllers.js";
 import {
+  activateProjectMember,
   addProjectMember,
   getAllProjectMembers,
   removeProjectMember,
@@ -48,23 +49,28 @@ projectRouter
 // members routes
 
 projectRouter
-  .route("/projects/:projectId/add-members")
+  .route("/add-members/:projectId")
   .post(verifyToken, addProjectMember); 
 
 projectRouter
-  .route("/projects/:projectId/all-members")
+    .route("/update-members/:projectId/:memberId")
+    .post(verifyToken, updateProjectMember);
+
+projectRouter
+  .route("/all-members/:projectId")
   .get(verifyToken, getAllProjectMembers);
 
-projectRouter
-  .route("/projects/:projectId/update-members/:memberId")
-  .patch(verifyToken, updateProjectMember);
 
 projectRouter
-  .route("/projects/:projectId/remove-members/:memberId")
+  .route("/active-members/:projectId/:memberId")
+  .patch(verifyToken,activateProjectMember);
+
+projectRouter
+  .route("/remove-members/:projectId/:memberId")
   .delete(verifyToken, removeProjectMember);
 
 projectRouter
-  .route("/projects/:projectId/sync-members")
+  .route("/sync-members/:projectId")
   .patch(verifyToken, syncProjectMembers);
 
 export default projectRouter;

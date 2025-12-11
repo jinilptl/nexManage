@@ -9,14 +9,18 @@ import {
   UserPlus,
   Settings,
   Archive,
+  RefreshCw,
 } from "lucide-react";
 import ProjectModal from "./ProjectModal";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  activeProjectMemberService,
   archiveProjectService,
   deleteProjectService,
+  removeProjectMemberService,
 } from "../../services/projectsOperations/projectsServices";
 import toast from "react-hot-toast";
+import ProjectMemberModal from "./ProjectMemberModal";
 
 export default function ViewProjectModal({ open, onClose, project }) {
   if (!open || !project) return null;
@@ -24,8 +28,14 @@ export default function ViewProjectModal({ open, onClose, project }) {
   const { id, data } = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
 
-  const [editModal, setEditModal] = useState(false);
   const { list } = useSelector((state) => state.teams);
+  const [editModal, setEditModal] = useState(false);
+  const [addMemberModal, setAddMemberModal] = useState(false);
+  const [memberModalMode, setMemberModalMode] = useState("add");
+  const [editMemberModal, setEditMemberModal] = useState(false);
+  const [editMemberData, setEditmember] = useState(null);
+
+  console.log("project memeber ", project.projectMembers);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -50,8 +60,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
     }
   };
 
-
-
   const handleStatus = () => {
     if (data.status !== "archived") {
       if (confirm("do you want to push your project to archive mode??")) {
@@ -59,8 +67,8 @@ export default function ViewProjectModal({ open, onClose, project }) {
       } else {
         return;
       }
-    }else{
-      toast.error("your project is already in archive mode")
+    } else {
+      toast.error("your project is already in archive mode");
     }
   };
   return (
@@ -103,7 +111,13 @@ export default function ViewProjectModal({ open, onClose, project }) {
               <Settings className="w-4 h-4" /> Edit
             </button>
 
-            <button className="px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700">
+            <button
+              onClick={() => {
+                setMemberModalMode("add");
+                setAddMemberModal(true);
+              }}
+              className="px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700"
+            >
               <UserPlus className="w-4 h-4" /> Add Member
             </button>
 
@@ -199,11 +213,58 @@ export default function ViewProjectModal({ open, onClose, project }) {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button className="p-1 hover:bg-gray-200 rounded-md">
-                      <Pencil className="w-4 h-4 text-blue-600" />
-                    </button>
-                    <button className="p-1 hover:bg-gray-200 rounded-md">
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                    {member.status === "active" && (
+                      <button
+                        onClick={() => {
+                          setMemberModalMode("edit");
+                          setEditMemberModal(true);
+                          setEditmember(member);
+                        }}
+                        className="p-1 hover:bg-gray-200 rounded-md"
+                      >
+                        <Pencil className="w-4 h-4 text-blue-600" />
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        if (member.status === "active") {
+                          if (confirm("do you want to remove this member??")) {
+                            dispatch(
+                              removeProjectMemberService(
+                                project._id,
+                                member.user._id,
+                                token
+                              )
+                            );
+                          } else {
+                            return;
+                          }
+                        }
+
+                        if (member.status === "removed") {
+                          if (
+                            confirm("do you want to reActivate this member??")
+                          ) {
+                            dispatch(
+                              activeProjectMemberService(
+                                project._id,
+                                member.user._id,
+                                token
+                              )
+                            );
+                          } else {
+                            return;
+                          }
+                        }
+                      }}
+                      className="p-1 hover:bg-gray-200 rounded-md"
+                    >
+                      {member.status === "active" ? (
+                        <Trash2 className="w-4 h-4 text-red-600 cursor-pointer  hover:text-red-700  hover:scale-110 transition" />
+                      ) : (
+                        <RefreshCw className=" w-4 h-4  text-green-600  cursor-pointer  hover:text-green-700 hover:scale-110 transition" />
+                      )}
                     </button>
                     <span
                       className={`text-xs px-2 py-1 rounded ${
@@ -239,6 +300,23 @@ export default function ViewProjectModal({ open, onClose, project }) {
           mode="edit"
           initialData={project}
           teamsList={list}
+        />
+      )}
+
+      {addMemberModal && (
+        <ProjectMemberModal
+          open={addMemberModal}
+          onClose={() => setAddMemberModal(false)}
+          mode={memberModalMode}
+        />
+      )}
+
+      {editMemberModal && (
+        <ProjectMemberModal
+          open={editMemberModal}
+          onClose={() => setEditMemberModal(false)}
+          mode={memberModalMode}
+          member={editMemberData}
         />
       )}
     </div>
