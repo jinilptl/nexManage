@@ -15,7 +15,7 @@ const PROJECTS_END_POINTS = {
     ADD_PROJECT_MEMBER: '/v1/project/add-members',
     REMOVE_PROJECT_MEMBER: '/v1/project/remove-members',
     ACTIVE_PROJECT_MEMBER: '/v1/project/active-members',
-    GET_PROJECT_MEMBERS: '/v1/project/all-members/:projectId',  
+    GET_PROJECT_MEMBERS: '/v1/project/all-members',  
     UPDATE_PROJECT_MEMBER: '/v1/project/update-members',
 
 }

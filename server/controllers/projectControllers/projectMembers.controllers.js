@@ -60,11 +60,18 @@ const addProjectMember = asyncHandler(async (req, res) => {
   project.projectMembers.push(newMember);
   await project.save();
 
+    const populatedProject = await ProjectModel.findById(projectId)
+    .populate("projectMembers.user", "name email");
+
+  const populatedNewMember = populatedProject.projectMembers.find(
+    (m) => m.user._id.toString() === userId.toString()
+  );
+
   return res.status(201).json(
     new ApiResponse(
       201,
       "Member added to project successfully",
-      newMember
+      populatedNewMember
     )
   );
 });
@@ -76,8 +83,15 @@ const getAllProjectMembers = asyncHandler(async (req, res) => {
   if (!projectId) throw new ApiError(400, "Project ID is required");
 
   const project = await ProjectModel.findById(projectId)
-    .populate("projectMembers.user", "name email")
-    .populate("projectMembers.addedFromTeam", "teamName");
+    .populate({
+      path: "projectMembers.user",
+      select: "name email role",
+    })
+    .populate({
+      path: "projectMembers.addedFromTeam",
+      select: "teamName",
+    })
+    .lean();
 
   if (!project) throw new ApiError(404, "Project not found");
 
@@ -144,10 +158,19 @@ const updateProjectMember = asyncHandler(async (req, res) => {
 
   await project.save();
 
-  return res.status(200).json(
+  const populatedProject = await ProjectModel.findById(projectId)
+    .populate("projectMembers.user", "name email");
+
+  const updatedMember = populatedProject.projectMembers.find(
+    (m) => m.user._id.toString() === memberId.toString()
+  );
+
+
+
+   return res.status(200).json(
     new ApiResponse(200, "Member updated successfully", {
-      updatedMember: member,
-      allMembers: project.projectMembers,
+      updatedMember,
+      allMembers: populatedProject.projectMembers,
     })
   );
 });

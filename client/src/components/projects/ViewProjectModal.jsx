@@ -17,6 +17,7 @@ import {
   activeProjectMemberService,
   archiveProjectService,
   deleteProjectService,
+  fetchProjectMembersService,
   removeProjectMemberService,
 } from "../../services/projectsOperations/projectsServices";
 import toast from "react-hot-toast";
@@ -29,13 +30,24 @@ export default function ViewProjectModal({ open, onClose, project }) {
   const token = useSelector((state) => state.auth.token);
 
   const { list } = useSelector((state) => state.teams);
+  const allProjectMembers=useSelector((state)=>state.projects.projectMembers.list)
+  console.log("membver is " ,allProjectMembers);
+  
   const [editModal, setEditModal] = useState(false);
   const [addMemberModal, setAddMemberModal] = useState(false);
   const [memberModalMode, setMemberModalMode] = useState("add");
   const [editMemberModal, setEditMemberModal] = useState(false);
   const [editMemberData, setEditmember] = useState(null);
 
-  console.log("project memeber ", project.projectMembers);
+  useEffect(()=>{
+    if(project._id&&token){
+      dispatch(fetchProjectMembersService(project._id,token))
+    }
+
+  },[project._id])
+
+
+  // console.log("project memeber ", project.projectMembers);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -193,7 +205,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </p>
 
             <div className="space-y-3">
-              {project.projectMembers?.map((member, index) => (
+              {allProjectMembers?.map((member, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between bg-gray-50 p-3 rounded-md"

@@ -21,6 +21,7 @@ import {
   setUpdateMemberLoading,
   setRemoveMemberLoading,
   setActiveMemberLoading,
+  setProjectMembersLoading,
 } from "../../Redux_Config/Slices/projectsSlice";
 
 const {
@@ -268,6 +269,53 @@ export const syncProjectMembersService = (projectId, token) => {
 
 // ---------------------------Members in Projects ----------------------------
 
+   //get all member
+
+export const fetchProjectMembersService = (projectId, token) => {
+  return async (dispatch, getState) => {
+    dispatch(setProjectMembersLoading(true));
+
+    try {
+      const response = await axiosInstance.get(
+        `${GET_PROJECT_MEMBERS}/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      console.log("response --> ",response.data);
+      
+
+      if (response.data.success) {
+        const members = response.data.data;
+
+        // 1️⃣ Update Redux Members List
+        dispatch(setProjectMembers(members));
+
+        // 2️⃣ Sync selectedProject.data with members
+        const currentProject = getState().projects.selectedProject.data;
+
+        if (currentProject) {
+          dispatch(
+            setSelectedProjectData({
+              ...currentProject,
+              projectMembers: members,
+            })
+          );
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to fetch members.");
+      console.log("fetchProjectMembersService error →", error);
+    } finally {
+      dispatch(setProjectMembersLoading(false));
+    }
+  };
+};
+
+
+
 //  ADD MEMBER TO PROJECT
 export const addProjectMemberService = (
   projectId,
@@ -293,22 +341,38 @@ export const addProjectMemberService = (
       if (response.data.success) {
         toast.success("Member added successfully!");
 
-        // Get existing members from slice
-        const oldMembers = getState().projects.projectMembers.list;
+        const newMember = response.data.data;
 
-        // Append new member
-        dispatch(setProjectMembers([...oldMembers, response.data.data]));
+        // projectMembers.list 
+
+        const oldMembers = getState().projects.projectMembers.list;
+        dispatch(setProjectMembers([...oldMembers, newMember]));
+
+        // for the selectedProject.data.projectMembers
+
+        const prevProject = getState().projects.selectedProject.data;
+
+        if (prevProject) {
+          dispatch(
+            setSelectedProjectData({
+              ...prevProject,
+              projectMembers: [...prevProject.projectMembers, newMember],
+            })
+          );
+        }
 
         // Close modal
         onClose(false);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add member.");
+      console.log("Add member error →", error);
     } finally {
       dispatch(setAddMemberLoading(false));
     }
   };
 };
+
 
 //update member
 
@@ -333,14 +397,19 @@ export const updateProjectMemberService = (
       );
 
       console.log("response is --> ", response.data);
-
+    
       if (response.data.success) {
         toast.success("Member updated successfully!");
 
-        // Replace full member list from backend
+        // 1️⃣ UPDATE MEMBERS LIST
         dispatch(setProjectMembers(response.data.data.allMembers));
 
-        // Close modal + reset selected
+        // 2️⃣ UPDATE SELECTED PROJECT DATA
+        if (response.data.data.project) {
+          dispatch(setSelectedProjectData(response.data.data.project));
+        }
+
+        // Close modal
         onClose(false);
       }
     } catch (error) {
@@ -350,6 +419,7 @@ export const updateProjectMemberService = (
     }
   };
 };
+
 
 //remove member(only status changing )
 
@@ -370,6 +440,16 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
       if (response.data.success) {
         toast.success("Member removed!");
 
+      const prevMembers = getState().projects.projectMembers.list;
+
+        // for the Update projectMembers.list
+        const updatedMembersList = prevMembers.map((m) =>
+          m.user._id === memberId ? { ...m, status: "removed" } : m
+        );
+        dispatch(setProjectMembers(updatedMembersList));
+
+
+        // for the selectedProjectData 
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
@@ -395,6 +475,8 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
   };
 };
 
+ 
+
 export const activeProjectMemberService = (projectId, memberId, token) => {
   return async (dispatch, getState) => {
     dispatch(setActiveMemberLoading(true));
@@ -412,6 +494,16 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
       if (response.data.success) {
         toast.success("Member reActivate!");
 
+        const prevMembers = getState().projects.projectMembers.list;
+
+        // for the Update projectMembers.list
+        const updatedMembersList = prevMembers.map((m) =>
+          m.user._id === memberId ? { ...m, status: "active" } : m
+        );
+        dispatch(setProjectMembers(updatedMembersList));
+
+
+          //for the SelectedProjectData
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
