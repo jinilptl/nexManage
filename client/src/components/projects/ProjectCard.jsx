@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { MoreVertical, Users, Calendar } from "lucide-react";
 import { useSelector } from "react-redux";
-
-
+import ButtonLoader from "../Lodders/ButtonLoader";
 
 export default function ProjectCard({
   project,
@@ -12,12 +11,8 @@ export default function ProjectCard({
   loading,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-    const user=useSelector((state)=>state.auth.user)
-  // console.log("user is ",user.role);
-  const UserRole=user.role
-
-
-  
+  const user = useSelector((state) => state.auth.user);
+  const UserRole = user.role;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -27,6 +22,21 @@ export default function ProjectCard({
   }, []);
 
   const membersCount = project.projectMembers?.length || 0;
+
+ 
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6 animate-pulse">
+        <div className="w-12 h-12 rounded-lg bg-slate-200" />
+        <div className="mt-4 h-4 w-32 bg-slate-200 rounded" />
+        <div className="mt-2 h-3 w-52 bg-slate-200 rounded" />
+        <div className="mt-2 h-3 w-40 bg-slate-200 rounded" />
+
+        <div className="mt-6 h-4 w-28 bg-slate-200 rounded" />
+        <div className="mt-2 h-4 w-full bg-slate-200 rounded" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative">
@@ -40,43 +50,45 @@ export default function ProjectCard({
           {/* MENU BUTTON */}
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
-              disabled={loading}
-              className={`p-1 rounded-md ${
-                loading ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
-              }`}
+              className="p-1 rounded-md hover:bg-gray-100"
               onClick={(e) => {
                 e.stopPropagation();
-                if (!loading) setMenuOpen(!menuOpen);
+                setMenuOpen(!menuOpen);
               }}
             >
               <MoreVertical className="w-5 h-5 text-gray-600" />
             </button>
 
             {/* DROPDOWN */}
-            {menuOpen && !loading && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg z-50 animate-fadeIn">
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg z-50 animate-fadeIn border border-gray-100 overflow-hidden">
+                {/* VIEW */}
                 <button
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 text-sm"
                   onClick={() => {
                     onView(project);
-                    
                     setMenuOpen(false);
                   }}
                 >
-                  View Project
+                  <span>View Project</span>
                 </button>
 
-                {UserRole!=="member"&&<div className="border-t my-1"></div>}
+                {UserRole !== "member" && <div className="border-t"></div>}
 
-                {UserRole!=="member"&&<button
-                  className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
-                  onClick={() => {
-                    // onArchive(project);
-                    setMenuOpen(false);
-                  }}
-                >
-                  Archive Project
-                </button>}
+                {/* ARCHIVE */}
+                {UserRole !== "member" && (
+                  <button
+                    className="w-full flex items-center justify-between px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
+                    onClick={() => {
+                      onArchive?.(project);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <span>Archive Project</span>
+                    {/* 🔥 Small Loader (ButtonLoader) */}
+                    {loading && <ButtonLoader />}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -116,6 +128,19 @@ export default function ProjectCard({
               }`}
             >
               {project.status}
+            </span>
+          </div>
+
+          {/* CREATED BY */}
+          <div className="p-1 flex justify-center">
+            <span className="text-xs text-gray-500 flex gap-1">
+              Created By :
+              <span className="font-semibold whitespace-nowrap">
+                {project.createdBy?.name
+                  ? project.createdBy.name[0].toUpperCase() +
+                    project.createdBy.name.slice(1)
+                  : "Unknown"}
+              </span>
             </span>
           </div>
         </div>
