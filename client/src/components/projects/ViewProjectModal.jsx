@@ -28,10 +28,13 @@ export default function ViewProjectModal({ open, onClose, project }) {
   const dispatch = useDispatch();
   const { id, data } = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
+  const user=useSelector((state)=>state.auth.user)
+  // console.log("user is ",user.role);
+  const UserRole=user.role
 
   const { list } = useSelector((state) => state.teams);
   const allProjectMembers=useSelector((state)=>state.projects.projectMembers.list)
-  console.log("membver is " ,allProjectMembers);
+  // console.log("membver is " ,allProjectMembers);
   
   const [editModal, setEditModal] = useState(false);
   const [addMemberModal, setAddMemberModal] = useState(false);
@@ -115,7 +118,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
           </div>
 
           {/* Actions */}
-          <div className="mt-5 flex flex-wrap gap-2">
+          {UserRole!=="member"&&<div className="mt-5 flex flex-wrap gap-2">
             <button
               onClick={() => setEditModal(true)}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700"
@@ -150,7 +153,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
             >
               <Trash2 className="w-4 h-4" /> Delete
             </button>
-          </div>
+          </div>}
 
           {/* GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
@@ -225,7 +228,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {member.status === "active" && (
+                    {UserRole!=="member"&&member.status === "active" && (
                       <button
                         onClick={() => {
                           setMemberModalMode("edit");
@@ -238,7 +241,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       </button>
                     )}
 
-                    <button
+                  {UserRole!=="member"&&  <button
                       onClick={() => {
                         if (member.status === "active") {
                           if (confirm("do you want to remove this member??")) {
@@ -277,7 +280,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       ) : (
                         <RefreshCw className=" w-4 h-4  text-green-600  cursor-pointer  hover:text-green-700 hover:scale-110 transition" />
                       )}
-                    </button>
+                    </button>}
                     <span
                       className={`text-xs px-2 py-1 rounded ${
                         member.status === "active"

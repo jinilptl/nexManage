@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MoreVertical, Users, Calendar } from "lucide-react";
+import { useSelector } from "react-redux";
 
 
 
@@ -11,6 +12,9 @@ export default function ProjectCard({
   loading,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+    const user=useSelector((state)=>state.auth.user)
+  // console.log("user is ",user.role);
+  const UserRole=user.role
 
 
   
@@ -62,17 +66,17 @@ export default function ProjectCard({
                   View Project
                 </button>
 
-                <div className="border-t my-1"></div>
+                {UserRole!=="member"&&<div className="border-t my-1"></div>}
 
-                <button
+                {UserRole!=="member"&&<button
                   className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
                   onClick={() => {
-                    onArchive(project);
+                    // onArchive(project);
                     setMenuOpen(false);
                   }}
                 >
                   Archive Project
-                </button>
+                </button>}
               </div>
             )}
           </div>

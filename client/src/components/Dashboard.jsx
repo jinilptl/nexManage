@@ -11,8 +11,14 @@ import {
   Users,
 } from "lucide-react";
 import DashboardHearderCard from "./DashboardHearderCard";
+import { useSelector } from "react-redux";
 
 export default function Dashboard() {
+
+    const user=useSelector((state)=>state.auth.user)
+ 
+  const UserRole=user.role
+
   const DashBoardCardData = [
     {
       heading: "Active Projects",
@@ -112,10 +118,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 p-4 md:p-6">
-      {/* Welcome */}
+     
       <div>
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-          Welcome back, Boss 👋
+          Welcome back, {user.name[0].toUpperCase()+user.name.slice(1)}
         </h1>
         <p className="text-gray-600">
           Here's what's happening with your projects today.
@@ -125,13 +131,14 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
-        {DashBoardCardData.map((card) => (
+        {DashBoardCardData.map((card,index) => (
           <DashboardHearderCard
             heading={card.heading}
             mainIcon={card.mainIcon}
             data={card.data}
             text={card.text}
             textColor={card.textColor}
+            key={index}
           />
         ))}
       </div>
@@ -147,7 +154,7 @@ export default function Dashboard() {
 
           <div className="space-y-3">
             {tasks.map((task, idx) => (
-              <div key={idx}>
+              <div key={idx*Math.random()}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${task.color}`}></div>
@@ -192,7 +199,7 @@ export default function Dashboard() {
       {/* Bottom Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Deadlines */}
-        <div className="bg-white p-4 rounded-xl shadow-sm  ">
+        {/* <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
           </h3>
@@ -225,10 +232,10 @@ export default function Dashboard() {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Project Progress */}
-        <div className="bg-white p-4 rounded-xl shadow-sm  ">
+        {/* <div className="bg-white p-4 rounded-xl shadow-sm  ">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Project Progress
           </h3>
@@ -256,7 +263,7 @@ export default function Dashboard() {
               </p>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
