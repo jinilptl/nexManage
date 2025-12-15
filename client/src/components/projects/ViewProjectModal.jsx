@@ -11,8 +11,12 @@ import {
   Archive,
   RefreshCw,
 } from "lucide-react";
-import ProjectModal from "./ProjectModal";
+
 import { useDispatch, useSelector } from "react-redux";
+
+import ProjectModal from "./ProjectModal";
+import ProjectMemberModal from "./ProjectMemberModal";
+
 import {
   activeProjectMemberService,
   archiveProjectService,
@@ -20,37 +24,53 @@ import {
   fetchProjectMembersService,
   removeProjectMemberService,
 } from "../../services/projectsOperations/projectsServices";
+
+import ModalSmallLoader from "../Lodders/ModalSmallLoader";
+import ButtonLoader from "../Lodders/ButtonLoader";
+
 import toast from "react-hot-toast";
-import ProjectMemberModal from "./ProjectMemberModal";
 
 export default function ViewProjectModal({ open, onClose, project }) {
-  if (!open || !project) return null;
   const dispatch = useDispatch();
-  const { id, data } = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
-  const user=useSelector((state)=>state.auth.user)
-  // console.log("user is ",user.role);
-  const UserRole=user.role
+  const user = useSelector((state) => state.auth.user);
+  const UserRole = user?.role;
 
-  const { list } = useSelector((state) => state.teams);
-  const allProjectMembers=useSelector((state)=>state.projects.projectMembers.list)
-  // console.log("membver is " ,allProjectMembers);
-  
+  const selectedProject = useSelector((state) => state.projects.selectedProject);
+  const loadingProject = selectedProject.loading;
+
+  const allProjectMembers = useSelector(
+    (state) => state.projects.projectMembers.list
+  );
+  const membersLoading = useSelector(
+    (state) => state.projects.projectMembers.loading
+  );
+
+  const {
+    updating: updatingProject,
+    deleting: deletingProject,
+    archiving,
+    addingMember,
+    updatingMember,
+    removingMember,
+    activingMember,
+  } = useSelector((state) => state.projects.actions);
+
+  // LOCAL STATES FOR PER-MEMBER LOADER
+  const [removingFor, setRemovingFor] = useState(null);
+  const [activatingFor, setActivatingFor] = useState(null);
+
   const [editModal, setEditModal] = useState(false);
   const [addMemberModal, setAddMemberModal] = useState(false);
   const [memberModalMode, setMemberModalMode] = useState("add");
   const [editMemberModal, setEditMemberModal] = useState(false);
   const [editMemberData, setEditmember] = useState(null);
 
-  useEffect(()=>{
-    if(project._id&&token){
-      dispatch(fetchProjectMembersService(project._id,token))
+  useEffect(() => {
+    if (project?._id && token) {
+      dispatch(fetchProjectMembersService(project._id, token));
     }
-
-  },[project._id])
-
-
-  // console.log("project memeber ", project.projectMembers);
+  }, [project?._id]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -68,29 +88,40 @@ export default function ViewProjectModal({ open, onClose, project }) {
   };
 
   const handleDelete = () => {
-    if (confirm("are you want to delete this project??")) {
-      dispatch(deleteProjectService(id, token, onClose));
-    } else {
-      return;
+    if (confirm("Are you sure you want to delete this project?")) {
+      dispatch(deleteProjectService(selectedProject.id, token, onClose));
     }
   };
 
-  const handleStatus = () => {
-    if (data.status !== "archived") {
-      if (confirm("do you want to push your project to archive mode??")) {
-        dispatch(archiveProjectService(id, "archived", token, onClose));
-      } else {
-        return;
+  const handleArchive = () => {
+    if (project.status !== "archived") {
+      if (confirm("Move this project to archive?")) {
+        dispatch(
+          archiveProjectService(selectedProject.id, "archived", token, onClose)
+        );
       }
     } else {
-      toast.error("your project is already in archive mode");
+      toast.error("Project is already archived");
     }
   };
+
+  // ⭐ Project loading loader
+  if (loadingProject) {
+    return (
+      <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm">
+        <ModalSmallLoader />
+      </div>
+    );
+  }
+
+  if (!open || !project) return null;
+
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-center p-4 overflow-y-auto">
       <div className="w-full max-w-3xl my-10">
         <div className="bg-white rounded-xl shadow-xl w-full relative p-5 md:p-6 animate-slideUp max-h-[92vh] md:max-h-[85vh] overflow-y-auto">
-          {/* Close */}
+
+          {/* CLOSE BUTTON */}
           <button
             onClick={onClose}
             className="absolute top-3 right-3 p-1 rounded-md hover:bg-gray-100"
@@ -98,7 +129,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
             <X className="w-5 h-5 text-gray-600" />
           </button>
 
-          {/* Header */}
+          {/* HEADER */}
           <h2 className="text-xl font-bold text-gray-900 mb-1">
             {project.projectName}
           </h2>
@@ -106,7 +137,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
             {project.description || "No description provided"}
           </p>
 
-          {/* Status */}
+          {/* STATUS */}
           <div className="mt-3">
             <span
               className={`px-3 py-1 text-xs rounded-md capitalize ${getStatusColor(
@@ -117,46 +148,58 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </span>
           </div>
 
-          {/* Actions */}
-          {UserRole!=="member"&&<div className="mt-5 flex flex-wrap gap-2">
-            <button
-              onClick={() => setEditModal(true)}
-              className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700"
-            >
-              <Settings className="w-4 h-4" /> Edit
-            </button>
+          {/* ACTIONS */}
+          {UserRole !== "member" && (
+            <div className="mt-5 flex flex-wrap gap-2">
 
-            <button
-              onClick={() => {
-                setMemberModalMode("add");
-                setAddMemberModal(true);
-              }}
-              className="px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700"
-            >
-              <UserPlus className="w-4 h-4" /> Add Member
-            </button>
+              {/* EDIT PROJECT */}
+              <button
+                onClick={() => setEditModal(true)}
+                disabled={updatingProject}
+                className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700 disabled:opacity-50"
+              >
+                {updatingProject ? <ButtonLoader /> : <Settings className="w-4 h-4" />}
+                Edit
+              </button>
 
-            <button
-              onClick={() => {
-                handleStatus();
-              }}
-              className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600"
-            >
-              <Archive className="w-4 h-4" /> Archive
-            </button>
+              {/* ADD MEMBER */}
+              <button
+                onClick={() => {
+                  setMemberModalMode("add");
+                  setAddMemberModal(true);
+                }}
+                disabled={addingMember}
+                className="px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700 disabled:opacity-50"
+              >
+                {addingMember ? <ButtonLoader /> : <UserPlus className="w-4 h-4" />}
+                Add Member
+              </button>
 
-            <button
-              onClick={() => {
-                handleDelete();
-              }}
-              className="px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700"
-            >
-              <Trash2 className="w-4 h-4" /> Delete
-            </button>
-          </div>}
+              {/* ARCHIVE */}
+              <button
+                onClick={handleArchive}
+                disabled={archiving}
+                className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600 disabled:opacity-50"
+              >
+                {archiving ? <ButtonLoader /> : <Archive className="w-4 h-4" />}
+                Archive
+              </button>
 
-          {/* GRID */}
+              {/* DELETE */}
+              <button
+                onClick={handleDelete}
+                disabled={deletingProject}
+                className="px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700 disabled:opacity-50"
+              >
+                {deletingProject ? <ButtonLoader /> : <Trash2 className="w-4 h-4" />}
+                Delete
+              </button>
+            </div>
+          )}
+
+          {/* GRID INFO */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+            {/* CREATED AT */}
             <div className="flex items-start gap-3">
               <Calendar className="w-6 h-6 text-gray-500" />
               <div>
@@ -167,28 +210,29 @@ export default function ViewProjectModal({ open, onClose, project }) {
               </div>
             </div>
 
+            {/* PROJECT MANAGER */}
             <div className="flex items-start gap-3">
               <Users className="w-6 h-6 text-gray-500" />
               <div>
-                <p className="text-xs text-gray-500 uppercase">
-                  Project Manager
-                </p>
+                <p className="text-xs text-gray-500 uppercase">Project Manager</p>
                 <p className="text-sm text-gray-900">
                   {project.projectManager?.name || "Not Assigned"}
                 </p>
               </div>
             </div>
 
+            {/* MEMBERS COUNT */}
             <div className="flex items-start gap-3">
               <Users className="w-6 h-6 text-gray-500" />
               <div>
                 <p className="text-xs text-gray-500 uppercase">Members</p>
                 <p className="text-sm text-gray-900">
-                  {project.projectMembers?.length || 0} Members
+                  {allProjectMembers?.length || 0} Members
                 </p>
               </div>
             </div>
 
+            {/* TEAMS COUNT */}
             <div className="flex items-start gap-3">
               <FolderKanban className="w-6 h-6 text-gray-500" />
               <div>
@@ -200,103 +244,123 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </div>
           </div>
 
-          {/* Members List */}
+          {/* MEMBERS LIST */}
           <div className="mt-8">
             <h3 className="text-lg font-semibold">Members</h3>
             <p className="text-gray-600 text-sm mb-3">
               People working on this project
             </p>
 
-            <div className="space-y-3">
-              {allProjectMembers?.map((member, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
-                      {member.user?.name?.[0]?.toUpperCase()}
+            {/* Loader for Members */}
+            {membersLoading ? (
+              <ModalSmallLoader />
+            ) : allProjectMembers?.length === 0 ? (
+              <p className="text-gray-500 text-sm">No members found.</p>
+            ) : (
+              <div className="space-y-3">
+                {allProjectMembers.map((member, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
+                  >
+                    {/* LEFT Section */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
+                        {member.user?.name?.[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          {member.user?.name}
+                        </p>
+                        <p className="text-xs text-gray-500 capitalize">
+                          {member.roleInProject}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold">
-                        {member.user?.name || "Unknown User"}
-                      </p>
-                      <p className="text-xs text-gray-500 capitalize">
-                        {member.roleInProject}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    {UserRole!=="member"&&member.status === "active" && (
-                      <button
-                        onClick={() => {
-                          setMemberModalMode("edit");
-                          setEditMemberModal(true);
-                          setEditmember(member);
-                        }}
-                        className="p-1 hover:bg-gray-200 rounded-md"
-                      >
-                        <Pencil className="w-4 h-4 text-blue-600" />
-                      </button>
-                    )}
+                    {/* ACTIONS */}
+                    <div className="flex items-center gap-2">
 
-                  {UserRole!=="member"&&  <button
-                      onClick={() => {
-                        if (member.status === "active") {
-                          if (confirm("do you want to remove this member??")) {
-                            dispatch(
-                              removeProjectMemberService(
-                                project._id,
-                                member.user._id,
-                                token
-                              )
-                            );
-                          } else {
-                            return;
-                          }
-                        }
-
-                        if (member.status === "removed") {
-                          if (
-                            confirm("do you want to reActivate this member??")
-                          ) {
-                            dispatch(
-                              activeProjectMemberService(
-                                project._id,
-                                member.user._id,
-                                token
-                              )
-                            );
-                          } else {
-                            return;
-                          }
-                        }
-                      }}
-                      className="p-1 hover:bg-gray-200 rounded-md"
-                    >
-                      {member.status === "active" ? (
-                        <Trash2 className="w-4 h-4 text-red-600 cursor-pointer  hover:text-red-700  hover:scale-110 transition" />
-                      ) : (
-                        <RefreshCw className=" w-4 h-4  text-green-600  cursor-pointer  hover:text-green-700 hover:scale-110 transition" />
+                      {/* EDIT ROLE */}
+                      {UserRole !== "member" && member.status === "active" && (
+                        <button
+                          onClick={() => {
+                            setMemberModalMode("edit");
+                            setEditMemberModal(true);
+                            setEditmember(member);
+                          }}
+                          className="p-1 hover:bg-gray-200 rounded-md"
+                        >
+                          <Pencil className="w-4 h-4 text-blue-600" />
+                        </button>
                       )}
-                    </button>}
-                    <span
-                      className={`text-xs px-2 py-1 rounded ${
-                        member.status === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {member.status}
-                    </span>
+
+                      {/* REMOVE / ACTIVATE BUTTON WITH LOADER */}
+                      {UserRole !== "member" && (
+                        <button
+                          disabled={
+                            removingFor === member.user._id ||
+                            activatingFor === member.user._id
+                          }
+                          onClick={() => {
+                            if (member.status === "active") {
+                              if (confirm("Remove this member?")) {
+                                setRemovingFor(member.user._id);
+                                dispatch(
+                                  removeProjectMemberService(
+                                    project._id,
+                                    member.user._id,
+                                    token, 
+                                  )
+                                  
+                                );
+                                setRemovingFor(null);
+                              }
+                            } else {
+                              if (confirm("Reactivate this member?")) {
+                                setActivatingFor(member.user._id);
+                                dispatch(
+                                  activeProjectMemberService(
+                                    project._id,
+                                    member.user._id,
+                                    token,
+                                    
+                                  )
+                                );
+                                setActivatingFor(null)
+                              }
+                            }
+                          }}
+                          className="p-1 hover:bg-gray-200 rounded-md"
+                        >
+                          {removingFor === member.user._id ||
+                          activatingFor === member.user._id ? (
+                            <ButtonLoader />
+                          ) : member.status === "active" ? (
+                            <Trash2 className="w-4 h-4 text-red-600" />
+                          ) : (
+                            <RefreshCw className="w-4 h-4 text-green-600" />
+                          )}
+                        </button>
+                      )}
+
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          member.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {member.status}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Close */}
+          {/* CLOSE BUTTON */}
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
@@ -308,13 +372,14 @@ export default function ViewProjectModal({ open, onClose, project }) {
         </div>
       </div>
 
+      {/* CHILD MODALS */}
       {editModal && (
         <ProjectModal
           open={editModal}
           onClose={() => setEditModal(false)}
           mode="edit"
           initialData={project}
-          teamsList={list}
+          teamsList={project.teams}
         />
       )}
 
