@@ -120,12 +120,12 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      <ProjectModal
+      {showModal&&(<ProjectModal
         open={showModal}
         onClose={() => setShowModal(false)}
         mode="create"
         teamsList={list}
-      />
+      />)}
 
       <ViewProjectModal
         open={viewModal}
