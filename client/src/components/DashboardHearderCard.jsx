@@ -10,9 +10,9 @@ const DashboardHearderCard = ({heading,mainIcon,data,text,textColor}) => {
           <div className="mt-3 text-2xl font-semibold text-gray-900">
             {data}
           </div>
-          <p className={`text-xs ${textColor} mt-1 flex items-center gap-1`}>
+          {/* <p className={`text-xs ${textColor} mt-1 flex items-center gap-1`}>
             {text}
-          </p>
+          </p> */}
         </div>
   )
 }

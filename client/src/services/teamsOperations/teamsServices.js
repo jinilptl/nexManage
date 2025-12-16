@@ -5,18 +5,14 @@ import TEAMS_END_POINTS from "./teamsEndPoints";
 import {
   setTeams,
   setTeamsLoading,
-
   setSelectedTeamId,
   setSelectedTeamData,
   setSelectedTeamLoading,
-
   setTeamMembers,
   setTeamMembersLoading,
-
   setCreateTeamLoading,
   setUpdateTeamLoading,
   setDeleteTeamLoading,
-
   setAddMemberLoading,
   setUpdateMemberLoading,
   setRemoveMemberLoading,
@@ -38,23 +34,17 @@ const {
 
 let logger = console.log;
 
-/* =====================================================
-   🚀 CREATE TEAM
-===================================================== */
+//   CREATE TEAM
+
 export const createTeamService = (teamData, token, onClose) => {
   return async (dispatch, getState) => {
-    
     dispatch(setCreateTeamLoading(true));
 
     try {
-      const response = await axiosInstance.post(
-        CREATE_TEAM,
-        teamData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post(CREATE_TEAM, teamData, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
 
       if (response.data.success) {
         toast.success("Team created successfully!");
@@ -72,9 +62,8 @@ export const createTeamService = (teamData, token, onClose) => {
   };
 };
 
-/* =====================================================
-   🚀 FETCH ALL TEAMS
-===================================================== */
+//   FETCH ALL TEAMS
+
 export const fetchTeamsService = (token, role) => {
   return async (dispatch) => {
     dispatch(setTeamsLoading(true));
@@ -100,19 +89,17 @@ export const fetchTeamsService = (token, role) => {
   };
 };
 
-/* =====================================================
-   🚀 FETCH SINGLE TEAM (VIEW MODAL)
-===================================================== */
+//  FETCH SINGLE TEAM (VIEW MOD
+
 export const fetchSingleTeamService = (teamId, token) => {
   return async (dispatch) => {
     dispatch(setSelectedTeamLoading(true));
     dispatch(setSelectedTeamData(null));
 
     try {
-      const response = await axiosInstance.get(
-        `${GET_TEAM}/${teamId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axiosInstance.get(`${GET_TEAM}/${teamId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         dispatch(setSelectedTeamData(response.data.data));
@@ -125,12 +112,10 @@ export const fetchSingleTeamService = (teamId, token) => {
   };
 };
 
-/* =====================================================
-   🚀 DELETE TEAM
-===================================================== */
+//  DELETE TEAM
+
 export const deleteTeamService = (teamId, token) => {
   return async (dispatch, getState) => {
-
     dispatch(setDeleteTeamLoading(true));
 
     try {
@@ -159,12 +144,10 @@ export const deleteTeamService = (teamId, token) => {
   };
 };
 
-/* =====================================================
-   🚀 UPDATE TEAM
-===================================================== */
+//   UPDATE TEAM
+
 export const updateTeamService = (teamId, updatedData, token, onClose) => {
   return async (dispatch, getState) => {
-
     dispatch(setUpdateTeamLoading(true));
 
     try {
@@ -194,12 +177,10 @@ export const updateTeamService = (teamId, updatedData, token, onClose) => {
   };
 };
 
-/* =====================================================
-   🚀 FETCH TEAM MEMBERS
-===================================================== */
+//  FETCH TEAM MEMBERS
+
 export const fetchTeamMembersService = (teamId, token) => {
   return async (dispatch) => {
-
     dispatch(setTeamMembersLoading(true));
 
     try {
@@ -219,12 +200,10 @@ export const fetchTeamMembersService = (teamId, token) => {
   };
 };
 
-/* =====================================================
-   🚀 ADD TEAM MEMBER
-===================================================== */
+//   ADD TEAM MEMBER
+
 export const addTeamMemberService = (teamId, memberData, token, onClose) => {
   return async (dispatch, getState) => {
-
     dispatch(setAddMemberLoading(true));
 
     try {
@@ -250,9 +229,8 @@ export const addTeamMemberService = (teamId, memberData, token, onClose) => {
   };
 };
 
-/* =====================================================
-   🚀 UPDATE MEMBER
-===================================================== */
+//   UPDATE MEMBER
+
 export const updateTeamMemberService = (
   teamId,
   memberId,
@@ -286,12 +264,10 @@ export const updateTeamMemberService = (
   };
 };
 
-/* =====================================================
-   🚀 REMOVE MEMBER
-===================================================== */
+//  REMOVE MEMBER
+
 export const removeTeamMemberService = (teamId, memberId, token) => {
   return async (dispatch) => {
-
     dispatch(setRemoveMemberLoading(true));
 
     try {
