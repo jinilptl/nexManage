@@ -12,6 +12,10 @@ const isProjectManager = asyncHandler(async (req, res, next) => {
 
   const project = req.project || (await Project.findById(projectId));
 
+  if(req.role==='admin' || req.role==='super_admin'){
+    return next();
+  }
+
   if (!project) {
     throw new ApiError(400, "Project context missing");
   }

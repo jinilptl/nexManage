@@ -21,7 +21,14 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
 
   if (!project) {
     throw new ApiError(404, "Project not found");
+
+    
   }
+
+
+  if(req.user.role==='admin' || req.user.role==='super_admin'){
+      return next();
+    }
 
   // Check if user is project manager
   if (
@@ -47,7 +54,7 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
   }
 
  
-//   req.project = project;
+  req.project = project;
   next();
 });
 
