@@ -13,8 +13,9 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Link, NavLink, useParams } from "react-router-dom";
+import { Link, NavLink, useLocation, useParams } from "react-router-dom";
 import LogoutModal from "./modals/authModal/LogOutModal";
+import { useSelector } from "react-redux";
 
 export default function Navigation({
   collapsed,
@@ -23,9 +24,10 @@ export default function Navigation({
   setMobileOpen,
 }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [isActiveLink, setIsActiveLink] = useState("/dashboard");
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const location=useLocation()
 
+    const user=useSelector((state)=>state.auth.user)
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
 
   const menuItems = [
@@ -98,8 +100,8 @@ export default function Navigation({
                 collapsed
                   ? "justify-center"
                   : "text-slate-300 hover:bg-slate-700 hover:text-white"
-              } ${isActiveLink === item.to ? "bg-slate-700 text-white" : ""}`}
-              onClick={() => setIsActiveLink(item.to)}
+              } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
+              
             >
               <item.icon className="w-5 h-5" />
               {!collapsed && <span className="text-sm">{item.label}</span>}
@@ -116,14 +118,14 @@ export default function Navigation({
             }`}
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
-              J
+              {user.name[0].toUpperCase()}
             </div>
             {!collapsed && (
               <div className="flex-1 text-left">
-                <div className="text-sm">Jinil Patel</div>
-                <div className="text-xs text-slate-400">Admin</div>
+                <div className="text-sm">{user.name[0].toUpperCase()+user.name.slice(1)}</div>
+                <div className="text-xs text-slate-400">{user.role}</div>
               </div>
-            )}
+            )}  
           </button>
 
           {/* Dropdown Menu */}
@@ -210,11 +212,11 @@ export default function Navigation({
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
-              J
+              {user.name[0].toUpperCase()}
             </div>
             <div className="flex-1 text-left">
-              <div className="text-sm">Jinil Patel</div>
-              <div className="text-xs text-slate-400">Admin</div>
+              <div className="text-sm">{user.name[0].toUpperCase()+user.name.slice(1)}</div>
+              <div className="text-xs text-slate-400">{user.role}</div>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>

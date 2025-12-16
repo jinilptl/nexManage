@@ -131,7 +131,7 @@ export default function TeamsPage() {
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-gray-900 mb-2 text-xl font-bold">Teams</h1>
+          <h1 className="text-gray-900  text-2xl font-bold">Teams</h1>
           <p className="text-gray-600">Manage and organize your teams</p>
         </div>
 

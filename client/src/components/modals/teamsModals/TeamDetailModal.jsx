@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { X, Edit, Trash2, Archive, UserPlus } from "lucide-react";
+import { 
+  X, Edit, Trash2, Archive, UserPlus 
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -26,7 +28,7 @@ export default function TeamDetailModal({ open, onClose }) {
   const token = useSelector((state) => state.auth.token);
   const role = useSelector((state) => state.auth.user.role);
 
-  //  Correct loaders
+  // Loaders
   const deleting = useSelector((state) => state.teams.actions.deletingTeam);
   const updating = useSelector((state) => state.teams.actions.updatingTeam);
   const addingMember = useSelector((state) => state.teams.actions.addingMember);
@@ -36,23 +38,21 @@ export default function TeamDetailModal({ open, onClose }) {
   const fetchTeamLoading = useSelector((state) => state.teams.selectedTeam.loading);
   const membersLoading = useSelector((state) => state.teams.teamMembers.loading);
 
-  const teamid = useSelector((state) => state.teams.selectedTeam.id);
-  const selectedTeamData = useSelector((state) => state.teams.selectedTeam.data);
+  const teamId = useSelector((state) => state.teams.selectedTeam.id);
+  const team = useSelector((state) => state.teams.selectedTeam.data);
   const members = useSelector((state) => state.teams.teamMembers.list);
 
   const isAdmin = role === "admin" || role === "super_admin";
 
   const [modalOpen, setModalOpen] = useState(false);
   const [memberModalOpen, setMemberModalOpen] = useState(false);
-  const [membermodalmode, setMemberModalMode] = useState("add");
+  const [memberModalMode, setMemberModalMode] = useState("add");
   const [selectedMember, setSelectedMember] = useState(null);
-
-  const team = selectedTeamData || {};
 
   /* ---------------- DELETE TEAM ---------------- */
   const handleDeleteTeam = () => {
     if (confirm("Delete this team?")) {
-      dispatch(deleteTeamService(teamid, token));
+      dispatch(deleteTeamService(teamId, token));
       onClose();
       dispatch(setSelectedTeamId(null));
     }
@@ -61,181 +61,186 @@ export default function TeamDetailModal({ open, onClose }) {
   /* ---------------- REMOVE MEMBER ---------------- */
   const handleRemoveMember = (memberID) => {
     if (confirm("Remove member?")) {
-      dispatch(removeTeamMemberService(teamid, memberID, token));
+      dispatch(removeTeamMemberService(teamId, memberID, token));
     }
   };
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center pointer-events-auto">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center p-4 overflow-y-auto">
+      <div className="w-full max-w-3xl my-10">
+        <div className="bg-white rounded-xl shadow-xl w-full relative p-5 md:p-6 animate-slideUp max-h-[92vh] md:max-h-[85vh] overflow-y-auto">
 
-      {/* ALWAYS-FULL-SCREEN BACKDROP — FIXED */}
-      <div
-        className="fixed inset-0 bg-black/ixed top-0 left-0 w-screen h-screen bg-black/40 backdrop-blur-sm z-5"
-        onClick={() => !updating && !deleting && onClose()}
-      ></div>
+          {/* Close Button */}
+          <button
+            disabled={updating || deleting}
+            onClick={() => {
+              onClose();
+              dispatch(setSelectedTeamData(null));
+              dispatch(setSelectedTeamId(null));
+            }}
+            className={`absolute top-3 right-3 p-1 rounded-md hover:bg-gray-100 
+              ${updating || deleting ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
 
-      {/* TOP LOADER WHILE FETCHING TEAM / MEMBERS */}
-      {(fetchTeamLoading || membersLoading) && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center pointer-events-none">
-          <ModalSmallLoader />
-        </div>
-      )}
-
-      {/* MODAL BOX */}
-      <div className="relative z-100 bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[88vh] overflow-y-auto p-6 animate-fadeIn">
-
-        {/* CLOSE BUTTON */}
-        <button
-          disabled={updating || deleting}
-          onClick={() => {
-            onClose();
-            dispatch(setSelectedTeamData(null));
-            dispatch(setSelectedTeamId(null));
-          }}
-          className={`absolute top-4 right-4 p-2 rounded-full 
-            ${updating || deleting ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"}`}
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* HEADER */}
-        <div className="border-b pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-            <div className="flex-1">
-              <h2 className="text-2xl font-semibold text-gray-900">
-                {team.teamName}
-              </h2>
-              <p className="text-gray-500 mt-1">{team.description}</p>
+          {/* Loading Overlay */}
+          {(fetchTeamLoading || membersLoading) && (
+            <div className="absolute inset-0 z-50 bg-white/60 flex items-center justify-center">
+              <ModalSmallLoader />
             </div>
+          )}
 
-            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-              {team.isActive ? "Active" : "Inactive"}
+          {/* HEADER */}
+          <h2 className="text-xl font-bold text-gray-900 mb-1">
+            {team?.teamName}
+          </h2>
+
+          <p className="text-gray-600 text-sm">{team?.description}</p>
+
+          {/* STATUS */}
+          <div className="mt-3">
+            <span
+              className={`px-3 py-1 text-xs rounded-md ${
+                team?.isActive
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {team?.isActive ? "Active" : "Inactive"}
             </span>
           </div>
 
           {/* ACTION BUTTONS */}
           {isAdmin && (
-            <div className="flex flex-wrap items-center gap-3 mt-4">
+            <div className="mt-5 flex flex-wrap gap-2">
 
-              {/* UPDATE TEAM */}
+              {/* Update */}
               <button
                 disabled={updating}
                 onClick={() => {
                   setModalOpen(true);
-                  dispatch(fetchSingleTeamService(teamid, token));
+                  dispatch(fetchSingleTeamService(teamId, token));
                 }}
-                className={`px-3 py-2 rounded-md text-sm flex items-center gap-2
-                  ${updating ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
+                className={`px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700 
+                  ${updating ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {updating ? <ButtonLoader /> : <Edit className="w-4 h-4" />}
-                {updating ? "Updating..." : "Update Team"}
+                {updating ? "Updating..." : "Edit"}
               </button>
 
-              {/* ARCHIVE TEAM (placeholder) */}
+              {/* Archive */}
               <button
-                className="px-3 py-2 rounded-md text-sm flex items-center gap-2 bg-yellow-100 text-yellow-700"
+                className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600"
               >
-                <Archive className="w-4 h-4" /> Archive Team
+                <Archive className="w-4 h-4" /> Archive
               </button>
 
-              {/* DELETE TEAM */}
+              {/* Delete */}
               <button
                 disabled={deleting}
                 onClick={handleDeleteTeam}
-                className={`px-3 py-2 rounded-md text-sm flex items-center gap-2 
-                  ${deleting ? "bg-red-200 cursor-not-allowed" : "bg-red-100 text-red-700 hover:bg-red-200"}`}
+                className={`px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700 
+                  ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {deleting ? <ButtonLoader /> : <Trash2 className="w-4 h-4" />}
-                {deleting ? "Deleting..." : "Delete Team"}
+                {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           )}
-        </div>
 
-        {/* MEMBERS SECTION */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold">Team Members</h3>
+          {/* MEMBERS SECTION */}
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">Team Members</h3>
 
-            {isAdmin && (
-              <button
-                disabled={addingMember}
-                onClick={() => {
-                  setMemberModalMode("add");
-                  setMemberModalOpen(true);
-                }}
-                className={`px-3 py-2 rounded-md text-sm flex items-center gap-2
-                  ${addingMember ? "bg-blue-100 cursor-not-allowed" : "bg-blue-50 text-blue-700 hover:bg-blue-100"}`}
-              >
-                {addingMember ? <ButtonLoader /> : <UserPlus className="w-4 h-4" />}
-                {addingMember ? "Please wait..." : "Add Member"}
-              </button>
-            )}
+              {isAdmin && (
+                <button
+                  disabled={addingMember}
+                  onClick={() => {
+                    setMemberModalMode("add");
+                    setMemberModalOpen(true);
+                  }}
+                  className={`px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700 
+                    ${addingMember ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  {addingMember ? <ButtonLoader /> : <UserPlus className="w-4 h-4" />}
+                  {addingMember ? "Please wait..." : "Add Member"}
+                </button>
+              )}
+            </div>
+
+            {/* MEMBERS LIST */}
+            <div className="space-y-3">
+              {members?.length === 0 && (
+                <p className="text-gray-500">No members in this team.</p>
+              )}
+
+              {members?.map((m) => (
+                <div
+                  key={m.user?._id}
+                  className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
+                      {m.user?.name?.charAt(0)?.toUpperCase()}
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold">{m.user?.name}</p>
+                      <p className="text-xs text-gray-500 capitalize">
+                        {m.roleInTeam}
+                      </p>
+                    </div>
+                  </div>
+
+                  {isAdmin && (
+                    <div className="flex items-center gap-2">
+
+                      {/* Edit */}
+                      <button
+                        disabled={updatingMember}
+                        onClick={() => {
+                          setSelectedMember(m);
+                          setMemberModalMode("update");
+                          setMemberModalOpen(true);
+                        }}
+                        className="p-1 hover:bg-gray-200 rounded-md"
+                      >
+                        {updatingMember ? (
+                          <ButtonLoader />
+                        ) : (
+                          <Edit className="w-4 h-4 text-blue-600" />
+                        )}
+                      </button>
+
+                      {/* Remove */}
+                      <button
+                        disabled={removingMember}
+                        onClick={() => handleRemoveMember(m.user._id)}
+                        className="p-1 hover:bg-gray-200 rounded-md"
+                      >
+                        {removingMember ? (
+                          <ButtonLoader />
+                        ) : (
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* MEMBERS LIST */}
-          <div className="space-y-3">
-            {members?.length === 0 && (
-              <p className="text-gray-500">No members in this team.</p>
-            )}
-
-            {members?.map((m) => (
-              <div
-                key={m.user?._id}
-                className="p-3 rounded-lg border hover:bg-gray-50 flex flex-col sm:flex-row justify-between gap-4"
-              >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
-                    {m.user?.name?.charAt(0)?.toUpperCase()}
-                  </div>
-
-                  <div>
-                    <p className="font-medium">{m.user?.name}</p>
-                    <p className="text-sm text-gray-500 capitalize">
-                      {m.roleInTeam}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full 
-                      ${m.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-300 text-gray-700"
-                      }`}
-                  >
-                    {m.status}
-                  </span>
-                </div>
-
-                {isAdmin && (
-                  <div className="flex items-center gap-2">
-
-                    <button
-                      disabled={updatingMember}
-                      onClick={() => {
-                        setSelectedMember(m);
-                        setMemberModalMode("update");
-                        setMemberModalOpen(true);
-                      }}
-                      className={`p-2 rounded-md hover:bg-gray-100
-                        ${updatingMember ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {updatingMember ? <ButtonLoader /> : <Edit className="w-4 h-4" />}
-                    </button>
-
-                    <button
-                      disabled={removingMember}
-                      onClick={() => handleRemoveMember(m.user._id)}
-                      className={`p-2 rounded-md hover:bg-gray-100
-                        ${removingMember ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {removingMember ? <ButtonLoader /> : <Trash2 className="w-4 h-4 text-red-600" />}
-                    </button>
-
-                  </div>
-                )}
-              </div>
-            ))}
+          {/* FOOTER */}
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-md"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -245,7 +250,7 @@ export default function TeamDetailModal({ open, onClose }) {
       <MemberModal
         open={memberModalOpen}
         onClose={setMemberModalOpen}
-        mode={membermodalmode}
+        mode={memberModalMode}
         member={selectedMember}
         setMember={setSelectedMember}
       />
