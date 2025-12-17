@@ -1,7 +1,6 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Task } from "../../models/task.models.js";
-
+import { Task } from "../../models/Task models/task.models.js"
 const attachTaskToRequest = asyncHandler(async (req, res, next) => {
   const { taskId } = req.params;
 
