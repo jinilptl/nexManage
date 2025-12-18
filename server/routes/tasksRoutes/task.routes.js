@@ -8,14 +8,19 @@ import { attachTaskToRequest } from "../../middlewares/taskMiddlewares/attachTas
 import { isAssigneeOrProjectManager } from "../../middlewares/taskMiddlewares/isAssigneeOrProjectManager.middlewares.js";
 import {
   createTask,
+  deleteTask,
   getProjectTasks,
   getTaskDetails,
   updateTask,
+  updateTaskAssignees,
   updateTaskOrder,
   updateTaskStatus,
 } from "../../controllers/taskControllers/task.controllers.js";
 
+
 const taskRouter = express.Router();
+
+// task routes
 
 // Create Task
 taskRouter
@@ -63,7 +68,7 @@ taskRouter
   );
 
 
-  taskRouter.route("/:taskId/status").patch(
+  taskRouter.route("/status/:taskId").patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
@@ -71,11 +76,34 @@ taskRouter
     updateTaskStatus
   )
 
-  taskRouter.route("/:taskId/order").patch(
+  taskRouter.route("/order/:taskId").patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isAssigneeOrProjectManager,
     updateTaskOrder
   )
+
+  taskRouter.route("/delete/:taskId").delete(
+    verifyToken,
+    attachTaskToRequest,
+    isProjectMember,
+    isProjectManager,
+    deleteTask
+
+  )
+
+  taskRouter.route("/updatetask-assignees/:taskId").patch(
+    verifyToken,
+    attachTaskToRequest,
+    isProjectMember,
+    isProjectManager,
+    updateTaskAssignees
+
+  )
+
+ 
+
+
+
 export default taskRouter;
