@@ -356,11 +356,11 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
-  
-  //  CASE 1: Task moves UP
+ 
+    // CASE 1: Task moves UP from down
   //  oldOrder = 4 → newOrder = 1
   //  Tasks [1 → 3] move DOWN (+1)
-   
+  
   if (newOrder < oldOrder) {
     await TaskModel.updateMany(
       {
@@ -372,11 +372,11 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
- 
-  //   CASE 2: Task moves DOWN
-  //   oldOrder = 1 → newOrder = 4
-  //   Tasks [2 → 4] move UP (-1)
- 
+  
+    // CASE 2: Task moves DOWN from up
+    // oldOrder = 1 → newOrder = 4
+    // Tasks [2 → 4] move UP (-1)
+   
   if (newOrder > oldOrder) {
     await TaskModel.updateMany(
       {
@@ -389,7 +389,8 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
   }
 
 
-    // UPDATE MOVED TASK
+
+  // UPDATE MOVED TASK
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
@@ -398,8 +399,9 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
   );
 
 
-    // ACTIVITY LOG
-   
+
+  // ACTIVITY LOG
+
   await createTaskActivityLog({
     taskId: task._id,
     action: "TASK_REORDERED",
@@ -416,6 +418,129 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
   );
 });
 
+// delete task with proper reorder logics and activity log
+const deleteTask = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const task = req.task; // attached by middleware
+
+  if (!task) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  const { status, order, project } = task;
+
+ 
+    // DELETE TASK
+  
+  await TaskModel.findByIdAndDelete(task._id);
+
+
+  // REORDER TASKS IN THE SAME COLUMN
+  await TaskModel.updateMany(
+    {
+      project,
+      status,
+      order: { $gt: order },
+    },
+    { $inc: { order: -1 } }
+  );
+
+
+    // ACTIVITY LOG
+  
+  await createTaskActivityLog({
+    taskId: task._id,
+    action: "TASK_DELETED",
+    performedBy: userId,
+    meta: {
+      title: task.title,
+      status,
+    },
+  });
+
+  return res.status(200).json(
+    new ApiResponse(200, "Task deleted successfully")
+  );
+});
+
+
+//updateTaskAssignees
+
+const updateTaskAssignees = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const task = req.task;         
+  const project = req.project;    
+
+  const { assignees } = req.body;
+
+  if (!Array.isArray(assignees) || assignees.length === 0) {
+    throw new ApiError(400, "Assignees must be a non-empty array");
+  }
+
+  
+  //  Get active project member IDs
+  
+  const activeProjectMemberIds = project.projectMembers
+    .filter((member) => member.status === "active")
+    .map((member) => member.user.toString());
+
+
+    //  Validate all assignees
+   
+  const areAssigneesValid = assignees.every((assigneeId) =>
+    activeProjectMemberIds.includes(assigneeId.toString())
+  );
+
+  if (!areAssigneesValid) {
+    throw new ApiError(
+      400,
+      "One or more assignees are not active project members"
+    );
+  }
+
+
+    //  detect added & removed assignees for meta track
+   
+  const previousAssignees = task.assignees.map((id) => id.toString());
+  const newAssignees = assignees.map((id) => id.toString());
+
+  const addedAssignees = newAssignees.filter(
+    (id) => !previousAssignees.includes(id)
+  );
+
+  const removedAssignees = previousAssignees.filter(
+    (id) => !newAssignees.includes(id)
+  );
+
+    //  Update task
+  
+  const updatedTask = await TaskModel.findByIdAndUpdate(
+    task._id,
+    { assignees: newAssignees },
+    { new: true }
+  );
+
+  
+    // Activity log
+   
+  await createTaskActivityLog({
+    taskId: task._id,
+    action: "ASSIGNEES_UPDATED",
+    performedBy: userId,
+    meta: {
+      added: addedAssignees,
+      removed: removedAssignees,
+    },
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Task assignees updated successfully",
+      updatedTask
+    )
+  );
+});
 
 export {
   createTask,
@@ -423,5 +548,7 @@ export {
   getTaskDetails,
   updateTask,
   updateTaskStatus,
-  updateTaskOrder
+  updateTaskOrder,
+  deleteTask,
+  updateTaskAssignees
 };
