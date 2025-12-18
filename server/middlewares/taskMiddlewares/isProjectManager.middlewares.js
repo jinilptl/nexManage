@@ -27,7 +27,7 @@ const isProjectManager = asyncHandler(async (req, res, next) => {
   ) {
     throw new ApiError(403, "Only project manager can perform this action");
   }
-
+req.project = project;
   next();
 });
 
