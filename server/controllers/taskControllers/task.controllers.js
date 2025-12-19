@@ -182,7 +182,9 @@ const getTaskDetails = asyncHandler(async (req, res) => {
 const updateTask = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId;
   const userId = req.user?._id;
-
+ 
+  console.log("request comes here ");
+  
   if (!taskId) {
     throw new ApiError(400, "Task id is required");
   }
@@ -198,6 +200,7 @@ const updateTask = asyncHandler(async (req, res) => {
   }
 
   const { title, description, priority, dueDate } = req.body;
+console.log("data --> ",title);
 
   //validations and updation
   let updates = {};
@@ -240,11 +243,16 @@ const updateTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No valid fields provided for update");
   }
 
+  // console.log("request comes here above updation");
+  
+
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
     { $set: updates },
     { new: true }
   );
+
+  //  console.log("request comes here after updation");
 
   // activity log utility function call
   await createTaskActivityLog({
@@ -253,6 +261,8 @@ const updateTask = asyncHandler(async (req, res) => {
     performedBy: userId,
     meta,
   });
+
+  return res.status(201).json(new ApiResponse(201,"Task Updated successfully",updatedTask))
 });
 
 
@@ -338,8 +348,9 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 
 //in same column reorder
 const updateTaskOrder = asyncHandler(async (req, res) => {
-  const { newOrder } = req.body;
+  const { order:newOrder } = req.body;
   const userId = req.user._id;
+
 
   if (newOrder === undefined || newOrder < 0) {
     throw new ApiError(400, "Valid newOrder is required");
