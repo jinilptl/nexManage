@@ -9,6 +9,8 @@ const isAssigneeOrProjectManager = asyncHandler(async (req, res, next) => {
   const taskId = req.params.taskId || req.task?._id;
   const task = req.task || (await TaskModel.findById(taskId));
   const project = req.project || (await ProjectModel.findById(projectId));
+  
+  
 
   if (!task || !project) {
     throw new ApiError(400, "Task or project context missing");

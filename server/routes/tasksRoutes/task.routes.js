@@ -46,7 +46,7 @@ taskRouter
 //get single task details
 
 taskRouter
-  .route("/get-task/:taskId")
+  .route("/:projectId/get-task/:taskId")
   .get(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
@@ -58,7 +58,7 @@ taskRouter
 //update task
 
 taskRouter
-  .route("/update-task/:taskId")
+  .route("/update-task/:projectId/:taskId")
   .put(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
@@ -68,7 +68,7 @@ taskRouter
   );
 
 
-  taskRouter.route("/status/:taskId").patch(
+  taskRouter.route("/status/:projectId/:taskId").patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
@@ -76,7 +76,7 @@ taskRouter
     updateTaskStatus
   )
 
-  taskRouter.route("/order/:taskId").patch(
+  taskRouter.route("/order/:projectId/:taskId").patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
@@ -84,7 +84,7 @@ taskRouter
     updateTaskOrder
   )
 
-  taskRouter.route("/delete/:taskId").delete(
+  taskRouter.route("/delete/:projectId/:taskId").delete(
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
@@ -93,7 +93,9 @@ taskRouter
 
   )
 
-  taskRouter.route("/updatetask-assignees/:taskId").patch(
+  taskRouter
+  .route("/updatetask-assignees/:projectId/:taskId")
+  .patch(
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
