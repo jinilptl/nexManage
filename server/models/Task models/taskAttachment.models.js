@@ -26,6 +26,11 @@ const taskAttachmentSchema = new mongoose.Schema(
       default: null,
     },
 
+    publicId: {
+      type: String,
+      required: false,
+    },
+
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
