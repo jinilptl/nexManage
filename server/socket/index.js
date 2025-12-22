@@ -1,20 +1,24 @@
 import { Server } from "socket.io";
-
+import { socketAuth } from "../middlewares/socketMiddlewares/socketAuth.js";
+import { ApiError } from "../utils/ApiError.js";
 let io;
 
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: "*", // frontend later restrict karenge
+      origin: "*", 
       methods: ["GET", "POST"],
     },
   });
+  
+//Socket authentication
+  socketAuth(io)
 
   io.on("connection", (socket) => {
-    console.log("🔌 New socket connected:", socket.id);
+    console.log("New socket connected:", socket.id);
 
     socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected:", socket.id);
+      console.log("Socket disconnected:", socket.id);
     });
   });
 
@@ -23,7 +27,7 @@ const initSocket = (httpServer) => {
 
 const getIO = () => {
   if (!io) {
-    throw new Error("Socket.io not initialized");
+    throw new ApiError("Socket.io not initialized");
   }
   return io;
 };
