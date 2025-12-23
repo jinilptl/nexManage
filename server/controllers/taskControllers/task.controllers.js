@@ -2,13 +2,10 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { User as UserModel } from "../../models/user.models.js";
 import { Project as ProjectModel } from "../../models/project.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
-
-// import {SubTask} from "../../models/Task models/subTask.models.js";
-// import {TaskAttachment} from "../../models/Task models/taskAttachment.models.js";
-// import {TaskActivityLog} from "../../models/Task models/taskActivityLog.models.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { createTaskActivityLog } from "../../utils/CreateActivityLog.js";
+import { getIO } from "../../socket/index.js";
 
 const createTask = asyncHandler(async (req, res) => {
   const projectId = req.params.projectId;
@@ -17,7 +14,9 @@ const createTask = asyncHandler(async (req, res) => {
 
   const { title, description, assignees, priority, dueDate } = req.body;
 
+  
   // Validations
+ 
 
   if (!projectId) {
     throw new ApiError(400, "Project ID is required");
@@ -49,11 +48,9 @@ const createTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "At least one assignee is required");
   }
 
-  // --------------------
+  
   // Validate assignees
-  // --------------------
 
-  // assignee must be active project members check
 
   const activeProjectMemberIds = project.projectMembers
     .filter((member) => member.status === "active")
@@ -70,7 +67,8 @@ const createTask = asyncHandler(async (req, res) => {
     );
   }
 
-  //defauult status
+  // Default status & order
+
 
   const defaultStatus = project.taskStatuses?.[0] || "To Do";
 
@@ -81,7 +79,8 @@ const createTask = asyncHandler(async (req, res) => {
 
   const order = existingTaskCount;
 
-  // task creation
+  // Task creation
+ 
 
   const newTask = await TaskModel.create({
     title: title.trim(),
@@ -95,10 +94,13 @@ const createTask = asyncHandler(async (req, res) => {
     order,
   });
 
-  // Activity log utility function call
+  
+  // Activity Log
+  
 
   await createTaskActivityLog({
     taskId: newTask._id,
+    projectId:projectId,
     action: "TASK_CREATED",
     performedBy: userId,
     meta: {
@@ -107,6 +109,32 @@ const createTask = asyncHandler(async (req, res) => {
       assigneesCount: newTask.assignees.length,
     },
   });
+
+  
+  // SOCKET EMIT (AFTER SUCCESS)
+  
+
+  try {
+    const io = getIO();
+
+    io.to(`project:${projectId}`).emit("TASK_CREATED", {
+      projectId,
+      task: {
+        _id: newTask._id,
+        title: newTask.title,
+        status: newTask.status,
+        priority: newTask.priority,
+        order: newTask.order,
+        assignees: newTask.assignees,
+        dueDate: newTask.dueDate,
+        createdBy: newTask.createdBy,
+        createdAt: newTask.createdAt,
+      },
+    });
+  } catch (error) {
+    // socket failure should NEVER break API
+    console.error("Socket emit failed (TASK_CREATED):", error.message);
+  }
 
   return res
     .status(201)
@@ -182,6 +210,7 @@ const getTaskDetails = asyncHandler(async (req, res) => {
 const updateTask = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId;
   const userId = req.user?._id;
+  const projectId=req.params.projectId
  
   console.log("request comes here ");
   
@@ -257,10 +286,23 @@ console.log("data --> ",title);
   // activity log utility function call
   await createTaskActivityLog({
     taskId: updatedTask._id,
+    projectId:projectId,
     action: "TASK_UPDATED",
     performedBy: userId,
     meta,
   });
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${projectId}`).emit("TASK_UPDATED", {
+    taskId: updatedTask._id,
+    updates,
+  });
+} catch (error) {
+  console.error("Socket emit failed (TASK_UPDATED)", error.message);
+}
+
 
   return res.status(201).json(new ApiResponse(201,"Task Updated successfully",updatedTask))
 });
@@ -270,6 +312,7 @@ console.log("data --> ",title);
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId;
   const userId = req.user?._id;
+  const projectId=req.params.projectId
   const { status: newStatus } = req.body;
 
   if (!taskId) {
@@ -330,6 +373,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   //crete activity log
   await createTaskActivityLog({
     taskId: task._id,
+    projectId:projectId,
     action: "TASK_STATUS_UPDATED",
     performedBy: userId,
     meta: {
@@ -337,6 +381,20 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
       to: newStatus,
     },
   });
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${task.project}`).emit("TASK_STATUS_UPDATED", {
+    taskId: updatedTask._id,
+    fromStatus: oldStatus,
+    toStatus: newStatus,
+    newOrder: updatedTask.order,
+  });
+} catch (error) {
+  console.error("Socket emit failed (TASK_STATUS_UPDATED)", error.message);
+}
+
 
   return res
     .status(200)
@@ -350,6 +408,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 const updateTaskOrder = asyncHandler(async (req, res) => {
   const { order:newOrder } = req.body;
   const userId = req.user._id;
+  const projectId=req.params.projectId
 
 
   if (newOrder === undefined || newOrder < 0) {
@@ -415,6 +474,7 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: task._id,
+    projectId:projectId,
     action: "TASK_REORDERED",
     performedBy: userId,
     meta: {
@@ -423,6 +483,20 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
       status,
     },
   });
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${task.project}`).emit("TASK_REORDERED", {
+    taskId: updatedTask._id,
+    fromOrder: oldOrder,
+    toOrder: newOrder,
+    status,
+  });
+} catch (error) {
+  console.error("Socket emit failed (TASK_REORDERED)", error.message);
+}
+
 
   return res.status(200).json(
     new ApiResponse(200, "Task order updated successfully", updatedTask)
@@ -461,6 +535,7 @@ const deleteTask = asyncHandler(async (req, res) => {
   
   await createTaskActivityLog({
     taskId: task._id,
+    projectId:project,
     action: "TASK_DELETED",
     performedBy: userId,
     meta: {
@@ -468,6 +543,19 @@ const deleteTask = asyncHandler(async (req, res) => {
       status,
     },
   });
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${project}`).emit("TASK_DELETED", {
+    taskId: task._id,
+    status,
+    order,
+  });
+} catch (error) {
+  console.error("Socket emit failed (TASK_DELETED)", error.message);
+}
+
 
   return res.status(200).json(
     new ApiResponse(200, "Task deleted successfully")
@@ -536,6 +624,7 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
    
   await createTaskActivityLog({
     taskId: task._id,
+    projectId:project._id,
     action: "ASSIGNEES_UPDATED",
     performedBy: userId,
     meta: {
@@ -543,6 +632,20 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
       removed: removedAssignees,
     },
   });
+
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${task.project}`).emit("TASK_ASSIGNEES_UPDATED", {
+    taskId: task._id,
+    added: addedAssignees,
+    removed: removedAssignees,
+  });
+} catch (error) {
+  console.error("Socket emit failed (TASK_ASSIGNEES_UPDATED)", error.message);
+}
+
 
   return res.status(200).json(
     new ApiResponse(
