@@ -86,7 +86,7 @@ export default function KanbanTaskCard({
 }) {
   const ref = useRef(null);
 
-  // DND Logic (No change)
+ 
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
     hover(item) {
@@ -119,18 +119,18 @@ export default function KanbanTaskCard({
         ${isDragging ? "opacity-30 rotate-1 scale-95" : ""}
       `}
     >
-      {/* 1. Drag Handle (More subtle) */}
+    
       <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
         <GripVertical size={18} className="text-gray-400" />
       </div>
 
-      {/* 2. Header: Priority / Tags */}
+     
       <div className="flex items-center justify-between mb-2">
         <TaskPriorityBadge priority={task.priority} />
-        {/* Removed conceptual tag example here as it is now in TaskTags component */}
+       
       </div>
 
-      {/* 3. Task Title (Most prominent) */}
+     
       <h4 className="text-base font-bold text-gray-900 mb-2 leading-snug">
         {task.title}
       </h4>
@@ -145,19 +145,19 @@ export default function KanbanTaskCard({
 
       <TaskTags tags={task.tags} /> 
 
-      {/* 6. Meta Info (Attachments/Comments) */}
+      
       {(task.attachments > 0 || task.comments > 0) && (
         <div className="mb-3">
             <TaskMetaInfo attachments={task.attachments} comments={task.comments} />
         </div>
       )}
       
-      {/* Separator */}
+      
       <div className="my-2 border-t border-gray-100"></div>
 
-      {/* 7. Footer: Assignee & Due Date */}
+      
       <div className="flex items-center justify-between">
-        {/* Assignee */}
+       
         <div className="flex items-center gap-2">
           <img
             src={task.assignee.avatar}
@@ -169,7 +169,7 @@ export default function KanbanTaskCard({
           </span>
         </div>
 
-        {/* Due Date */}
+        
         <div className="flex items-center gap-1 text-xs font-semibold text-gray-500">
           <Calendar size={14} className="text-gray-400" />
           <span className={task.isOverdue ? "text-red-500" : ""}>
