@@ -8,13 +8,13 @@ export default function DashboardPage() {
      const [mobileOpen, setMobileOpen] = useState(false);
      
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen w-full flex bg-gray-50 overflow-x-hidden">
       {/* Sidebar */}
       <Navigation collapsed={collapsed} setCollapsed={setCollapsed} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
       {/* Main Content */}
-      <div className={`flex-1 ${mobileOpen ? "ml-0" : collapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-300`}>
-        <div className="pt-16 md:pt-0 px-4 md:px-8 py-6">
+      <div className={`flex-1 min-w-0 ${mobileOpen ? "ml-0" : collapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-300`}>
+        <div className="pt-16 md:pt-0 px-4 md:px-8 py-6 ">
           <Outlet />
         </div>
       </div>

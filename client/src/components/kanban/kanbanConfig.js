@@ -7,4 +7,6 @@ export const COLUMNS = [
   { id: "in_progress", title: "In Progress", icon: "🔄" },
   { id: "review", title: "Review", icon: "👀" },
   { id: "done", title: "Done", icon: "✅" },
+  { id: "review", title: "Review", icon: "👀" },
+  { id: "done", title: "Done", icon: "✅" },
 ];

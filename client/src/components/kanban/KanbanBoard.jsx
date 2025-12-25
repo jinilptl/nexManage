@@ -12,7 +12,7 @@ export default function KanbanBoard({
   onReorderTask
 }) {
 
-  console.log("reorder tasak--> ",onReorderTask);
+ 
   
   /* -------- SAME COLUMN REORDER LOGIC -------- */
   const moveTask = (columnId, fromIndex, toIndex) => {
@@ -30,22 +30,31 @@ export default function KanbanBoard({
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="overflow-x-auto">
-        <div className="flex gap-6 min-w-max">
-          {COLUMNS.map((column) => (
-            <KanbanColumn
-              key={column.id}
-              column={column}
-              tasks={tasks.filter((t) => t.status === column.id)}
-              onMoveTask={onMoveTask}
-              onAddTask={onAddTask}
-              onTaskClick={onTaskClick}
-              moveTask={moveTask}
-            />
-          ))}
-        </div>
+   <DndProvider backend={HTML5Backend}>
+  {/* OUTER WRAPPER (NO SCROLL HERE) */}
+  <div className="w-full min-w-0 overflow-hidden">
+
+    {/* SCROLL CONTAINER */}
+    <div className="overflow-x-auto overflow-y-hidden max-w-full">
+      
+      {/* ACTUAL BOARD */}
+      <div className="flex gap-6 min-w-max px-2 pb-4">
+        {COLUMNS.map((column) => (
+          <KanbanColumn
+            key={column.id}
+            column={column}
+            tasks={tasks.filter((t) => t.status === column.id)}
+            onMoveTask={onMoveTask}
+            onAddTask={onAddTask}
+            onTaskClick={onTaskClick}
+            moveTask={moveTask}
+          />
+        ))}
       </div>
-    </DndProvider>
+
+    </div>
+  </div>
+</DndProvider>
+
   );
 }

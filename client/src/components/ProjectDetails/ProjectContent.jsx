@@ -8,7 +8,7 @@ export default function ProjectContent({
   reorderTaskInColumn
 }) {
 
-    console.log("reorder task  in content---> ",reorderTaskInColumn);
+    
     
   const handleMoveTask = (taskId, newStatus) => {
     setTasks((prev) =>
@@ -18,17 +18,24 @@ export default function ProjectContent({
     );
   };
 
-  if (activeTab === "board") {
-    return (
-      <KanbanBoard
-        tasks={tasks}
-        onTaskClick={(task) => console.log("open task", task)}
-        onAddTask={(status) => console.log("add task in", status)}
-        onMoveTask={handleMoveTask}
-        onReorderTask={reorderTaskInColumn}
-      />
-    );
-  }
+ if (activeTab === "board") {
+  return (
+    <div className="w-full min-w-0 overflow-x-hidden">
+      <div className="overflow-x-auto max-w-full">
+        <div className="min-w-0">
+          <KanbanBoard
+            tasks={tasks}
+            onTaskClick={(task) => console.log("open task", task)}
+            onAddTask={(status) => console.log("add task in", status)}
+            onMoveTask={handleMoveTask}
+            onReorderTask={reorderTaskInColumn}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
   return (
     <div className="text-sm text-gray-500">
