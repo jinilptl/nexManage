@@ -16,12 +16,14 @@ const PROJECT = {
   ],
 };
 
-const TASKS = [
+ const TASKS = [
   {
     id: "t1",
     title: "Optimize image loading",
     status: "todo",
     priority: "high",
+    description: "Use WebP format and lazy loading for all primary images on landing pages to improve FCP.",
+    tags: ["Frontend", "Performance", "Critical"],
     assignee: {
       name: "Alex",
       avatar: "https://i.pravatar.cc/100?img=1",
@@ -32,6 +34,8 @@ const TASKS = [
     title: "User testing and feedback",
     status: "todo",
     priority: "medium",
+    description: "Schedule five user interviews to gather feedback on the new checkout flow and address pain points.",
+    tags: ["UX", "Research", "Customer"],
     assignee: {
       name: "Emma",
       avatar: "https://i.pravatar.cc/100?img=2",
@@ -42,6 +46,8 @@ const TASKS = [
     title: "Implement responsive navigation",
     status: "in_progress",
     priority: "high",
+    description: "Develop mobile-first navigation menu, ensuring smooth transitions and accessibility across all devices.",
+    tags: ["Frontend", "Mobile", "A11y"],
     assignee: {
       name: "Rahul",
       avatar: "https://i.pravatar.cc/100?img=3",
@@ -52,6 +58,8 @@ const TASKS = [
     title: "Setup design system tokens",
     status: "review",
     priority: "medium",
+    description: "Define and implement core color, typography, and spacing tokens in Figma and codebase (CSS variables).",
+    tags: ["Design", "DevOps", "Documentation"],
     assignee: {
       name: "Maya",
       avatar: "https://i.pravatar.cc/100?img=4",
@@ -62,13 +70,14 @@ const TASKS = [
     title: "Design homepage mockups",
     status: "done",
     priority: "high",
+    description: "Create high-fidelity mockups for the new homepage design, focusing on clarity and conversion rates.",
+    tags: ["Design", "Marketing"],
     assignee: {
       name: "Chris",
       avatar: "https://i.pravatar.cc/100?img=5",
     },
   },
 ];
-
 
 
 export default function ProjectDetails() {

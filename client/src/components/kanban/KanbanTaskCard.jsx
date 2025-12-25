@@ -1,26 +1,20 @@
 import React, { useRef, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { ItemTypes } from "./kanbanConfig"; // Assuming this is correct
+import { ItemTypes } from "./kanbanConfig"; 
 import { Paperclip, MessageSquare, Calendar, GripVertical, Tag } from "lucide-react";
 
-// --- Utility Functions (Place in a separate file in a real app) ---
+// --- Utility Functions ---
 
-/**
- * Formats a date string into a readable short format.
- * @param {string} dateString
- * @returns {string}
- */
 const formatDueDate = (dateString) => {
   if (!dateString) return 'No Date';
   try {
-    // Simple, robust date format (e.g., "Dec 31")
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   } catch (e) {
-    return dateString; // Return original if parsing fails
+    return dateString;
   }
 };
 
-// --- Config (Place in a separate file) ---
+// --- Config ---
 
 const priorityConfig = {
   high: { bg: "bg-red-100", border: "border-red-400", dot: "bg-red-600", text: "text-red-800" },
@@ -28,7 +22,7 @@ const priorityConfig = {
   low: { bg: "bg-emerald-100", border: "border-emerald-400", dot: "bg-emerald-600", text: "text-emerald-800" },
 };
 
-// --- Sub-Components for Clarity ---
+// --- Sub-Components ---
 
 const TaskPriorityBadge = ({ priority }) => {
   const config = priorityConfig[priority] || priorityConfig.low;
@@ -58,6 +52,29 @@ const TaskMetaInfo = ({ attachments, comments }) => (
 );
 
 
+const TaskTags = ({ tags }) => {
+    if (!tags || tags.length === 0) return null;
+    return (
+        <div className="flex flex-wrap items-center gap-1.5 mt-2 mb-3">
+            {tags.slice(0, 3).map((tag, index) => ( 
+                <span 
+                    key={index} 
+                    className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full"
+                >
+                    <Tag size={10} className="text-blue-500"/>
+                    {tag}
+                </span>
+            ))}
+            {tags.length > 3 && (
+                <span className="text-xs text-gray-500 px-2 py-0.5">
+                    +{tags.length - 3} more
+                </span>
+            )}
+        </div>
+    );
+};
+
+
 // --- Main Component ---
 
 export default function KanbanTaskCard({
@@ -69,8 +86,7 @@ export default function KanbanTaskCard({
 }) {
   const ref = useRef(null);
 
-  // 1. DND Logic (Kept as is - it's fine)
-  /* ---------- DROP (for reorder) ---------- */
+  // DND Logic (No change)
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
     hover(item) {
@@ -80,7 +96,6 @@ export default function KanbanTaskCard({
     },
   });
 
-  /* ---------- DRAG ---------- */
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.TASK,
     item: { id: task.id, index, columnId },
@@ -89,7 +104,7 @@ export default function KanbanTaskCard({
 
   drag(drop(ref));
 
-  // 2. Calculated Values
+  // Calculated Values
   const cardConfig = priorityConfig[task.priority] || priorityConfig.low;
   const formattedDate = useMemo(() => formatDueDate(task.dueDate), [task.dueDate]);
 
@@ -112,29 +127,35 @@ export default function KanbanTaskCard({
       {/* 2. Header: Priority / Tags */}
       <div className="flex items-center justify-between mb-2">
         <TaskPriorityBadge priority={task.priority} />
-        {/* Conceptual: Add other tags/status here if needed */}
-        {/* Example: task.tag && <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">#{task.tag}</span> */}
+        {/* Removed conceptual tag example here as it is now in TaskTags component */}
       </div>
 
-      {/* 3. Task Title (More prominent) */}
-      <h4 className="text-base font-bold text-gray-900 mb-3 leading-snug">
+      {/* 3. Task Title (Most prominent) */}
+      <h4 className="text-base font-bold text-gray-900 mb-2 leading-snug">
         {task.title}
       </h4>
       
-      {/* 4. Description (Conceptual: Add a short snippet if available) */}
-      {/* {task.descriptionSnippet && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.descriptionSnippet}</p>
-      )} */}
+      
+      {task.description && (
+        <p className="text-sm text-gray-600 mb-2 line-clamp-2" title={task.description}>
+            {task.description}
+        </p>
+      )}
 
-      {/* 5. Meta Info: Attachments / Comments */}
+
+      <TaskTags tags={task.tags} /> 
+
+      {/* 6. Meta Info (Attachments/Comments) */}
       {(task.attachments > 0 || task.comments > 0) && (
-        <TaskMetaInfo attachments={task.attachments} comments={task.comments} />
+        <div className="mb-3">
+            <TaskMetaInfo attachments={task.attachments} comments={task.comments} />
+        </div>
       )}
       
       {/* Separator */}
-      <div className="my-3 border-t border-gray-100"></div>
+      <div className="my-2 border-t border-gray-100"></div>
 
-      {/* 6. Footer: Assignee & Due Date */}
+      {/* 7. Footer: Assignee & Due Date */}
       <div className="flex items-center justify-between">
         {/* Assignee */}
         <div className="flex items-center gap-2">
