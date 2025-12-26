@@ -1,14 +1,23 @@
 import React, { useRef, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { ItemTypes } from "./kanbanConfig"; 
-import { Paperclip, MessageSquare, Calendar, GripVertical, Tag } from "lucide-react";
+import { ItemTypes } from "./kanbanConfig";
+import {
+  Paperclip,
+  MessageSquare,
+  Calendar,
+  GripVertical,
+  Tag,
+} from "lucide-react";
 
 // --- Utility Functions ---
 
 const formatDueDate = (dateString) => {
-  if (!dateString) return 'No Date';
+  if (!dateString) return "No Date";
   try {
-    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
   } catch (e) {
     return dateString;
   }
@@ -17,9 +26,24 @@ const formatDueDate = (dateString) => {
 // --- Config ---
 
 const priorityConfig = {
-  high: { bg: "bg-red-100", border: "border-red-400", dot: "bg-red-600", text: "text-red-800" },
-  medium: { bg: "bg-amber-100", border: "border-amber-400", dot: "bg-amber-600", text: "text-amber-800" },
-  low: { bg: "bg-emerald-100", border: "border-emerald-400", dot: "bg-emerald-600", text: "text-emerald-800" },
+  high: {
+    bg: "bg-red-100",
+    border: "border-red-400",
+    dot: "bg-red-600",
+    text: "text-red-800",
+  },
+  medium: {
+    bg: "bg-amber-100",
+    border: "border-amber-400",
+    dot: "bg-amber-600",
+    text: "text-amber-800",
+  },
+  low: {
+    bg: "bg-emerald-100",
+    border: "border-emerald-400",
+    dot: "bg-emerald-600",
+    text: "text-emerald-800",
+  },
 };
 
 // --- Sub-Components ---
@@ -27,7 +51,9 @@ const priorityConfig = {
 const TaskPriorityBadge = ({ priority }) => {
   const config = priorityConfig[priority] || priorityConfig.low;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold ${config.bg} ${config.text}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold ${config.bg} ${config.text}`}
+    >
       <span className={`w-2 h-2 rounded-full ${config.dot}`}></span>
       {priority.charAt(0).toUpperCase() + priority.slice(1)}
     </span>
@@ -51,29 +77,27 @@ const TaskMetaInfo = ({ attachments, comments }) => (
   </div>
 );
 
-
 const TaskTags = ({ tags }) => {
-    if (!tags || tags.length === 0) return null;
-    return (
-        <div className="flex flex-wrap items-center gap-1.5 mt-2 mb-3">
-            {tags.slice(0, 3).map((tag, index) => ( 
-                <span 
-                    key={index} 
-                    className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full"
-                >
-                    <Tag size={10} className="text-blue-500"/>
-                    {tag}
-                </span>
-            ))}
-            {tags.length > 3 && (
-                <span className="text-xs text-gray-500 px-2 py-0.5">
-                    +{tags.length - 3} more
-                </span>
-            )}
-        </div>
-    );
+  if (!tags || tags.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 mt-2 mb-3">
+      {tags.slice(0, 3).map((tag, index) => (
+        <span
+          key={index}
+          className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full"
+        >
+          <Tag size={10} className="text-blue-500" />
+          {tag}
+        </span>
+      ))}
+      {tags.length > 3 && (
+        <span className="text-xs text-gray-500 px-2 py-0.5">
+          +{tags.length - 3} more
+        </span>
+      )}
+    </div>
+  );
 };
-
 
 // --- Main Component ---
 
@@ -86,11 +110,11 @@ export default function KanbanTaskCard({
 }) {
   const ref = useRef(null);
 
- 
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
     hover(item) {
-      if (!ref.current || item.columnId !== columnId || item.index === index) return;
+      if (!ref.current || item.columnId !== columnId || item.index === index)
+        return;
       moveTask(columnId, item.index, index);
       item.index = index;
     },
@@ -106,70 +130,70 @@ export default function KanbanTaskCard({
 
   // Calculated Values
   const cardConfig = priorityConfig[task.priority] || priorityConfig.low;
-  const formattedDate = useMemo(() => formatDueDate(task.dueDate), [task.dueDate]);
+  const formattedDate = useMemo(
+    () => formatDueDate(task.dueDate),
+    [task.dueDate]
+  );
 
   return (
     <div
       ref={ref}
       onClick={() => onClick(task)}
       className={`
-        group relative bg-white rounded-xl shadow-md border-t-4 ${cardConfig.border} p-4 mb-3 cursor-pointer 
+        group relative bg-white rounded-xl shadow-md border-t-4 ${
+          cardConfig.border
+        } p-4 mb-3 cursor-pointer 
         transition-all duration-300 transform
         hover:shadow-xl hover:scale-[1.01]
         ${isDragging ? "opacity-30 rotate-1 scale-95" : ""}
       `}
     >
-    
       <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
         <GripVertical size={18} className="text-gray-400" />
       </div>
 
-     
       <div className="flex items-center justify-between mb-2">
         <TaskPriorityBadge priority={task.priority} />
-       
       </div>
 
-     
       <h4 className="text-base font-bold text-gray-900 mb-2 leading-snug">
         {task.title}
       </h4>
-      
-      
+
       {task.description && (
-        <p className="text-sm text-gray-600 mb-2 line-clamp-2" title={task.description}>
-            {task.description}
+        <p
+          className="text-sm text-gray-600 mb-2 line-clamp-2"
+          title={task.description}
+        >
+          {task.description}
         </p>
       )}
 
+      <TaskTags tags={task.tags} />
 
-      <TaskTags tags={task.tags} /> 
-
-      
       {(task.attachments > 0 || task.comments > 0) && (
         <div className="mb-3">
-            <TaskMetaInfo attachments={task.attachments} comments={task.comments} />
+          <TaskMetaInfo
+            attachments={task.attachments}
+            comments={task.comments}
+          />
         </div>
       )}
-      
-      
+
       <div className="my-2 border-t border-gray-100"></div>
 
-      
       <div className="flex items-center justify-between">
-       
         <div className="flex items-center gap-2">
-          <img
+          {/* <img
             src={task.assignee.avatar}
             alt={task.assignee.name || "Assignee"}
             className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-sm"
-          />
+          /> */}
           <span className="text-xs font-medium text-gray-700 truncate max-w-[80px]">
             {task.assignee.name}
           </span>
         </div>
 
-        
         <div className="flex items-center gap-1 text-xs font-semibold text-gray-500">
           <Calendar size={14} className="text-gray-400" />
           <span className={task.isOverdue ? "text-red-500" : ""}>

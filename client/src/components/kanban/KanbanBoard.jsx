@@ -9,9 +9,11 @@ export default function KanbanBoard({
   onTaskClick,
   onAddTask,
   onMoveTask,
-  onReorderTask
+  onReorderTask,
+  onModalOpen
 }) {
 
+ console.log("task is ---> ",tasks);
  
   
   /* -------- SAME COLUMN REORDER LOGIC -------- */
@@ -48,6 +50,7 @@ export default function KanbanBoard({
             onAddTask={onAddTask}
             onTaskClick={onTaskClick}
             moveTask={moveTask}
+            onModalOpen={onModalOpen}
           />
         ))}
       </div>

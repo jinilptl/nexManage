@@ -5,7 +5,8 @@ export default function ProjectContent({
   activeTab,
   tasks,
   setTasks,
-  reorderTaskInColumn
+  reorderTaskInColumn,
+  onModalOpen,
 }) {
 
     
@@ -29,6 +30,7 @@ export default function ProjectContent({
             onAddTask={(status) => console.log("add task in", status)}
             onMoveTask={handleMoveTask}
             onReorderTask={reorderTaskInColumn}
+            onModalOpen={onModalOpen}
           />
         </div>
       </div>

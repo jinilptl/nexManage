@@ -31,12 +31,17 @@ const taskSlice = createSlice({
   reducers: {
     // TASK LIST
 
+    setLoading(state,action){
+      state.loading=action.payload
+
+    },
+
     setAllTasks(state, action) {
       state.list = action.payload;
     },
 
     addTask(state, action) {
-      // ✅ FIXED
+      
       state.list.unshift(action.payload);
     },
 
@@ -180,6 +185,7 @@ const taskSlice = createSlice({
 });
 
 export const {
+  setLoading,
   setAllTasks,
   addTask,
   updateTask,

@@ -128,7 +128,7 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/teams" element={<TeamsPage />} />
           <Route path="/dashboard/projects" element={<ProjectPage />} />
-          {/* <Route path="/dashboard/projects/task" element={<KanbanBoard tasks={DUMMY_TASKS} onAddTask={handleAddTask} onMoveTask={handleMoveTask} onTaskClick={handleTaskClick}/>} /> */}
+
           <Route path="/dashboard/projects/task" element={<ProjectDetails />} />
         </Route>
 

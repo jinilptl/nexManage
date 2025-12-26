@@ -11,6 +11,7 @@ export default function KanbanColumn({
   onAddTask,
   onTaskClick,
   moveTask,
+  onModalOpen
 }) {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
@@ -24,12 +25,17 @@ export default function KanbanColumn({
     }),
   });
 
+
+  console.log("filter task is --> ",tasks);
+  
+  
+
   return (
    <div
   ref={drop}
   className={`
-    min-w-[300px] max-w-[300px]   /* ✅ FIXED WIDTH (MOST IMPORTANT) */
-    shrink-0                     /* ✅ DO NOT SHRINK IN FLEX */
+    min-w-[300px] max-w-[300px]  
+    shrink-0                     
     rounded-2xl p-4 transition
     ${
       isOver
@@ -49,15 +55,22 @@ export default function KanbanColumn({
         {tasks.length}
       </span>
     </div>
-
-    <div className="flex gap-2">
+    
+     
+    {column.id==="todo" &&<div className="flex gap-2">
       <Plus
         size={16}
         className="cursor-pointer"
-        onClick={() => onAddTask(column.id)}
+        onClick={() => {
+          onAddTask(column.id)
+          onModalOpen(true)
+
+        }
+          
+        }
       />
-      <MoreHorizontal size={16} className="cursor-pointer" />
-    </div>
+      {/* <MoreHorizontal size={16} className="cursor-pointer" /> */}
+    </div>}
   </div>
 
   {/* Tasks */}

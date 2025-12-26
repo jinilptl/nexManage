@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { MoreVertical, Users, Calendar } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonLoader from "../Lodders/ButtonLoader";
+import { useNavigate } from "react-router-dom";
+import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
+import { setSelectedProjectData, setSelectedProjectId } from "../../Redux_Config/Slices/projectsSlice";
 
 export default function ProjectCard({
   project,
@@ -13,6 +16,8 @@ export default function ProjectCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const UserRole = user.role;
+  const navigate=useNavigate()
+  const dispatch=useDispatch()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -20,6 +25,13 @@ export default function ProjectCard({
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, []);
+
+  function ProjectDetails(){
+    dispatch(setSelectedProjectId(project._id))
+    dispatch(setSelectedProjectData(project))
+    navigate("/dashboard/projects/task")
+    
+  }
 
   const membersCount = project.projectMembers?.length || 0;
 
@@ -39,7 +51,9 @@ export default function ProjectCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative">
+    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative" onClick={()=>{
+      ProjectDetails()
+    }}>
       <div className="p-6">
         {/* HEADER */}
         <div className="flex items-start justify-between">

@@ -14,31 +14,27 @@ export default function ProjectHeader({ project }) {
         <div className="min-w-0">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold text-gray-900 truncate max-w-[60vw]">
-              {project.title}
+              {project.projectName}
             </h1>
             <span className="px-3 py-1 text-xs rounded-full bg-black text-white">
               {project.status}
             </span>
           </div>
 
-          <p className="text-sm text-gray-500 mt-1">
-            {project.description}
-          </p>
+          <p className="text-sm text-gray-500 mt-1">{project.description}</p>
 
           {/* Members */}
           <div className="flex items-center gap-3 mt-3">
             <div className="flex -space-x-2">
-              {project.members.map((m) => (
-                <img
-                  key={m.id}
-                  src={m.avatar}
-                  alt=""
-                  className="w-8 h-8 rounded-full border-2 border-white"
-                />
+              {project.projectMembers?.map((m) => (
+                <div
+                
+                  className="w-8 h-8 text-xl rounded-full border-2 border-white text-center bg-amber-500"
+                >{m.user.name[0].toUpperCase()}</div>
               ))}
             </div>
             <span className="text-sm text-gray-500">
-              {project.members.length} members
+              {project.projectMembers.length} members
             </span>
           </div>
         </div>

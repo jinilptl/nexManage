@@ -114,27 +114,27 @@ const createTask = asyncHandler(async (req, res) => {
   // SOCKET EMIT (AFTER SUCCESS)
   
 
-  try {
-    const io = getIO();
+  // try {
+  //   const io = getIO();
 
-    io.to(`project:${projectId}`).emit("TASK_CREATED", {
-      projectId,
-      task: {
-        _id: newTask._id,
-        title: newTask.title,
-        status: newTask.status,
-        priority: newTask.priority,
-        order: newTask.order,
-        assignees: newTask.assignees,
-        dueDate: newTask.dueDate,
-        createdBy: newTask.createdBy,
-        createdAt: newTask.createdAt,
-      },
-    });
-  } catch (error) {
-    // socket failure should NEVER break API
-    console.error("Socket emit failed (TASK_CREATED):", error.message);
-  }
+  //   io.to(`project:${projectId}`).emit("TASK_CREATED", {
+  //     projectId,
+  //     task: {
+  //       _id: newTask._id,
+  //       title: newTask.title,
+  //       status: newTask.status,
+  //       priority: newTask.priority,
+  //       order: newTask.order,
+  //       assignees: newTask.assignees,
+  //       dueDate: newTask.dueDate,
+  //       createdBy: newTask.createdBy,
+  //       createdAt: newTask.createdAt,
+  //     },
+  //   });
+  // } catch (error) {
+  //   // socket failure should NEVER break API
+  //   console.error("Socket emit failed (TASK_CREATED):", error.message);
+  // }
 
   return res
     .status(201)

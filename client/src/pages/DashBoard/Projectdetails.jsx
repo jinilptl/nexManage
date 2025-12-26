@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import ProjectHeader from "../../components/ProjectDetails/ProjectHeader";
 import ProjectTabs from "../../components/ProjectDetails/ProjectTabs";
 import ProjectContent from "../../components/ProjectDetails/ProjectContent";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import CreateTaskModal from "../../components/modals/taskModal/CreateTaskModal";
+import CreateTeamModal from "../../components/modals/teamsModals/CreateTeamModal";
+import {
+  createTaskService,
+  getAllTasksService,
+} from "../../services/taskOperations/taskServices";
+import { act } from "react";
 
 const PROJECT = {
   title: "Website Redesign",
@@ -16,13 +22,14 @@ const PROJECT = {
   ],
 };
 
- const TASKS = [
+const TASKS = [
   {
     id: "t1",
     title: "Optimize image loading",
     status: "todo",
     priority: "high",
-    description: "Use WebP format and lazy loading for all primary images on landing pages to improve FCP.",
+    description:
+      "Use WebP format and lazy loading for all primary images on landing pages to improve FCP.",
     tags: ["Frontend", "Performance", "Critical"],
     assignee: {
       name: "Alex",
@@ -34,7 +41,8 @@ const PROJECT = {
     title: "User testing and feedback",
     status: "todo",
     priority: "medium",
-    description: "Schedule five user interviews to gather feedback on the new checkout flow and address pain points.",
+    description:
+      "Schedule five user interviews to gather feedback on the new checkout flow and address pain points.",
     tags: ["UX", "Research", "Customer"],
     assignee: {
       name: "Emma",
@@ -46,7 +54,8 @@ const PROJECT = {
     title: "Implement responsive navigation",
     status: "in_progress",
     priority: "high",
-    description: "Develop mobile-first navigation menu, ensuring smooth transitions and accessibility across all devices.",
+    description:
+      "Develop mobile-first navigation menu, ensuring smooth transitions and accessibility across all devices.",
     tags: ["Frontend", "Mobile", "A11y"],
     assignee: {
       name: "Rahul",
@@ -58,7 +67,8 @@ const PROJECT = {
     title: "Setup design system tokens",
     status: "review",
     priority: "medium",
-    description: "Define and implement core color, typography, and spacing tokens in Figma and codebase (CSS variables).",
+    description:
+      "Define and implement core color, typography, and spacing tokens in Figma and codebase (CSS variables).",
     tags: ["Design", "DevOps", "Documentation"],
     assignee: {
       name: "Maya",
@@ -70,7 +80,8 @@ const PROJECT = {
     title: "Design homepage mockups",
     status: "done",
     priority: "high",
-    description: "Create high-fidelity mockups for the new homepage design, focusing on clarity and conversion rates.",
+    description:
+      "Create high-fidelity mockups for the new homepage design, focusing on clarity and conversion rates.",
     tags: ["Design", "Marketing"],
     assignee: {
       name: "Chris",
@@ -79,11 +90,16 @@ const PROJECT = {
   },
 ];
 
-
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
   const [tasks, setTasks] = useState([]);
+  const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
+  const projectData = useSelector((state) => state.projects.selectedProject);
+  const taskList = useSelector((state) => state.tasks.list);
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
 
+  // console.log("project |Data===> ", projectData);
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
       const columnTasks = prev.filter((t) => t.status === columnId);
@@ -96,22 +112,27 @@ export default function ProjectDetails() {
     });
   };
 
-  
-  
-
   useEffect(() => {
-    setTasks(TASKS)
-  }, []);
+    setTasks(TASKS);
+    dispatch(getAllTasksService(projectData.id, token));
+  }, [activeTab]);
 
+  const onSubmit = (formData) => {
+    // console.log("form Data is ---> ", formData);
+
+    dispatch(
+      createTaskService(formData, projectData.id, token, setCreateTaskModalOpen)
+    );
+  };
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-4">
         Projects <span className="mx-1">›</span>
-        <span className="text-gray-700">{PROJECT.title}</span>
+        <span className="text-gray-700">{projectData.data.projectName}</span>
       </div>
 
-      <ProjectHeader project={PROJECT} />
+      <ProjectHeader project={projectData.data} />
 
       <ProjectTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -120,7 +141,18 @@ export default function ProjectDetails() {
         tasks={tasks}
         setTasks={setTasks}
         reorderTaskInColumn={reorderTaskInColumn}
+        onModalOpen={setCreateTaskModalOpen}
+        modalOpen={createTaskModalOpen}
       />
+
+      {createTaskModalOpen && (
+        <CreateTaskModal
+          isOpen={createTaskModalOpen}
+          onClose={setCreateTaskModalOpen}
+          projectMembers={projectData.data.projectMembers}
+          onSubmit={onSubmit}
+        />
+      )}
     </div>
   );
 }
