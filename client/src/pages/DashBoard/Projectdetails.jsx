@@ -9,86 +9,7 @@ import {
   createTaskService,
   getAllTasksService,
 } from "../../services/taskOperations/taskServices";
-import { act } from "react";
 
-const PROJECT = {
-  title: "Website Redesign",
-  status: "Active",
-  description: "Complete redesign of company website with modern UI/UX",
-  members: [
-    { id: 1, avatar: "https://i.pravatar.cc/100?img=11" },
-    { id: 2, avatar: "https://i.pravatar.cc/100?img=12" },
-    { id: 3, avatar: "https://i.pravatar.cc/100?img=13" },
-  ],
-};
-
-const TASKS = [
-  {
-    id: "t1",
-    title: "Optimize image loading",
-    status: "todo",
-    priority: "high",
-    description:
-      "Use WebP format and lazy loading for all primary images on landing pages to improve FCP.",
-    tags: ["Frontend", "Performance", "Critical"],
-    assignee: {
-      name: "Alex",
-      avatar: "https://i.pravatar.cc/100?img=1",
-    },
-  },
-  {
-    id: "t2",
-    title: "User testing and feedback",
-    status: "todo",
-    priority: "medium",
-    description:
-      "Schedule five user interviews to gather feedback on the new checkout flow and address pain points.",
-    tags: ["UX", "Research", "Customer"],
-    assignee: {
-      name: "Emma",
-      avatar: "https://i.pravatar.cc/100?img=2",
-    },
-  },
-  {
-    id: "t3",
-    title: "Implement responsive navigation",
-    status: "in_progress",
-    priority: "high",
-    description:
-      "Develop mobile-first navigation menu, ensuring smooth transitions and accessibility across all devices.",
-    tags: ["Frontend", "Mobile", "A11y"],
-    assignee: {
-      name: "Rahul",
-      avatar: "https://i.pravatar.cc/100?img=3",
-    },
-  },
-  {
-    id: "t4",
-    title: "Setup design system tokens",
-    status: "review",
-    priority: "medium",
-    description:
-      "Define and implement core color, typography, and spacing tokens in Figma and codebase (CSS variables).",
-    tags: ["Design", "DevOps", "Documentation"],
-    assignee: {
-      name: "Maya",
-      avatar: "https://i.pravatar.cc/100?img=4",
-    },
-  },
-  {
-    id: "t5",
-    title: "Design homepage mockups",
-    status: "done",
-    priority: "high",
-    description:
-      "Create high-fidelity mockups for the new homepage design, focusing on clarity and conversion rates.",
-    tags: ["Design", "Marketing"],
-    assignee: {
-      name: "Chris",
-      avatar: "https://i.pravatar.cc/100?img=5",
-    },
-  },
-];
 
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
@@ -98,6 +19,9 @@ export default function ProjectDetails() {
   const taskList = useSelector((state) => state.tasks.list);
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
+
+  console.log("task list ---> ",taskList);
+  
 
   // console.log("project |Data===> ", projectData);
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
@@ -113,10 +37,14 @@ export default function ProjectDetails() {
   };
 
   useEffect(() => {
-    setTasks(TASKS);
+    setTasks(taskList);
     dispatch(getAllTasksService(projectData.id, token));
-  }, [activeTab]);
+  }, []);
 
+  console.log(
+    "main task in deialts --> ",tasks
+  );
+  
   const onSubmit = (formData) => {
     // console.log("form Data is ---> ", formData);
 

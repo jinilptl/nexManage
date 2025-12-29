@@ -44,7 +44,7 @@ export const createTaskService = (formData, projectId, token, onClose) => {
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 };
@@ -73,7 +73,7 @@ export const getAllTasksService = (projectId, token) => {
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
-      setLoading(false);
+     dispatch(setLoading(false));
     }
   };
 };
