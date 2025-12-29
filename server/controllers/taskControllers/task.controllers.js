@@ -14,30 +14,15 @@ const createTask = asyncHandler(async (req, res) => {
 
   const { title, description, assignees, priority, dueDate } = req.body;
 
-  
-  // Validations
- 
-
-  if (!projectId) {
-    throw new ApiError(400, "Project ID is required");
-  }
-
-  if (!userId) {
-    throw new ApiError(401, "Unauthorized user");
-  }
+  if (!projectId) throw new ApiError(400, "Project ID is required");
+  if (!userId) throw new ApiError(401, "Unauthorized user");
 
   if (!title || title.trim().length < 5) {
-    throw new ApiError(
-      400,
-      "Title is required and should be at least 5 characters long"
-    );
+    throw new ApiError(400, "Title must be at least 5 characters");
   }
 
   if (!priority || !["low", "medium", "high", "critical"].includes(priority)) {
-    throw new ApiError(
-      400,
-      "Priority must be one of: low, medium, high, critical"
-    );
+    throw new ApiError(400, "Invalid priority");
   }
 
   if (dueDate && new Date(dueDate) < new Date()) {
@@ -48,98 +33,63 @@ const createTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "At least one assignee is required");
   }
 
-  
-  // Validate assignees
+  // validate assignees
+  const activeMemberIds = project.projectMembers
+    .filter((m) => m.status === "active")
+    .map((m) => m.user.toString());
 
-
-  const activeProjectMemberIds = project.projectMembers
-    .filter((member) => member.status === "active")
-    .map((member) => member.user.toString());
-
-  const isAssigneeValid = assignees.every((assigneeId) =>
-    activeProjectMemberIds.includes(assigneeId.toString())
+  const isValid = assignees.every((id) =>
+    activeMemberIds.includes(id.toString())
   );
 
-  if (!isAssigneeValid) {
-    throw new ApiError(
-      400,
-      "One or more assignees are not active members of this project"
-    );
+  if (!isValid) {
+    throw new ApiError(400, "Invalid assignee(s)");
   }
 
-  // Default status & order
-
-
-  const defaultStatus = project.taskStatuses?.[0] || "To Do";
-
-  const existingTaskCount = await TaskModel.countDocuments({
-    project: projectId,
-    status: defaultStatus,
-  });
-
-  const order = existingTaskCount;
-
-  // Task creation
  
+  const defaultStatus =
+  project.taskStatuses.find((s) => s.isDefault) ||
+  [...project.taskStatuses].sort((a, b) => a.order - b.order)[0];
+
+if (!defaultStatus) {
+  throw new ApiError(400, "No task status configured for this project");
+}
+
+
+  const existingCount = await TaskModel.countDocuments({
+    project: projectId,
+    status: defaultStatus._id,
+  });
 
   const newTask = await TaskModel.create({
     title: title.trim(),
     description: description || "",
-    status: defaultStatus,
+    status: defaultStatus._id,
     priority,
     dueDate: dueDate || null,
     assignees,
     createdBy: userId,
     project: projectId,
-    order,
+    order: existingCount,
   });
-
-  
-  // Activity Log
-  
+console.log("ne taskl is ---> ",newTask);
 
   await createTaskActivityLog({
     taskId: newTask._id,
-    projectId:projectId,
+    projectId,
     action: "TASK_CREATED",
     performedBy: userId,
     meta: {
       title: newTask.title,
-      priority: newTask.priority,
-      assigneesCount: newTask.assignees.length,
+      status: defaultStatus.label,
     },
   });
-
-  
-  // SOCKET EMIT (AFTER SUCCESS)
-  
-
-  // try {
-  //   const io = getIO();
-
-  //   io.to(`project:${projectId}`).emit("TASK_CREATED", {
-  //     projectId,
-  //     task: {
-  //       _id: newTask._id,
-  //       title: newTask.title,
-  //       status: newTask.status,
-  //       priority: newTask.priority,
-  //       order: newTask.order,
-  //       assignees: newTask.assignees,
-  //       dueDate: newTask.dueDate,
-  //       createdBy: newTask.createdBy,
-  //       createdAt: newTask.createdAt,
-  //     },
-  //   });
-  // } catch (error) {
-  //   // socket failure should NEVER break API
-  //   console.error("Socket emit failed (TASK_CREATED):", error.message);
-  // }
 
   return res
     .status(201)
     .json(new ApiResponse(201, "Task created successfully", newTask));
 });
+
 
 const getProjectTasks = asyncHandler(async (req, res) => {
   const projectId = req.params.projectId;
@@ -210,10 +160,10 @@ const getTaskDetails = asyncHandler(async (req, res) => {
 const updateTask = asyncHandler(async (req, res) => {
   const taskId = req.params.taskId;
   const userId = req.user?._id;
-  const projectId=req.params.projectId
- 
+  const projectId = req.params.projectId;
+
   console.log("request comes here ");
-  
+
   if (!taskId) {
     throw new ApiError(400, "Task id is required");
   }
@@ -229,7 +179,7 @@ const updateTask = asyncHandler(async (req, res) => {
   }
 
   const { title, description, priority, dueDate } = req.body;
-console.log("data --> ",title);
+  console.log("data --> ", title);
 
   //validations and updation
   let updates = {};
@@ -273,7 +223,6 @@ console.log("data --> ",title);
   }
 
   // console.log("request comes here above updation");
-  
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
@@ -286,130 +235,102 @@ console.log("data --> ",title);
   // activity log utility function call
   await createTaskActivityLog({
     taskId: updatedTask._id,
-    projectId:projectId,
+    projectId: projectId,
     action: "TASK_UPDATED",
     performedBy: userId,
     meta,
   });
 
   try {
-  const io = getIO();
+    const io = getIO();
 
-  io.to(`project:${projectId}`).emit("TASK_UPDATED", {
-    taskId: updatedTask._id,
-    updates,
-  });
-} catch (error) {
-  console.error("Socket emit failed (TASK_UPDATED)", error.message);
-}
+    io.to(`project:${projectId}`).emit("TASK_UPDATED", {
+      taskId: updatedTask._id,
+      updates,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (TASK_UPDATED)", error.message);
+  }
 
-
-  return res.status(201).json(new ApiResponse(201,"Task Updated successfully",updatedTask))
+  return res
+    .status(201)
+    .json(new ApiResponse(201, "Task Updated successfully", updatedTask));
 });
-
 
 // one column to another column
 const updateTaskStatus = asyncHandler(async (req, res) => {
-  const taskId = req.params.taskId;
-  const userId = req.user?._id;
-  const projectId=req.params.projectId
-  const { status: newStatus } = req.body;
+  const { taskId, projectId } = req.params;
+  const userId = req.user._id;
+  const { statusId } = req.body;
 
-  if (!taskId) {
-    throw new ApiError(400, "Task id is required");
-  }
-  if (!userId) {
-    throw new ApiError(401, "Unauthorized user");
-  }
-  let task = req.task;
-  if (!task) {
-    task = await TaskModel.findById(taskId);
-    if (!task) {
-      throw new ApiError(404, "Task not found");
-    }
-  }
-  if (!newStatus) {
-    throw new ApiError(400, "Status is required");
+  const project = req.project;
+  const task = req.task;
+
+  if (!statusId) throw new ApiError(400, "statusId is required");
+
+  const targetStatus = project.taskStatuses.find(
+    (s) => s._id.toString() === statusId
+  );
+
+  if (!targetStatus) {
+    throw new ApiError(400, "Invalid task status");
   }
 
-  // if not chnageble status then
-  if (task.status === newStatus) {
-    return res.status(200).json(new ApiResponse(200, "Status unchanged", task));
+  if (task.status.toString() === statusId) {
+    return res.status(200).json(
+      new ApiResponse(200, "Status unchanged", task)
+    );
   }
 
-  //  previous status for activity log
-  const oldStatus = task.status;
+  const oldStatusId = task.status;
   const oldOrder = task.order;
 
-  //FIX SOURCE COLUMN
-  //move one step UP (order - 1)
-  //we set old order to all tasks which are in same project and same status and order greater than this task order so that there is no gap in order or no conflict in order
-
+  // FIX SOURCE COLUMN GAP
   await TaskModel.updateMany(
     {
       project: task.project,
-      status: oldStatus,
+      status: oldStatusId,
       order: { $gt: oldOrder },
     },
     { $inc: { order: -1 } }
   );
 
-  //for order calculation for set this task at the end of column
-  //Determine new order = end of target column
-
-  const targetColumnCount = await TaskModel.countDocuments({
+  const targetCount = await TaskModel.countDocuments({
     project: task.project,
-    status: newStatus,
+    status: statusId,
   });
-
-  // updation of status
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
-    { $set: { status: newStatus, order: targetColumnCount } },
+    {
+      status: statusId,
+      order: targetCount,
+    },
     { new: true }
   );
 
-  //crete activity log
   await createTaskActivityLog({
     taskId: task._id,
-    projectId:projectId,
+    projectId,
     action: "TASK_STATUS_UPDATED",
     performedBy: userId,
     meta: {
-      from: oldStatus,
-      to: newStatus,
+      from: oldStatusId,
+      to: statusId,
     },
   });
 
-  try {
-  const io = getIO();
-
-  io.to(`project:${task.project}`).emit("TASK_STATUS_UPDATED", {
-    taskId: updatedTask._id,
-    fromStatus: oldStatus,
-    toStatus: newStatus,
-    newOrder: updatedTask.order,
-  });
-} catch (error) {
-  console.error("Socket emit failed (TASK_STATUS_UPDATED)", error.message);
-}
-
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, "Task status updated successfully", updatedTask)
-    );
+  return res.status(200).json(
+    new ApiResponse(200, "Task status updated", updatedTask)
+  );
 });
 
 
 //in same column reorder
 const updateTaskOrder = asyncHandler(async (req, res) => {
-  const { order:newOrder } = req.body;
+  const { order: newOrder } = req.body;
   const userId = req.user._id;
-  const projectId=req.params.projectId
-
+  const projectId = req.params.projectId;
 
   if (newOrder === undefined || newOrder < 0) {
     throw new ApiError(400, "Valid newOrder is required");
@@ -421,16 +342,13 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
 
   // No movement
   if (newOrder === oldOrder) {
-    return res.status(200).json(
-      new ApiResponse(200, "Order unchanged", task)
-    );
+    return res.status(200).json(new ApiResponse(200, "Order unchanged", task));
   }
 
- 
-    // CASE 1: Task moves UP from down
+  // CASE 1: Task moves UP from down
   //  oldOrder = 4 → newOrder = 1
   //  Tasks [1 → 3] move DOWN (+1)
-  
+
   if (newOrder < oldOrder) {
     await TaskModel.updateMany(
       {
@@ -442,11 +360,10 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
-  
-    // CASE 2: Task moves DOWN from up
-    // oldOrder = 1 → newOrder = 4
-    // Tasks [2 → 4] move UP (-1)
-   
+  // CASE 2: Task moves DOWN from up
+  // oldOrder = 1 → newOrder = 4
+  // Tasks [2 → 4] move UP (-1)
+
   if (newOrder > oldOrder) {
     await TaskModel.updateMany(
       {
@@ -458,8 +375,6 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
-
-
   // UPDATE MOVED TASK
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
@@ -468,13 +383,11 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-
-
   // ACTIVITY LOG
 
   await createTaskActivityLog({
     taskId: task._id,
-    projectId:projectId,
+    projectId: projectId,
     action: "TASK_REORDERED",
     performedBy: userId,
     meta: {
@@ -485,22 +398,21 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
   });
 
   try {
-  const io = getIO();
+    const io = getIO();
 
-  io.to(`project:${task.project}`).emit("TASK_REORDERED", {
-    taskId: updatedTask._id,
-    fromOrder: oldOrder,
-    toOrder: newOrder,
-    status,
-  });
-} catch (error) {
-  console.error("Socket emit failed (TASK_REORDERED)", error.message);
-}
+    io.to(`project:${task.project}`).emit("TASK_REORDERED", {
+      taskId: updatedTask._id,
+      fromOrder: oldOrder,
+      toOrder: newOrder,
+      status,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (TASK_REORDERED)", error.message);
+  }
 
-
-  return res.status(200).json(
-    new ApiResponse(200, "Task order updated successfully", updatedTask)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Task order updated successfully", updatedTask));
 });
 
 // delete task with proper reorder logics and activity log
@@ -514,11 +426,9 @@ const deleteTask = asyncHandler(async (req, res) => {
 
   const { status, order, project } = task;
 
- 
-    // DELETE TASK
-  
-  await TaskModel.findByIdAndDelete(task._id);
+  // DELETE TASK
 
+  await TaskModel.findByIdAndDelete(task._id);
 
   // REORDER TASKS IN THE SAME COLUMN
   await TaskModel.updateMany(
@@ -530,12 +440,11 @@ const deleteTask = asyncHandler(async (req, res) => {
     { $inc: { order: -1 } }
   );
 
+  // ACTIVITY LOG
 
-    // ACTIVITY LOG
-  
   await createTaskActivityLog({
     taskId: task._id,
-    projectId:project,
+    projectId: project,
     action: "TASK_DELETED",
     performedBy: userId,
     meta: {
@@ -545,30 +454,28 @@ const deleteTask = asyncHandler(async (req, res) => {
   });
 
   try {
-  const io = getIO();
+    const io = getIO();
 
-  io.to(`project:${project}`).emit("TASK_DELETED", {
-    taskId: task._id,
-    status,
-    order,
-  });
-} catch (error) {
-  console.error("Socket emit failed (TASK_DELETED)", error.message);
-}
+    io.to(`project:${project}`).emit("TASK_DELETED", {
+      taskId: task._id,
+      status,
+      order,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (TASK_DELETED)", error.message);
+  }
 
-
-  return res.status(200).json(
-    new ApiResponse(200, "Task deleted successfully")
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Task deleted successfully"));
 });
-
 
 //updateTaskAssignees
 
 const updateTaskAssignees = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const task = req.task;         
-  const project = req.project;    
+  const task = req.task;
+  const project = req.project;
 
   const { assignees } = req.body;
 
@@ -576,16 +483,14 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Assignees must be a non-empty array");
   }
 
-  
   //  Get active project member IDs
-  
+
   const activeProjectMemberIds = project.projectMembers
     .filter((member) => member.status === "active")
     .map((member) => member.user.toString());
 
+  //  Validate all assignees
 
-    //  Validate all assignees
-   
   const areAssigneesValid = assignees.every((assigneeId) =>
     activeProjectMemberIds.includes(assigneeId.toString())
   );
@@ -597,9 +502,8 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
     );
   }
 
+  //  detect added & removed assignees for meta track
 
-    //  detect added & removed assignees for meta track
-   
   const previousAssignees = task.assignees.map((id) => id.toString());
   const newAssignees = assignees.map((id) => id.toString());
 
@@ -611,20 +515,19 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
     (id) => !newAssignees.includes(id)
   );
 
-    //  Update task
-  
+  //  Update task
+
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
     { assignees: newAssignees },
     { new: true }
   );
 
-  
-    // Activity log
-   
+  // Activity log
+
   await createTaskActivityLog({
     taskId: task._id,
-    projectId:project._id,
+    projectId: project._id,
     action: "ASSIGNEES_UPDATED",
     performedBy: userId,
     meta: {
@@ -633,27 +536,23 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
     },
   });
 
-
   try {
-  const io = getIO();
+    const io = getIO();
 
-  io.to(`project:${task.project}`).emit("TASK_ASSIGNEES_UPDATED", {
-    taskId: task._id,
-    added: addedAssignees,
-    removed: removedAssignees,
-  });
-} catch (error) {
-  console.error("Socket emit failed (TASK_ASSIGNEES_UPDATED)", error.message);
-}
+    io.to(`project:${task.project}`).emit("TASK_ASSIGNEES_UPDATED", {
+      taskId: task._id,
+      added: addedAssignees,
+      removed: removedAssignees,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (TASK_ASSIGNEES_UPDATED)", error.message);
+  }
 
-
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      "Task assignees updated successfully",
-      updatedTask
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, "Task assignees updated successfully", updatedTask)
+    );
 });
 
 export {
@@ -664,5 +563,5 @@ export {
   updateTaskStatus,
   updateTaskOrder,
   deleteTask,
-  updateTaskAssignees
+  updateTaskAssignees,
 };
