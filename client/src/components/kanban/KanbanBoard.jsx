@@ -12,24 +12,19 @@ export default function KanbanBoard({
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
 
-  // 🔥 LOCAL TASK STATE
   const [tasks, setTasks] = useState([]);
 
-  // Sync backend tasks → local state
   useEffect(() => {
     setTasks(initialTasks || []);
   }, [initialTasks]);
 
-  // Columns from backend (dynamic)
   const columns = useMemo(() => {
     return (
-      project?.data?.taskStatuses
-        ?.slice()
-        .sort((a, b) => a.order - b.order) || []
+      project?.data?.taskStatuses?.slice().sort((a, b) => a.order - b.order) ||
+      []
     );
   }, [project]);
 
-  // ✅ SAME COLUMN REORDER
   const reorderTask = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
       const columnTasks = prev.filter((t) => t.status === columnId);
@@ -43,13 +38,10 @@ export default function KanbanBoard({
     });
   };
 
-  // ✅ COLUMN → COLUMN MOVE
   const moveTaskToColumn = (taskId, targetColumnId) => {
     setTasks((prev) =>
       prev.map((task) =>
-        task._id === taskId
-          ? { ...task, status: targetColumnId }
-          : task
+        task._id === taskId ? { ...task, status: targetColumnId } : task
       )
     );
   };

@@ -64,7 +64,7 @@ export default function Navigation({
 
       {/* Desktop Sidebar */}
       <div
-        className={`hidden md:flex fixed z-50000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
+        className={`hidden md:flex fixed z-2000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
           collapsed ? "w-20" : "w-64"
         }`}
       >

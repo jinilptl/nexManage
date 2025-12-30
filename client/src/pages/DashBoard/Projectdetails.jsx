@@ -20,7 +20,7 @@ export default function ProjectDetails() {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
-  console.log("task list ---> ",taskList);
+  // console.log("task list ---> ",taskList);
   
 
   // console.log("project |Data===> ", projectData);
@@ -48,9 +48,9 @@ export default function ProjectDetails() {
 }, [taskList]);
 
 
-  console.log(
-    "main task in deialts --> ",tasks
-  );
+  // console.log(
+  //   "main task in deialts --> ",tasks
+  // );
   
   const onSubmit = (formData) => {
     // console.log("form Data is ---> ", formData);

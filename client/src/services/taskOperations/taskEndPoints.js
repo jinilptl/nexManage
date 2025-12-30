@@ -1,19 +1,22 @@
 const TASK_END_POINTS = {
   // CREATE
-  CREATE_TASK: "/v1/project/task/create-task/:projectId",
+  CREATE_TASK: "/v1/project/task/create-task/:projectId", //done
 
-  // READ
+  //  READ  (done both)
   GET_PROJECT_TASKS: "/v1/project/task/project-tasks/:projectId",
   GET_TASK_DETAILS: "/:projectId/get-task/:taskId",
 
-  // UPDATE
-  UPDATE_TASK: "/update-task/:projectId/:taskId",
-  UPDATE_TASK_STATUS: "/status/:projectId/:taskId",
-  UPDATE_TASK_ORDER: "/order/:projectId/:taskId",
-  UPDATE_TASK_ASSIGNEES: "/updatetask-assignees/:projectId/:taskId",
-
-  // DELETE
-  DELETE_TASK: "/delete/:projectId/:taskId",
+  // UPDATE (in progress)
+  UPDATE_TASK: "/v1/project/task/update-task/:projectId/:taskId",
+  
+   //(in progress)
+  UPDATE_TASK_ASSIGNEES: "/v1/project/task/updatetask-assignees/:projectId/:taskId",
+  
+  // DELETE (in progress)
+  DELETE_TASK: "/v1/project/task/delete/:projectId/:taskId",
+  
+  UPDATE_TASK_STATUS: "/v1/project/task/status/:projectId/:taskId",
+  UPDATE_TASK_ORDER: "/v1/project/task/order/:projectId/:taskId",
 };
 
 
