@@ -36,10 +36,17 @@ export default function ProjectDetails() {
     });
   };
 
-  useEffect(() => {
-    setTasks(taskList);
+ useEffect(() => {
+  if (projectData?.id && token) {
     dispatch(getAllTasksService(projectData.id, token));
-  }, []);
+  }
+}, [dispatch, projectData?.id, token]);
+
+
+  useEffect(() => {
+  setTasks(taskList || []);
+}, [taskList]);
+
 
   console.log(
     "main task in deialts --> ",tasks
