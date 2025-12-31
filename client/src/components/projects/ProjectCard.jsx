@@ -15,6 +15,7 @@ export default function ProjectCard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  
   const UserRole = user.role;
   const navigate=useNavigate()
   const dispatch=useDispatch()
@@ -29,7 +30,7 @@ export default function ProjectCard({
   function ProjectDetails(){
     dispatch(setSelectedProjectId(project._id))
     dispatch(setSelectedProjectData(project))
-    navigate("/dashboard/projects/task")
+    navigate(`/dashboard/projects/task/${project._id}`)
     
   }
 

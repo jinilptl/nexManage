@@ -9,10 +9,12 @@ import {
   createTaskService,
   getAllTasksService,
 } from "../../services/taskOperations/taskServices";
-
+import { useParams } from "react-router-dom";
+import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
 
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
+  const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
   const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
   const projectData = useSelector((state) => state.projects.selectedProject);
@@ -20,10 +22,6 @@ export default function ProjectDetails() {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
-  // console.log("task list ---> ",taskList);
-  
-
-  // console.log("project |Data===> ", projectData);
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
       const columnTasks = prev.filter((t) => t.status === columnId);
@@ -36,38 +34,46 @@ export default function ProjectDetails() {
     });
   };
 
- useEffect(() => {
-  if (projectData?.id && token) {
-    dispatch(getAllTasksService(projectData.id, token));
-  }
-}, [dispatch, projectData?.id, token]);
-
 
   useEffect(() => {
-  setTasks(taskList || []);
-}, [taskList]);
+    if (projectId && token) {
+      dispatch(fetchSingleProjectService(projectId, token));
+    }
+  }, [projectId, token, dispatch]);
 
-
-  // console.log(
-  //   "main task in deialts --> ",tasks
-  // );
   
-  const onSubmit = (formData) => {
-    // console.log("form Data is ---> ", formData);
+  useEffect(() => {
+    if (projectData?.data?._id && token) {
+      dispatch(getAllTasksService(projectData.data._id, token));
+    }
+  }, [projectData?.data?._id, token, dispatch]);
 
+  useEffect(() => {
+    setTasks(taskList || []);
+  }, [taskList]);
+
+  const onSubmit = (formData) => {
     dispatch(
-      createTaskService(formData, projectData.id, token, setCreateTaskModalOpen)
+      createTaskService(formData, projectId, token, setCreateTaskModalOpen)
     );
   };
+
+  if (!projectData?.data) {
+    return (
+      <div className="flex h-screen items-center justify-center text-gray-500">
+        Loading project details...
+      </div>
+    );
+  }
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-4">
         Projects <span className="mx-1">›</span>
-        <span className="text-gray-700">{projectData.data.projectName}</span>
+        <span className="text-gray-700">{projectData?.data?.projectName}</span>
       </div>
 
-      <ProjectHeader project={projectData.data} />
+      <ProjectHeader project={projectData?.data} />
 
       <ProjectTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -84,7 +90,7 @@ export default function ProjectDetails() {
         <CreateTaskModal
           isOpen={createTaskModalOpen}
           onClose={setCreateTaskModalOpen}
-          projectMembers={projectData.data.projectMembers}
+          projectMembers={projectData?.data?.projectMembers}
           onSubmit={onSubmit}
         />
       )}

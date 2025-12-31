@@ -179,6 +179,9 @@ const getUserProjects = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
+  console.log("route hit");
+  
+
   if (!projectId) {
     throw new ApiError(400, "Project ID is required");
   }

@@ -56,18 +56,24 @@ const projectsSlice = createSlice({
       state.myLoading = action.payload;
     },
 
-    /* --------------------- SELECTED PROJECT ------------------- */
+    
     setSelectedProjectId(state, action) {
       state.selectedProject.id = action.payload;
     },
     setSelectedProjectData(state, action) {
+      console.log(" it is working --->reducers-->  ",action.payload);
+      
       state.selectedProject.data = action.payload;
+
+      console.log("it is working --->state-->  ",state.selectedProject.data);
+
+
     },
     setSelectedProjectLoading(state, action) {
       state.selectedProject.loading = action.payload;
     },
 
-    /* --------------------- PROJECT MEMBERS --------------------- */
+ 
     setProjectMembers(state, action) {
       state.projectMembers.list = action.payload;
     },
@@ -92,7 +98,7 @@ const projectsSlice = createSlice({
       state.actions.syncing = action.payload;
     },
 
-    // ⭐ NEW MEMBER ACTION LOADERS
+    
     setAddMemberLoading(state, action) {
       state.actions.addingMember = action.payload;
     },
@@ -105,8 +111,6 @@ const projectsSlice = createSlice({
     setActiveMemberLoading(state, action) {
       state.actions.activingMember = action.payload;
     },
-
-    /* --------------------------- CLEAR --------------------------- */
     clearProjects(state) {
       state.allProjects = [];
       state.myProjects = [];

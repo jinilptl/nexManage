@@ -10,7 +10,12 @@ import {
   Satellite,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAssigneesTaskService } from "../../../services/taskOperations/taskServices";
+import {
+  deleteTaskService,
+  updateAssigneesTaskService,
+  updateTaskService,
+} from "../../../services/taskOperations/taskServices";
+import CreateTaskModal from "./CreateTaskModal";
 
 export default function TaskDetailModal({ task, onClose }) {
   useEffect(() => {
@@ -39,9 +44,12 @@ export default function TaskDetailModal({ task, onClose }) {
   const [isAssignMode, setIsAssignMode] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = useState(false);
+  const [UpdateTaskModalopen, setUpdateTaskModalopen] = useState(false);
 
   const project = useSelector((state) => state.projects.selectedProject);
-  const allTaskAssignee = useSelector((state) => state.tasks.selectedTask.data.assignees);
+  const allTaskAssignee = useSelector(
+    (state) => state.tasks.selectedTask.data.assignees
+  );
   const projectMembers = project?.data?.projectMembers || [];
 
   const handleAddSubtask = () => {
@@ -95,7 +103,7 @@ export default function TaskDetailModal({ task, onClose }) {
         )
       );
 
-      setAssignees(allTaskAssignee)
+      setAssignees(allTaskAssignee);
 
       setIsAssignMode(false);
     } catch (err) {
@@ -111,13 +119,26 @@ export default function TaskDetailModal({ task, onClose }) {
   };
 
   const handleDeleteTask = () => {
-    alert("Dummy delete: task removed");
-    onClose();
+    if (confirm("do you want to delete this task??")) {
+      dispatch(deleteTaskService(task.project, task._id, token));
+      onClose();
+    }
   };
 
+  const handleUpdateTask = (formData) => {
+    dispatch(
+      updateTaskService(
+        formData,
+        task.project,
+        task._id,
+        token,
+        setUpdateTaskModalopen
+      )
+    );
+  };
   // ================= UI =================
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center">
+    <div className="fixed inset-0 z-5555 flex items-center justify-center">
       {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-md"
@@ -141,7 +162,7 @@ export default function TaskDetailModal({ task, onClose }) {
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsEditingDesc(true)}
+                onClick={() => setUpdateTaskModalopen(true)}
                 className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-100 flex items-center gap-1"
               >
                 <Pencil size={14} /> Edit
@@ -169,37 +190,9 @@ export default function TaskDetailModal({ task, onClose }) {
               Description
             </h3>
 
-            {!isEditingDesc ? (
-              <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-700">
-                {description || "No description provided."}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-lg border p-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setIsEditingDesc(false)}
-                    className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setDescription(task.description || "");
-                      setIsEditingDesc(false);
-                    }}
-                    className="rounded-lg border px-4 py-1.5 text-sm"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
+            <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-700">
+              {task.description || "No description provided."}
+            </p>
           </section>
 
           {/* SUBTASKS */}
@@ -399,6 +392,13 @@ export default function TaskDetailModal({ task, onClose }) {
           </section>
         </div>
       </div>
+      <CreateTaskModal
+        onClose={setUpdateTaskModalopen}
+        onSubmit={handleUpdateTask}
+        isOpen={UpdateTaskModalopen}
+        mode="edit"
+        editableData={task}
+      />
     </div>
   );
 }

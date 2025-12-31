@@ -113,7 +113,7 @@ export const updateTaskService = (formData, projectId,taskId, token, onClose) =>
 };
 
 
-export const deleteTaskService = (projectId,taskId, token, onClose) => {
+export const deleteTaskService = (projectId,taskId, token,) => {
   return async (dispatch, getstate) => {
     dispatch(setLoading(true));
     try {
@@ -133,7 +133,7 @@ export const deleteTaskService = (projectId,taskId, token, onClose) => {
         dispatch(deleteTask(response.data?.data));
         toast.success(response.data.message);
         dispatch(getAllTasksService(projectId,token))
-        onClose(false);
+        
       }
     } catch (error) {
       console.log("error in delete Task---> ", error);
