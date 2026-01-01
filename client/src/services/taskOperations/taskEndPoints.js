@@ -1,4 +1,4 @@
-const TASK_END_POINTS = {
+export const TASK_END_POINTS = {
   // CREATE
   CREATE_TASK: "/v1/project/task/create-task/:projectId", //done
 
@@ -20,4 +20,10 @@ const TASK_END_POINTS = {
 };
 
 
-export default TASK_END_POINTS
+
+export const SUB_TASK_END_POINTS={
+  CREATE_SUB_TASK: "/v1/project/task/subtask/:projectId/create-subtask/:taskId",
+  GET_ALL_SUB_TASK: "/v1/project/task/subtask/:projectId/get-subtask/:taskId",
+  TOGGLE_SUBTASK_COMPLETE:"/v1/project/task/subtask/:projectId/:taskId/complete/:subTaskId",
+  DELETE_SUBTASK:"/v1/project/task/subtask/:projectId/:taskId/delete/:subTaskId",
+}

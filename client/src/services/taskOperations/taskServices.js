@@ -1,8 +1,20 @@
 import axiosInstance from "../../utils/axios_instance";
 import toast from "react-hot-toast";
-import TASK_END_POINTS from "./taskEndPoints";
+import { TASK_END_POINTS, SUB_TASK_END_POINTS } from "./taskEndPoints";
 
-import { addTask, deleteTask, setAllTasks, setLoading, updateTask } from "../../Redux_Config/Slices/tasksSlice";
+import {
+  addSubtask,
+  addTask,
+  deleteSubtask,
+  deleteTask,
+  setAllTasks,
+  setLoading,
+  setSubtaskLoading,
+  setSubtasks,
+  updateSubtask,
+  updateTask,
+} from "../../Redux_Config/Slices/tasksSlice";
+import { ToyBrick } from "lucide-react";
 
 const {
   CREATE_TASK,
@@ -11,8 +23,11 @@ const {
   DELETE_TASK,
   GET_PROJECT_TASKS,
   GET_TASK_DETAILS,
-  UPDATE_TASK_ASSIGNEES
+  UPDATE_TASK_ASSIGNEES,
 } = TASK_END_POINTS;
+
+const { CREATE_SUB_TASK, GET_ALL_SUB_TASK, TOGGLE_SUBTASK_COMPLETE,DELETE_SUBTASK } =
+  SUB_TASK_END_POINTS;
 
 function GenerateErrorMessage(error) {
   const message =
@@ -20,6 +35,14 @@ function GenerateErrorMessage(error) {
 
   return message;
 }
+
+const normalizeSubtask = (subtask, taskId) => ({
+  ...subtask,
+  task:
+    typeof subtask.task === "object"
+      ? subtask.task?._id
+      : subtask.task || taskId,
+});
 
 export const createTaskService = (formData, projectId, token, onClose) => {
   return async (dispatch, getstate) => {
@@ -56,7 +79,7 @@ export const getAllTasksService = (projectId, token) => {
     try {
       const endPoints = GET_PROJECT_TASKS.replace(":projectId", projectId);
 
-      const response = await axiosInstance.get(endPoints,{
+      const response = await axiosInstance.get(endPoints, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,23 +87,27 @@ export const getAllTasksService = (projectId, token) => {
       });
 
       // console.log("response is ---> ", response.data);
-        if (response.data.success) {
-          dispatch(setAllTasks(response.data?.data))
-          // toast.success(response.data.message)
-          
-        }
+      if (response.data.success) {
+        dispatch(setAllTasks(response.data?.data));
+        // toast.success(response.data.message)
+      }
     } catch (error) {
       console.log("error in get Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
-     dispatch(setLoading(false));
+      dispatch(setLoading(false));
     }
   };
 };
 
-
-export const updateTaskService = (formData, projectId,taskId, token, onClose) => {
+export const updateTaskService = (
+  formData,
+  projectId,
+  taskId,
+  token,
+  onClose
+) => {
   return async (dispatch, getstate) => {
     dispatch(setLoading(true));
     try {
@@ -100,7 +127,7 @@ export const updateTaskService = (formData, projectId,taskId, token, onClose) =>
         dispatch(updateTask(response.data?.data));
         toast.success(response.data.message);
         onClose(false);
-        dispatch(getAllTasksService(projectId,token))
+        dispatch(getAllTasksService(projectId, token));
       }
     } catch (error) {
       console.log("error in update Task---> ", error);
@@ -112,8 +139,7 @@ export const updateTaskService = (formData, projectId,taskId, token, onClose) =>
   };
 };
 
-
-export const deleteTaskService = (projectId,taskId, token,) => {
+export const deleteTaskService = (projectId, taskId, token) => {
   return async (dispatch, getstate) => {
     dispatch(setLoading(true));
     try {
@@ -132,8 +158,7 @@ export const deleteTaskService = (projectId,taskId, token,) => {
       if (response.data.success) {
         dispatch(deleteTask(response.data?.data));
         toast.success(response.data.message);
-        dispatch(getAllTasksService(projectId,token))
-        
+        dispatch(getAllTasksService(projectId, token));
       }
     } catch (error) {
       console.log("error in delete Task---> ", error);
@@ -145,27 +170,38 @@ export const deleteTaskService = (projectId,taskId, token,) => {
   };
 };
 
-
-export const updateAssigneesTaskService = (assignnnesData,projectId,taskId, token) => {
+export const updateAssigneesTaskService = (
+  assignnnesData,
+  projectId,
+  taskId,
+  token
+) => {
   return async (dispatch, getstate) => {
     dispatch(setLoading(true));
     try {
-      const NEW_UPDATE_TASK_ASSIGNEES = UPDATE_TASK_ASSIGNEES.replace(":projectId", projectId);
+      const NEW_UPDATE_TASK_ASSIGNEES = UPDATE_TASK_ASSIGNEES.replace(
+        ":projectId",
+        projectId
+      );
       const endPoints = NEW_UPDATE_TASK_ASSIGNEES.replace(":taskId", taskId);
 
-      const response = await axiosInstance.patch(endPoints,{assignees:assignnnesData}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
+      const response = await axiosInstance.patch(
+        endPoints,
+        { assignees: assignnnesData },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       console.log("response is on update Assignee task ---> ", response.data);
-         
-      // make sure backend send a whole update data not only array whichis updated okk.. 
+
+      // make sure backend send a whole update data not only array whichis updated okk..
       if (response.data.success) {
         dispatch(updateTask(response.data?.data));
-        toast.success(response.data.message)
+        toast.success(response.data.message);
       }
     } catch (error) {
       console.log("error in update assignes Task---> ", error);
@@ -176,3 +212,180 @@ export const updateAssigneesTaskService = (assignnnesData,projectId,taskId, toke
     }
   };
 };
+
+// sub task services
+
+export const createSubTaskService = (title, projectId, taskId, token) => {
+  return async (dispatch) => {
+    dispatch(setSubtaskLoading(true));
+
+    try {
+      const endpoint = CREATE_SUB_TASK.replace(":projectId", projectId).replace(
+        ":taskId",
+        taskId
+      );
+
+      const response = await axiosInstance.post(
+        endpoint,
+        { title },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        const { subTask } = response.data.data;
+
+        const flattenedSubtask = {
+          ...subTask,
+          task: taskId,
+        };
+
+        dispatch(
+          addSubtask({
+            taskId,
+            subtask: flattenedSubtask,
+          })
+        );
+
+        toast.success(response.data.message);
+      }
+    } catch (error) {
+      toast.error(GenerateErrorMessage(error));
+    } finally {
+      dispatch(setSubtaskLoading(false));
+    }
+  };
+};
+
+export const fetchAllSubTaskService = (projectId, taskId, token) => {
+  return async (dispatch) => {
+    dispatch(setSubtaskLoading(true));
+
+    try {
+      const endpoint = GET_ALL_SUB_TASK.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const response = await axiosInstance.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        const normalizedSubtasks = response.data.data.map((s) =>
+          normalizeSubtask(s, taskId)
+        );
+
+        dispatch(
+          setSubtasks({
+            taskId,
+            subtasks: normalizedSubtasks,
+          })
+        );
+      }
+    } catch (error) {
+      const message = GenerateErrorMessage(error);
+      toast.error(message);
+    } finally {
+      dispatch(setSubtaskLoading(false));
+    }
+  };
+};
+
+export const toggleSubtaskCompleteService = (
+  isCompleted,
+  subtaskId,
+  taskId,
+  projectId,
+  token
+) => {
+  return async (dispatch) => {
+    try {
+      const endpoint = TOGGLE_SUBTASK_COMPLETE.replace(":projectId", projectId)
+        .replace(":subTaskId", subtaskId)
+        .replace(":taskId", taskId);
+
+      const response = await axiosInstance.patch(
+        endpoint,
+        { isCompleted },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        const updatedSubtask = response.data.data;
+        const normalizedData = normalizeSubtask(updatedSubtask, taskId);
+
+        dispatch(
+          updateSubtask({
+            taskId,
+            subtask: normalizedData,
+          })
+        );
+      }
+    } catch (error) {
+      console.log("error in toggle sub task -->", error);
+
+      toast.error(GenerateErrorMessage(error));
+    }
+  };
+};
+
+
+export const deleteSubtaskService = (
+  subtaskId,
+  taskId,
+  projectId,
+  token
+) => {
+  return async (dispatch) => {
+    try {
+      const endpoint = DELETE_SUBTASK.replace(":projectId", projectId)
+        .replace(":subTaskId", subtaskId)
+        .replace(":taskId", taskId);
+
+      const response = await axiosInstance.delete(
+        endpoint,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("response id for delete sub task --> ",response.data);
+      
+
+      if (response.data.success) {
+        
+
+        dispatch(
+          deleteSubtask({
+            taskId,
+            subtaskId
+            
+          })
+        );
+      }
+    } catch (error) {
+      console.log("error in toggle sub task -->", error);
+
+      toast.error(GenerateErrorMessage(error));
+    }
+  };
+};
+
+
+
+//ATTECHMENT SERVICES 
