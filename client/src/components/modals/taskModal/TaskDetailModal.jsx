@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTaskService,
   fetchAllSubTaskService,
+  fetchTaskAttachmentsService,
   updateAssigneesTaskService,
   updateTaskService,
 } from "../../../services/taskOperations/taskServices";
@@ -14,7 +15,7 @@ import TaskSubtasks from "./TaskSubtasks";
 import TaskAttachments from "./TaskAttachments";
 import TaskAssignees from "./TaskAssignees";
 import TaskActivity from "./TaskActivity";
-import { clearSelectedTaskSubtasks } from "../../../Redux_Config/Slices/tasksSlice";
+import { clearSelectedTaskAttachments, clearSelectedTaskSubtasks } from "../../../Redux_Config/Slices/tasksSlice";
 
 export default function TaskDetailModal({ task, onClose }) {
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function TaskDetailModal({ task, onClose }) {
     loading: subtaskLoading,
   } = useSelector((state) => state.tasks.selectedTaskSubtasks);
 
+  
   const allTaskAssignee = useSelector(
     (state) => state.tasks.selectedTask?.data?.assignees || []
   );
@@ -44,17 +46,43 @@ export default function TaskDetailModal({ task, onClose }) {
   const [selectedAssignees, setSelectedAssignees] = React.useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = React.useState(false);
   const [updateTaskModalOpen, setUpdateTaskModalOpen] = React.useState(false);
+  console.log("attechments is --> ",task.attachments);
+  
 
-  // 🔥 FETCH SUBTASKS ON MODAL OPEN
+  //  FETCH SUBTASKS ON MODAL 
   useEffect(() => {
     if (task?._id && token) {
       dispatch(fetchAllSubTaskService(task.project, task._id, token));
+      // setAttachments(task.attachments)
     }
 
     return () => {
       dispatch(clearSelectedTaskSubtasks());
     };
   }, [task._id, task.project, token, dispatch]);
+
+  useEffect(()=>{
+    console.log(
+      "useeefct run"
+    );
+    
+
+    if(task?._id&&token){
+      console.log(
+      "fetch taskattech ment inuseeefect run"
+    );
+      dispatch(fetchTaskAttachmentsService(task.project,task._id,token))
+    }
+
+    return ()=>{
+      console.log(
+      "fetch taskattech ment return inuseeefect run"
+    );
+
+      dispatch(clearSelectedTaskAttachments())
+    }
+
+  },[task._id,token])
 
   const handleDeleteTask = () => {
     if (confirm("do you want to delete this task??")) {
@@ -127,8 +155,9 @@ export default function TaskDetailModal({ task, onClose }) {
           />
 
           <TaskAttachments
-            attachments={attachments}
-            setAttachments={setAttachments}
+          task={task}
+            // attachments={attachments}
+            // setAttachments={setAttachments}
           />
         </div>
 

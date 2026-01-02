@@ -26,7 +26,11 @@ const initialState = {
     data: null,
     loading: false,
   },
-  attachmentsByTaskId: {},
+  selectedTaskAttachments: {
+    taskId: null,
+    data: [],
+    loading: false,
+  },
 };
 
 const taskSlice = createSlice({
@@ -173,24 +177,36 @@ const taskSlice = createSlice({
     setAttachments(state, action) {
       const { taskId, attachments } = action.payload;
 
-      state.attachmentsByTaskId[taskId] = attachments;
+      state.selectedTaskAttachments.taskId = taskId;
+      state.selectedTaskAttachments.data = attachments;
     },
 
     addAttachment(state, action) {
       const { taskId, attachment } = action.payload;
-      if (!state.attachmentsByTaskId[taskId]) {
-        state.attachmentsByTaskId[taskId] = [];
-      }
-      state.attachmentsByTaskId[taskId].push(attachment);
+      if (state.selectedTaskAttachments.taskId !== taskId) return;
+
+      state.selectedTaskAttachments.data.unshift(attachment);
     },
 
     deleteAttachment(state, action) {
       const { taskId, attachmentId } = action.payload;
-      state.attachmentsByTaskId[taskId] = state.attachmentsByTaskId[
-        taskId
-      ]?.filter((a) => a._id !== attachmentId);
-    },
 
+      if (state.selectedTaskAttachments.taskId !== taskId) return;
+      state.selectedTaskAttachments.data =
+        state.selectedTaskAttachments.data.filter((attechment) => {
+          return attechment._id !== attachmentId;
+        });
+    },
+setAttachmentLoading(state, action) {
+  state.selectedTaskAttachments.loading = action.payload;
+},
+clearSelectedTaskAttachments(state){
+ state.selectedTaskAttachments={
+  data:[],
+  taskId:null,
+  loading:false
+ }
+},
     // ACTIVITY LOGS
 
     setActivityLogs(state, action) {
@@ -231,7 +247,9 @@ export const {
 
   setAttachments,
   addAttachment,
+  setAttachmentLoading,
   deleteAttachment,
+  clearSelectedTaskAttachments,
 
   setActivityLogs,
   addActivityLog,

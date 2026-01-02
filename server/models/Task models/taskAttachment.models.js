@@ -14,13 +14,13 @@ const taskAttachmentSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Cloudinary / S3 / external URL
+    // Cloudinary
     fileUrl: {
       type: String,
       required: true,
     },
 
-    // Original filename or link label
+    // Original filename
     fileName: {
       type: String,
       default: null,
@@ -30,7 +30,6 @@ const taskAttachmentSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

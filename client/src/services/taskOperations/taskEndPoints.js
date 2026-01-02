@@ -27,3 +27,9 @@ export const SUB_TASK_END_POINTS={
   TOGGLE_SUBTASK_COMPLETE:"/v1/project/task/subtask/:projectId/:taskId/complete/:subTaskId",
   DELETE_SUBTASK:"/v1/project/task/subtask/:projectId/:taskId/delete/:subTaskId",
 }
+
+export const ATTACHMENT_END_POINTS={
+  ADD_TASK_ATTACHMENT: "/v1/project/task/attachments/:projectId/:taskId",
+  GET_TASK_ATTACHMENTS:"/v1/project/task/attachments/:projectId/:taskId"
+  
+}

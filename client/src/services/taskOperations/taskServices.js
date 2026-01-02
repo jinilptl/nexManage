@@ -1,13 +1,20 @@
 import axiosInstance from "../../utils/axios_instance";
 import toast from "react-hot-toast";
-import { TASK_END_POINTS, SUB_TASK_END_POINTS } from "./taskEndPoints";
+import {
+  TASK_END_POINTS,
+  SUB_TASK_END_POINTS,
+  ATTACHMENT_END_POINTS,
+} from "./taskEndPoints";
 
 import {
+  addAttachment,
   addSubtask,
   addTask,
   deleteSubtask,
   deleteTask,
   setAllTasks,
+  setAttachmentLoading,
+  setAttachments,
   setLoading,
   setSubtaskLoading,
   setSubtasks,
@@ -26,8 +33,14 @@ const {
   UPDATE_TASK_ASSIGNEES,
 } = TASK_END_POINTS;
 
-const { CREATE_SUB_TASK, GET_ALL_SUB_TASK, TOGGLE_SUBTASK_COMPLETE,DELETE_SUBTASK } =
-  SUB_TASK_END_POINTS;
+const {
+  CREATE_SUB_TASK,
+  GET_ALL_SUB_TASK,
+  TOGGLE_SUBTASK_COMPLETE,
+  DELETE_SUBTASK,
+} = SUB_TASK_END_POINTS;
+
+const { ADD_TASK_ATTACHMENT , GET_TASK_ATTACHMENTS} = ATTACHMENT_END_POINTS;
 
 function GenerateErrorMessage(error) {
   const message =
@@ -340,13 +353,7 @@ export const toggleSubtaskCompleteService = (
   };
 };
 
-
-export const deleteSubtaskService = (
-  subtaskId,
-  taskId,
-  projectId,
-  token
-) => {
+export const deleteSubtaskService = (subtaskId, taskId, projectId, token) => {
   return async (dispatch) => {
     try {
       const endpoint = DELETE_SUBTASK.replace(":projectId", projectId)
@@ -364,17 +371,13 @@ export const deleteSubtaskService = (
         }
       );
 
-      console.log("response id for delete sub task --> ",response.data);
-      
+      console.log("response id for delete sub task --> ", response.data);
 
       if (response.data.success) {
-        
-
         dispatch(
           deleteSubtask({
             taskId,
-            subtaskId
-            
+            subtaskId,
           })
         );
       }
@@ -386,6 +389,74 @@ export const deleteSubtaskService = (
   };
 };
 
+//ATTECHMENT SERVICES
+
+export const addTaskAttachmentService = (
+  projectId,
+  taskId,
+  formData,
+  token
+) => {
+  return async (dispatch, getstate) => {
+    dispatch(setAttachmentLoading(true));
+    try {
+      const endpoint = ADD_TASK_ATTACHMENT.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+          
+      console.log("form data---> ",formData);
+      
+      const response = await axiosInstance.post(endpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
+
+      if(response.data.success){
+        console.log("response in attechment----> ",response.data);
+
+        dispatch(addAttachment({
+          taskId:taskId,
+          attachment:response.data.data
+        }))
+        
+      }
+    } catch (error) {
+       toast.error(GenerateErrorMessage(error));
+    } finally {
+      dispatch(setAttachmentLoading(false));
+    }
+  };
+};
 
 
-//ATTECHMENT SERVICES 
+export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
+  return async (dispatch) => {
+    dispatch(setAttachmentLoading(true));
+
+    try {
+      const endpoint = GET_TASK_ATTACHMENTS
+        .replace(":projectId", projectId)
+        .replace(":taskId", taskId);
+
+      const res = await axiosInstance.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.success) {
+        dispatch(setAttachments({
+          taskId,
+          attachments:res.data.data
+        }))
+        toast.success("attechment fetch succesfully")
+      }
+    } catch (err) {
+      toast.error(GenerateErrorMessage(err));
+    } finally {
+      dispatch(setAttachmentLoading(false));
+    }
+  };
+};
