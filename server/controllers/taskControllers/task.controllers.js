@@ -467,7 +467,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
       order: targetCount,
     },
     { new: true }
-  );
+  ).populate("assignees","name")
 
   await createTaskActivityLog({
     taskId: task._id,
@@ -541,7 +541,7 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     task._id,
     { order: newOrder },
     { new: true }
-  );
+  ).populate("assignees","name");
 
   // ACTIVITY LOG
 

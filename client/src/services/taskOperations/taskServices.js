@@ -253,7 +253,7 @@ export const updateTaskStatusService =
         const updatedTask = response.data.data;
         console.log("update task status response--> ", updatedTask);
 
-        // dispatch(updateTask(updatedTask));
+        dispatch(updateTask(updatedTask));
 
         toast.success("Task moved successfully");
       }
@@ -289,7 +289,7 @@ export const updateTaskOrderService =
       if (response.data.success) {
         const updatedTask = response.data.data;
 
-        // console.log("updated task Order response --> ", updatedTask);
+        console.log("updated task Order response --> ", updatedTask);
         dispatch(updateTask(updatedTask));
         // toast.success("order chnage succesfully");
       }

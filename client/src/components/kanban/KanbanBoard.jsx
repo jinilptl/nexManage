@@ -15,7 +15,7 @@ export default function KanbanBoard({
   onModalOpen,
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
-  console.log("project is -> ",project);
+  // console.log("project is -> ",project);
   
   const token = useSelector((state) => state.auth.token);
 
