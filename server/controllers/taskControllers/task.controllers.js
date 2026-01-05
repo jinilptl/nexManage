@@ -411,12 +411,24 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { statusId } = req.body;
 
-  const project = req.project;
+  let project = req.project;
   const task = req.task;
+
+  if(!project){
+    project=await ProjectModel.findById(projectId)
+
+    if(!project){
+      throw new ApiError(400,"project not found ")
+    }
+  }
 
   if (!statusId) throw new ApiError(400, "statusId is required");
 
-  const targetStatus = project.taskStatuses.find(
+  console.log(project);
+  
+
+
+  const targetStatus = await project.taskStatuses.find(
     (s) => s._id.toString() === statusId
   );
 

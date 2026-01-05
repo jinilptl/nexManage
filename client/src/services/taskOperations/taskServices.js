@@ -31,6 +31,9 @@ const {
   GET_PROJECT_TASKS,
   GET_TASK_DETAILS,
   UPDATE_TASK_ASSIGNEES,
+
+  UPDATE_TASK_ORDER,
+  UPDATE_TASK_STATUS,
 } = TASK_END_POINTS;
 
 const {
@@ -40,7 +43,7 @@ const {
   DELETE_SUBTASK,
 } = SUB_TASK_END_POINTS;
 
-const { ADD_TASK_ATTACHMENT , GET_TASK_ATTACHMENTS} = ATTACHMENT_END_POINTS;
+const { ADD_TASK_ATTACHMENT, GET_TASK_ATTACHMENTS } = ATTACHMENT_END_POINTS;
 
 function GenerateErrorMessage(error) {
   const message =
@@ -226,6 +229,76 @@ export const updateAssigneesTaskService = (
   };
 };
 
+// order and chnage status
+export const updateTaskStatusService =
+  (projectId, taskId, statusId, token) => async (dispatch) => {
+    try {
+      const endpoint = UPDATE_TASK_STATUS.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const response = await axiosInstance.patch(
+        endpoint,
+        { statusId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        const updatedTask = response.data.data;
+        console.log("update task status response--> ", updatedTask);
+
+        // dispatch(updateTask(updatedTask));
+
+        toast.success("Task moved successfully");
+      }
+    } catch (error) {
+      console.error("Status update failed", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to update task status"
+      );
+    }
+  };
+
+export const updateTaskOrderService =
+  (projectId, taskId, newOrder, token) => async (dispatch) => {
+
+    
+    
+    try {
+      const endpoint = UPDATE_TASK_ORDER.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const response = await axiosInstance.patch(
+        endpoint,
+        { order: newOrder },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.data.success) {
+        const updatedTask = response.data.data;
+
+        // console.log("updated task Order response --> ", updatedTask);
+        dispatch(updateTask(updatedTask));
+        // toast.success("order chnage succesfully");
+      }
+    } catch (error) {
+      console.error("Order update failed", error);
+      toast.error(error?.response?.data?.message || "Failed to reorder task");
+    }
+  };
+
 // sub task services
 
 export const createSubTaskService = (title, projectId, taskId, token) => {
@@ -404,9 +477,9 @@ export const addTaskAttachmentService = (
         ":projectId",
         projectId
       ).replace(":taskId", taskId);
-          
-      console.log("form data---> ",formData);
-      
+
+      console.log("form data---> ", formData);
+
       const response = await axiosInstance.post(endpoint, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -415,43 +488,46 @@ export const addTaskAttachmentService = (
         withCredentials: true,
       });
 
-      if(response.data.success){
-        console.log("response in attechment----> ",response.data);
+      if (response.data.success) {
+        console.log("response in attechment----> ", response.data);
 
-        dispatch(addAttachment({
-          taskId:taskId,
-          attachment:response.data.data
-        }))
-        
+        dispatch(
+          addAttachment({
+            taskId: taskId,
+            attachment: response.data.data,
+          })
+        );
       }
     } catch (error) {
-       toast.error(GenerateErrorMessage(error));
+      toast.error(GenerateErrorMessage(error));
     } finally {
       dispatch(setAttachmentLoading(false));
     }
   };
 };
 
-
 export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
   return async (dispatch) => {
     dispatch(setAttachmentLoading(true));
 
     try {
-      const endpoint = GET_TASK_ATTACHMENTS
-        .replace(":projectId", projectId)
-        .replace(":taskId", taskId);
+      const endpoint = GET_TASK_ATTACHMENTS.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
 
       const res = await axiosInstance.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.data.success) {
-        dispatch(setAttachments({
-          taskId,
-          attachments:res.data.data
-        }))
-        toast.success("attechment fetch succesfully")
+        dispatch(
+          setAttachments({
+            taskId,
+            attachments: res.data.data,
+          })
+        );
+        toast.success("attechment fetch succesfully");
       }
     } catch (err) {
       toast.error(GenerateErrorMessage(err));
