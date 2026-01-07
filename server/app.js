@@ -6,6 +6,7 @@ import teamRouter from './routes/team.routes.js';
 import projectRouter from './routes/project.routes.js';
 import taskRouter from './routes/tasksRoutes/task.routes.js';
 import fileUploadRouter from "./routes/tasksRoutes/fileUpload.routes.js"
+import subTaskRouter from './routes/tasksRoutes/subTask.routes.js';
 
 const app= express();
 
@@ -25,6 +26,7 @@ app.use("/api/v1/user",authRouter)
 app.use("/api/v1/team",teamRouter)
 app.use("/api/v1/project",projectRouter)
 app.use("/api/v1/project/task",taskRouter)
+app.use("/api/v1/project/task/subtask",subTaskRouter)
 app.use("/api/v1/project/task",fileUploadRouter)
 
 

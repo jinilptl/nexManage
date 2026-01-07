@@ -4,10 +4,10 @@ const projectsSlice = createSlice({
   name: "projects",
 
   initialState: {
-    allProjects: [],     
-    myProjects: [],       
-    loading: false,       
-    myLoading: false,      
+    allProjects: [],
+    myProjects: [],
+    loading: false,
+    myLoading: false,
     error: null,
 
     selectedProject: {
@@ -19,8 +19,8 @@ const projectsSlice = createSlice({
 
     // ⭐ PROJECT MEMBERS SECTION
     projectMembers: {
-      list: [],          // All members of selected project
-      loading: false,    // Loader for fetching members
+      list: [], // All members of selected project
+      loading: false, // Loader for fetching members
       error: null,
     },
 
@@ -35,7 +35,7 @@ const projectsSlice = createSlice({
       addingMember: false,
       updatingMember: false,
       removingMember: false,
-      activingMember:false
+      activingMember: false,
     },
   },
 
@@ -56,7 +56,6 @@ const projectsSlice = createSlice({
       state.myLoading = action.payload;
     },
 
-    /* --------------------- SELECTED PROJECT ------------------- */
     setSelectedProjectId(state, action) {
       state.selectedProject.id = action.payload;
     },
@@ -67,7 +66,6 @@ const projectsSlice = createSlice({
       state.selectedProject.loading = action.payload;
     },
 
-    /* --------------------- PROJECT MEMBERS --------------------- */
     setProjectMembers(state, action) {
       state.projectMembers.list = action.payload;
     },
@@ -92,7 +90,6 @@ const projectsSlice = createSlice({
       state.actions.syncing = action.payload;
     },
 
-    // ⭐ NEW MEMBER ACTION LOADERS
     setAddMemberLoading(state, action) {
       state.actions.addingMember = action.payload;
     },
@@ -105,8 +102,6 @@ const projectsSlice = createSlice({
     setActiveMemberLoading(state, action) {
       state.actions.activingMember = action.payload;
     },
-
-    /* --------------------------- CLEAR --------------------------- */
     clearProjects(state) {
       state.allProjects = [];
       state.myProjects = [];

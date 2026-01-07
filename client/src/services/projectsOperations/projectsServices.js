@@ -118,6 +118,9 @@ export const fetchSingleProjectService = (projectId, token) => {
       });
       // console.log("response is --> ",response);
 
+      console.log("response in projecvt data---> ",response.data.data);
+      
+
       if (response.data.success) {
         dispatch(setSelectedProjectData(response.data.data));
         toast.success("succesfully fetched single project");

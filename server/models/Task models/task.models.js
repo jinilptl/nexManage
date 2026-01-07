@@ -26,13 +26,11 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Status is dynamic (driven by project columns)
     status: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
-      default: "To Do",
+      index: true,
     },
-
     assignees: [
       {
         type: mongoose.Schema.Types.ObjectId,

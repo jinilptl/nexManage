@@ -12,9 +12,17 @@ import TeamsPage from "./pages/DashBoard/TeamsPage";
 
 import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProjectDetails from "./pages/DashBoard/Projectdetails"
 
 const App = () => {
   const { user, token } = useSelector((state) => state.auth);
+  
+
+ 
+
+  
+
+  
 
   return (
     <div>
@@ -33,7 +41,9 @@ const App = () => {
         >
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/teams" element={<TeamsPage />} />
-          <Route path="/dashboard/projects" element={<ProjectPage/>} />
+          <Route path="/dashboard/projects" element={<ProjectPage />} />
+
+          <Route path="/dashboard/projects/task/:projectId" element={<ProjectDetails />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
