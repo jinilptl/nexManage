@@ -4,7 +4,7 @@ export const TASK_END_POINTS = {
 
   //  READ  (done both)
   GET_PROJECT_TASKS: "/v1/project/task/project-tasks/:projectId",
-  GET_TASK_DETAILS: "/:projectId/get-task/:taskId",
+  GET_TASK_DETAILS: "/v1/project/task/:projectId/get-task/:taskId",
 
   // UPDATE (in progress)
   UPDATE_TASK: "/v1/project/task/update-task/:projectId/:taskId",

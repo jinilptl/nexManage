@@ -53,13 +53,25 @@ const taskSlice = createSlice({
 
     updateTask(state, action) {
       const updatedTask = action.payload;
-
       state.list = state.list.map((task) =>
         task._id === updatedTask._id ? updatedTask : task
       );
 
       if (state.selectedTaskId === updatedTask._id) {
         state.selectedTask.data = updatedTask;
+      }
+    },
+
+      // it is for realtime add or update 
+    upsertTask(state, action) {
+      const index = state.list.findIndex(
+        (task) => task._id === action.payload._id
+      );
+
+      if (index === -1) {
+        state.list.unshift(action.payload);
+      } else {
+        state.list[index] = action.payload;
       }
     },
 
@@ -230,6 +242,7 @@ export const {
   addTask,
   updateTask,
   deleteTask,
+  upsertTask,
 
   setSelectedTaskId,
   clearSelectedTask,

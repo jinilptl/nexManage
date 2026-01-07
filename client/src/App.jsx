@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/Homepage/HomePage";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
@@ -13,12 +13,16 @@ import TeamsPage from "./pages/DashBoard/TeamsPage";
 import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProjectDetails from "./pages/DashBoard/Projectdetails"
+// import { connectWs } from "./sockets/socket";
 
 const App = () => {
   const { user, token } = useSelector((state) => state.auth);
   
 
+
  
+
+
 
   
 

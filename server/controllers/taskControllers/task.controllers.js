@@ -72,7 +72,7 @@ if (!defaultStatus) {
     project: projectId,
     order: existingCount,
   });
-console.log("ne taskl is ---> ",newTask);
+const populatedData=await TaskModel.findById(newTask._id).populate("assignees","name").populate("createdBy","name")
 
   await createTaskActivityLog({
     taskId: newTask._id,
@@ -85,9 +85,23 @@ console.log("ne taskl is ---> ",newTask);
     },
   });
 
+ try {
+  const io = getIO();
+
+  io.to(`project:${projectId}`).emit("TASK:CREATE", {
+    taskId: newTask._id,
+    createdBy: userId, // optional but useful
+  });
+
+  console.log("TASK:CREATE emitted for task:", newTask._id);
+} catch (error) {
+  console.error("Socket emit failed (TASK:CREATE):", error.message);
+}
+
+
   return res
     .status(201)
-    .json(new ApiResponse(201, "Task created successfully", newTask));
+    .json(new ApiResponse(201, "Task created successfully", populatedData));
 });
 
 
@@ -138,10 +152,10 @@ const getTaskDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Task id is required");
   }
 
-  let task = req.task;
+  // let task = req.task;
 
-  if (!task) {
-    task = await TaskModel.findById(taskId)
+  
+    let task = await TaskModel.findById(taskId)
       .populate("assignees", "name email")
       .populate("createdBy", "name email")
       .populate("project", "projectName  projectType")
@@ -150,7 +164,7 @@ const getTaskDetails = asyncHandler(async (req, res) => {
     if (!task) {
       throw new ApiError(404, "Task not found");
     }
-  }
+  
 
   return res
     .status(200)
@@ -232,9 +246,9 @@ const updateTask = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  //  console.log("request comes here after updation");
+  updates._id=updatedTask._id
 
-  // activity log utility function call
+
   await createTaskActivityLog({
     taskId: updatedTask._id,
     projectId: projectId,
@@ -246,12 +260,13 @@ const updateTask = asyncHandler(async (req, res) => {
   try {
     const io = getIO();
 
-    io.to(`project:${projectId}`).emit("TASK_UPDATED", {
+    io.to(`project:${projectId}`).emit("TASK:UPDATE", {
       taskId: updatedTask._id,
+      createdBy:updatedTask.createdBy,
       updates,
     });
   } catch (error) {
-    console.error("Socket emit failed (TASK_UPDATED)", error.message);
+    console.error("Socket emit failed (TASK:UPDATE)", error.message);
   }
 
   return res
@@ -263,7 +278,7 @@ const updateTask = asyncHandler(async (req, res) => {
 // delete task with proper reorder logics and activity log
 const deleteTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const task = req.task; // attached by middleware
+  const task = req.task; 
 
   if (!task) {
     throw new ApiError(404, "Task not found");
@@ -271,7 +286,6 @@ const deleteTask = asyncHandler(async (req, res) => {
 
   const { status, order, project } = task;
 
-  // DELETE TASK
 
   await TaskModel.findByIdAndDelete(task._id);
 

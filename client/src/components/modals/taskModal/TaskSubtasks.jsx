@@ -12,7 +12,7 @@ export default function TaskSubtasks({ subtasks, task }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  console.log("subtask is ---> ", subtasks[0]);
+  // console.log("subtask is ---> ", subtasks[0]);
 
   const addSubtask = () => {
     if (!newSubtask.trim()) return;

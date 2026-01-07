@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ProjectHeader from "../../components/ProjectDetails/ProjectHeader";
 import ProjectTabs from "../../components/ProjectDetails/ProjectTabs";
 import ProjectContent from "../../components/ProjectDetails/ProjectContent";
@@ -7,10 +7,15 @@ import CreateTaskModal from "../../components/modals/taskModal/CreateTaskModal";
 import CreateTeamModal from "../../components/modals/teamsModals/CreateTeamModal";
 import {
   createTaskService,
+  deleteTaskService,
   getAllTasksService,
+  getSingleTasksService,
+  updateTaskService,
 } from "../../services/taskOperations/taskServices";
 import { useParams } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
+import { connectWs } from "../../sockets/socket";
+import { updateTask } from "../../Redux_Config/Slices/tasksSlice";
 
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
@@ -19,7 +24,7 @@ export default function ProjectDetails() {
   const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
   const projectData = useSelector((state) => state.projects.selectedProject);
   const taskList = useSelector((state) => state.tasks.list);
-  const token = useSelector((state) => state.auth.token);
+  const { token, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
@@ -34,6 +39,68 @@ export default function ProjectDetails() {
     });
   };
 
+  let Socket = useRef(null);
+
+  useEffect(() => {
+    Socket.current = connectWs();
+
+    Socket.current.connect();
+
+    Socket.current.on("connect", () => {
+      console.log("connected to the server socket :: -->", Socket.current.id);
+
+      Socket.current.emit("client-message", "hello from client");
+
+      Socket.current.on("server-message", (msg) => {
+        console.log(" Message from server:", msg);
+      });
+
+      Socket.current.emit("join-project", { projectId });
+
+      const handleTaskCreate = ({ taskId, createdBy }) => {
+        if (createdBy === user._id) return;
+
+        console.log("TASK:CREATED RECEIVED ", taskId);
+
+        dispatch(getSingleTasksService(projectId, taskId, token));
+      };
+
+      const handleTaskDelete = ({ taskId, createdBy }) => {
+        if (createdBy === user._id) return;
+
+        console.log("TASK:DELETED RECEIVED ", taskId);
+
+        dispatch(deleteTaskService(projectId, taskId, token));
+      };
+
+      const handleTaskUpdate = ({ taskId,createdBy}) => {
+        if (createdBy === user._id) return;
+
+        console.log("TASK:UPDATE RECEIVED ", taskId);
+        
+
+        // dispatch(updateTask(updates))
+
+        dispatch(getSingleTasksService(projectId, taskId, token));
+      };
+
+      Socket.current.on("TASK:CREATE", handleTaskCreate);
+      Socket.current.on("TASK:DELETE", handleTaskDelete);
+      Socket.current.on("TASK:UPDATE", handleTaskUpdate);
+
+      Socket.current.on("disconnect", () => {
+        console.log(" Disconnected from server");
+      });
+    });
+
+    console.log("socket cureent==> ", Socket);
+
+    return () => {
+      Socket.current.off("connect");
+      Socket.current.off("server-message");
+      Socket.current.disconnect();
+    };
+  }, [projectId]);
 
   useEffect(() => {
     if (projectId && token) {
@@ -41,7 +108,6 @@ export default function ProjectDetails() {
     }
   }, [projectId, token, dispatch]);
 
-  
   useEffect(() => {
     if (projectData?.data?._id && token) {
       dispatch(getAllTasksService(projectData.data._id, token));
@@ -65,6 +131,7 @@ export default function ProjectDetails() {
       </div>
     );
   }
+
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}

@@ -118,7 +118,7 @@ export const fetchSingleProjectService = (projectId, token) => {
       });
       // console.log("response is --> ",response);
 
-      console.log("response in projecvt data---> ",response.data.data);
+      // console.log("response in projecvt data---> ",response.data.data);
       
 
       if (response.data.success) {
@@ -151,7 +151,7 @@ export const updateProjectService = (
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("update responcse==> ", response);
+      // console.log("update responcse==> ", response);
 
       if (response.data.success) {
         toast.success("Project updated successfully!");
@@ -225,7 +225,7 @@ export const archiveProjectService = (projectId, status, token) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("response is ---> ", response);
+      // console.log("response is ---> ", response);
 
       if (response.data.success) {
         toast.success(
@@ -287,7 +287,7 @@ export const fetchProjectMembersService = (projectId, token) => {
         }
       );
 
-      console.log("response --> ",response.data);
+      // console.log("response --> ",response.data);
       
 
       if (response.data.success) {
@@ -310,7 +310,7 @@ export const fetchProjectMembersService = (projectId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch members.");
-      console.log("fetchProjectMembersService error →", error);
+      // console.log("fetchProjectMembersService error →", error);
     } finally {
       dispatch(setProjectMembersLoading(false));
     }
@@ -339,7 +339,7 @@ export const addProjectMemberService = (
         }
       );
 
-      console.log("response is---> ", response.data);
+      // console.log("response is---> ", response.data);
 
       if (response.data.success) {
         toast.success("Member added successfully!");
@@ -369,7 +369,7 @@ export const addProjectMemberService = (
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add member.");
-      console.log("Add member error →", error);
+      // console.log("Add member error →", error);
     } finally {
       dispatch(setAddMemberLoading(false));
     }
@@ -399,7 +399,7 @@ export const updateProjectMemberService = (
         }
       );
 
-      console.log("response is --> ", response.data);
+      // console.log("response is --> ", response.data);
     
       if (response.data.success) {
         toast.success("Member updated successfully!");
@@ -470,7 +470,7 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to remove member.");
-      console.log("error is --> ",error);
+      // console.log("error is --> ",error);
       
     } finally {
       dispatch(setRemoveMemberLoading(false));
@@ -524,7 +524,7 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to active member.");
-      console.log("error is --> ",error);
+      // console.log("error is --> ",error);
       
     } finally {
       dispatch(setActiveMemberLoading(false));

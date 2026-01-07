@@ -179,7 +179,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
-  console.log("route hit");
+  // console.log("route hit");
   
 
   if (!projectId) {
