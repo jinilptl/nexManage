@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-
 // SUB-SCHEMA: projectMembers
-
 
 const projectMembersSchema = new mongoose.Schema(
   {
@@ -43,13 +41,16 @@ const projectMembersSchema = new mongoose.Schema(
       enum: ["active", "removed"],
       default: "active",
     },
+
+    taskStatuses: {
+      type: [String],
+      default: ["To Do", "In Progress", "Review", "Done"],
+    },
   },
   { _id: false }
 );
 
-
 // MAIN PROJECT SCHEMA
-
 
 const projectSchema = new mongoose.Schema(
   {

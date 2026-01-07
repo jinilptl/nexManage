@@ -45,14 +45,7 @@ export default function ProjectModal({
         projectType: initialData.projectType ?? "personal",
         teams: initialData?.teams?.map((t) => t._id) ?? [],
       });
-    } else {
-      setFormData({
-        projectName: "",
-        description: "",
-        projectType: "personal",
-        teams: [],
-      });
-    }
+    } 
   }, [open, isEdit, initialData]);
 
   const handleSubmit = (e) => {
