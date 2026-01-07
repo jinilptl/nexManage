@@ -44,7 +44,7 @@ export default function Navigation({
   return (
     <>
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900 text-white border-b border-slate-700">
+      <div className="md:hidden  fixed top-0 left-0 right-0 z-50 bg-slate-900 text-white border-b border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -64,7 +64,7 @@ export default function Navigation({
 
       {/* Desktop Sidebar */}
       <div
-        className={`hidden md:flex fixed left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
+        className={`hidden md:flex fixed z-50000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
           collapsed ? "w-20" : "w-64"
         }`}
       >
