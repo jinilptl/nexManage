@@ -1,63 +1,71 @@
-import React from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { COLUMNS } from "./kanbanConfig";
 import KanbanColumn from "./KanbanColumn";
+import { useSelector } from "react-redux";
 
 export default function KanbanBoard({
-  tasks,
+  tasks: initialTasks,
   onTaskClick,
   onAddTask,
-  onMoveTask,
-  onReorderTask,
-  onModalOpen
+  onModalOpen,
 }) {
+  const project = useSelector((state) => state.projects.selectedProject);
 
- console.log("task is ---> ",tasks);
- 
-  
-  /* -------- SAME COLUMN REORDER LOGIC -------- */
-  const moveTask = (columnId, fromIndex, toIndex) => {
-     onReorderTask(columnId, fromIndex, toIndex);
-    onMoveTask((prev) => {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    setTasks(initialTasks || []);
+  }, [initialTasks]);
+
+  const columns = useMemo(() => {
+    return (
+      project?.data?.taskStatuses?.slice().sort((a, b) => a.order - b.order) ||
+      []
+    );
+  }, [project]);
+
+  const reorderTask = (columnId, fromIndex, toIndex) => {
+    setTasks((prev) => {
       const columnTasks = prev.filter((t) => t.status === columnId);
       const otherTasks = prev.filter((t) => t.status !== columnId);
 
-      const [moved] = columnTasks.splice(fromIndex, 1);
-      columnTasks.splice(toIndex, 0, moved);
-     
+      const updated = [...columnTasks];
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, moved);
 
-      return [...otherTasks, ...columnTasks];
+      return [...otherTasks, ...updated];
     });
   };
 
+  const moveTaskToColumn = (taskId, targetColumnId) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task._id === taskId ? { ...task, status: targetColumnId } : task
+      )
+    );
+  };
+
   return (
-   <DndProvider backend={HTML5Backend}>
-  {/* OUTER WRAPPER (NO SCROLL HERE) */}
-  <div className="w-full min-w-0 overflow-hidden">
-
-    {/* SCROLL CONTAINER */}
-    <div className="overflow-x-auto overflow-y-hidden max-w-full">
-      
-      {/* ACTUAL BOARD */}
-      <div className="flex gap-6 min-w-max px-2 pb-4">
-        {COLUMNS.map((column) => (
-          <KanbanColumn
-            key={column.id}
-            column={column}
-            tasks={tasks.filter((t) => t.status === column.id)}
-            onMoveTask={onMoveTask}
-            onAddTask={onAddTask}
-            onTaskClick={onTaskClick}
-            moveTask={moveTask}
-            onModalOpen={onModalOpen}
-          />
-        ))}
+    <DndProvider backend={HTML5Backend}>
+      <div className="w-full min-w-0 overflow-hidden">
+        <div className="overflow-x-auto overflow-y-hidden max-w-full">
+          <div className="flex gap-6 min-w-max px-2 pb-4">
+            {columns.map((column) => (
+              <KanbanColumn
+                key={column._id}
+                column={column}
+                tasks={tasks.filter((t) => t.status === column._id)}
+                onMoveTaskToColumn={moveTaskToColumn}
+                onReorderTask={reorderTask}
+                onAddTask={onAddTask}
+                onTaskClick={onTaskClick}
+                onModalOpen={onModalOpen}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-
-    </div>
-  </div>
-</DndProvider>
-
+    </DndProvider>
   );
 }
