@@ -7,10 +7,13 @@ import { Project as ProjectModel } from "../../models/project.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { TaskAttachment as TaskAttachmentModel } from "../../models/Task models/taskAttachment.models.js";
 import { uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { getIO } from "../../socket/index.js";
+
 
 const addTaskAttachment = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
   const userId = req.user?._id;
+  const projectId=req.params.projectId;
   let task = req.task;
 
   const { attachmentType, fileName, fileUrl } = req.body;
@@ -60,6 +63,7 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
 
     await createTaskActivityLog({
       taskId: task._id,
+      projectId:projectId,
       action: "ATTACHMENT_ADDED",
       performedBy: userId,
       meta: {
@@ -73,6 +77,25 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
     )
       .populate("task", "title status")
       .populate("uploadedBy", "name email");
+
+      try {
+  const io = getIO();
+
+  io.to(`project:${task.project}`).emit("ATTACHMENT_ADDED", {
+    taskId: task._id,
+    attachment: {
+      _id: attachment._id,
+      attachmentType: attachment.attachmentType,
+      fileName: attachment.fileName,
+      fileUrl: attachment.fileUrl,
+      uploadedBy: attachment.uploadedBy,
+      createdAt: attachment.createdAt,
+    },
+  });
+} catch (error) {
+  console.error("Socket emit failed (ATTACHMENT_ADDED)", error.message);
+}
+
 
     return res.status(201).json(
       new ApiResponse(201, "File attached successfully", {
@@ -149,6 +172,7 @@ const getTaskAttachments = asyncHandler(async (req, res) => {
 const deleteTaskAttachment = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { attachmentId } = req.params;
+  const projectId=req.params.projectId
 
   if (!attachmentId) {
     throw new ApiError(404, "AttachmentId not found");
@@ -177,6 +201,7 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId,
+    projectId:projectId,
     action: "ATTACHMENT_DELETED",
     performedBy: userId,
     meta: {
@@ -185,6 +210,19 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
       fileUrl,
     },
   });
+
+  try {
+  const io = getIO();
+
+  io.to(`project:${taskId}`).emit("ATTACHMENT_DELETED", {
+    taskId,
+    attachmentId: attachment._id,
+    attachmentType: type,
+    fileName,
+  });
+} catch (error) {
+  console.error("Socket emit failed (ATTACHMENT_DELETED)", error.message);
+}
 
   return res
     .status(200)

@@ -6,11 +6,14 @@ import { User as UserModel } from "../../models/user.models.js";
 import { Project as ProjectModel } from "../../models/project.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { SubTask as SubTaskModel } from "../../models/Task models/subTask.models.js";
+import { getIO } from "../../socket/index.js";
+
 
 const addSubTask = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
   const { title, description } = req.body;
   const userId = req.user?._id;
+  const projectId=req.params.projectId
 
   // Validations
 
@@ -52,6 +55,7 @@ const addSubTask = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: task._id,
+    projectId:projectId,
     action: "SUBTASK_CREATED",
     performedBy: userId,
     meta: {
@@ -65,6 +69,22 @@ const addSubTask = asyncHandler(async (req, res) => {
     select: "title status priority",
   });
 
+  try {
+    const io = getIO();
+
+    io.to(`project:${task.project}`).emit("SUBTASK_CREATED", {
+      taskId: task._id,
+      subTask: {
+        _id: subTask._id,
+        title: subTask.title,
+        isCompleted: subTask.isCompleted,
+        createdAt: subTask.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Socket emit failed (SUBTASK_CREATED)", error.message);
+  }
+
   return res.status(201).json(
     new ApiResponse(201, "Subtask added successfully", {
       subTask: populatedSubTask,
@@ -76,6 +96,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
   const { title, description } = req.body;
+  const projectId=req.params.projectId
 
   let subTask = req.subTask;
 
@@ -121,10 +142,23 @@ const updateSubTask = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: subTask.task,
+    projectId:projectId,
     action: "SUBTASK_UPDATED",
     performedBy: userId,
     meta,
   });
+
+  try {
+    const io = getIO();
+
+    io.to(`project:${updatedSubTask.task}`).emit("SUBTASK_UPDATED", {
+      taskId: updatedSubTask.task,
+      subTaskId: updatedSubTask._id,
+      updates,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (SUBTASK_UPDATED)", error.message);
+  }
 
   return res
     .status(200)
@@ -134,6 +168,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
 const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
+  const projectId=req.params.projectId
 
   const { isCompleted } = req.body;
 
@@ -172,6 +207,7 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: subTask.task,
+    projectId:projectId,
     action: targetState ? "SUBTASK_COMPLETED" : "SUBTASK_UNCOMPLETED",
     performedBy: userId,
     meta: {
@@ -179,6 +215,17 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
       completed: targetState,
     },
   });
+
+  try {
+    const io = getIO();
+
+    io.to(`project:${taskId}`).emit("SUBTASK_DELETED", {
+      taskId,
+      subTaskId,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (SUBTASK_DELETED)", error.message);
+  }
 
   return res
     .status(200)
@@ -193,11 +240,10 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
     );
 });
 
-
-
 const deleteSubTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
+  const projectId=req.params.projectId
 
   let subTask = req.subTask;
 
@@ -208,16 +254,15 @@ const deleteSubTask = asyncHandler(async (req, res) => {
     }
   }
 
-
   const taskId = subTask.task;
   const subTaskTitle = subTask.title;
 
-  
   await SubTaskModel.findByIdAndDelete(subTask._id);
 
   // Activity log
   await createTaskActivityLog({
     taskId,
+    projectId:projectId,
     action: "SUBTASK_DELETED",
     performedBy: userId,
     meta: {
@@ -226,8 +271,19 @@ const deleteSubTask = asyncHandler(async (req, res) => {
     },
   });
 
-  return res.status(200).json(
-    new ApiResponse(200, "Subtask deleted successfully")
-  );
+  try {
+    const io = getIO();
+
+    io.to(`project:${taskId}`).emit("SUBTASK_DELETED", {
+      taskId,
+      subTaskId,
+    });
+  } catch (error) {
+    console.error("Socket emit failed (SUBTASK_DELETED)", error.message);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Subtask deleted successfully"));
 });
-export { addSubTask, updateSubTask ,toggleSubTaskCompletion,deleteSubTask};
+export { addSubTask, updateSubTask, toggleSubTaskCompletion, deleteSubTask };
