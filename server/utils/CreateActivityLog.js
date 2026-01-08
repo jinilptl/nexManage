@@ -39,21 +39,21 @@ const createTaskActivityLog = async ({
   });
 
 
- try {
-  const io = getIO();
-  io.to(`project:${projectId}`).emit("ACTIVITY_LOG_ADDED", {
-    taskId,
-    log: {
-      _id: log._id,
-      action: log.action,
-      performedBy: log.performedBy,
-      performedAt: log.performedAt,
-      meta: log.meta,
-    },
-  });
-} catch (err) {
-  console.error("Socket emit failed (ACTIVITY_LOG_ADDED)");
-}
+//  try {
+//   const io = getIO();
+//   io.to(`project:${projectId}`).emit("ACTIVITY_LOG_ADDED", {
+//     taskId,
+//     log: {
+//       _id: log._id,
+//       action: log.action,
+//       performedBy: log.performedBy,
+//       performedAt: log.performedAt,
+//       meta: log.meta,
+//     },
+//   });
+// } catch (err) {
+//   console.error("Socket emit failed (ACTIVITY_LOG_ADDED)");
+// }
 };
 
 export { createTaskActivityLog };
