@@ -62,7 +62,7 @@ const taskSlice = createSlice({
       }
     },
 
-      // it is for realtime add or update 
+    // it is for realtime add or update
     upsertTask(state, action) {
       const index = state.list.findIndex(
         (task) => task._id === action.payload._id
@@ -133,7 +133,40 @@ const taskSlice = createSlice({
         }
       }
     },
+    moveTaskRealtime(state, action) {
+      const { taskId, toStatus } = action.payload;
 
+      const movedTaskIndex = state.list.findIndex(
+        (taskItem) => taskItem._id.toString() === taskId.toString()
+      );
+
+      if (movedTaskIndex === -1) return;
+
+      const movedTask = state.list[movedTaskIndex];
+
+      if (movedTask.status === toStatus) return;
+
+      state.list.splice(movedTaskIndex, 1);
+
+      movedTask.status = toStatus;
+
+      const tasksInTargetColumn = state.list.filter(
+        (taskItem) => taskItem.status === toStatus
+      );
+
+      if (tasksInTargetColumn.length === 0) {
+        state.list.push(movedTask);
+      } else {
+        const lastTaskInTargetColumn =
+          tasksInTargetColumn[tasksInTargetColumn.length - 1];
+
+        const lastTaskGlobalIndex = state.list.findIndex(
+          (taskItem) => taskItem._id === lastTaskInTargetColumn._id
+        );
+
+        state.list.splice(lastTaskGlobalIndex + 1, 0, movedTask);
+      }
+    },
     // SUBTASKS
 
     setSubtasks(state, action) {
@@ -250,6 +283,7 @@ export const {
 
   setReorderTasksInColumn,
   setUpdateTaskStatus,
+  moveTaskRealtime,
 
   setSubtasks,
   addSubtask,
