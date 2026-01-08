@@ -15,7 +15,11 @@ import {
 import { useParams } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
 import { connectWs } from "../../sockets/socket";
-import { updateTask } from "../../Redux_Config/Slices/tasksSlice";
+import {
+  deleteTask,
+  moveTaskRealtime,
+  updateTask,
+} from "../../Redux_Config/Slices/tasksSlice";
 
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
@@ -70,23 +74,28 @@ export default function ProjectDetails() {
 
         console.log("TASK:DELETED RECEIVED ", taskId);
 
-        dispatch(deleteTaskService(projectId, taskId, token));
+        dispatch(deleteTask(taskId));
       };
 
-      const handleTaskUpdate = ({ taskId,createdBy}) => {
+      const handleTaskUpdate = ({ taskId, createdBy }) => {
         if (createdBy === user._id) return;
 
         console.log("TASK:UPDATE RECEIVED ", taskId);
-        
 
         // dispatch(updateTask(updates))
 
         dispatch(getSingleTasksService(projectId, taskId, token));
       };
 
+      const handleTaskMove = ({ taskId, fromStatus, toStatus }) => {
+        console.log("TASK:MOVE RECEIVED ", taskId);
+        dispatch(moveTaskRealtime({taskId, fromStatus, toStatus}));
+      };
+
       Socket.current.on("TASK:CREATE", handleTaskCreate);
       Socket.current.on("TASK:DELETE", handleTaskDelete);
       Socket.current.on("TASK:UPDATE", handleTaskUpdate);
+      Socket.current.on("TASK:MOVE", handleTaskMove);
 
       Socket.current.on("disconnect", () => {
         console.log(" Disconnected from server");
