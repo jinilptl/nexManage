@@ -45,12 +45,14 @@ projectRouter
   .post(verifyToken, updateProjectStatus);
 
 projectRouter
-  .route("/projects/:projectId/status")
+  .route("/:projectId/status")
   .post(verifyToken,addProjectTaskStatus);
 
 projectRouter
   .route("/update-project-manager/:projectId")
   .post(verifyToken, updateProjectManager);
+
+
 
 // members routes
 

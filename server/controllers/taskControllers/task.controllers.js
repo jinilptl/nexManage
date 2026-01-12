@@ -424,7 +424,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 
   if (!statusId) throw new ApiError(400, "statusId is required");
 
-  console.log(project);
+  // console.log(project);
 
   const targetStatus = await project.taskStatuses.find(
     (s) => s._id.toString() === statusId

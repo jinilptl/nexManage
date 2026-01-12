@@ -3,14 +3,12 @@ import { ApiError } from "../../utils/ApiError.js";
 import { verifySocketToken } from "../../utils/verifySocketToken.js";
 
 const socketAuth = (io) => {
-  log("req comes in the socket auth --> ");
+  // log("req comes in the socket auth --> ");
   io.use((socket, next) => {
-    
-    
     try {
       const token = socket.handshake.auth?.token;
 
-      log("token is --> ", token);
+      // log("token is --> ", token);
       if (!token) {
         return next(new Error("Authentication token missing"));
       }
@@ -21,11 +19,11 @@ const socketAuth = (io) => {
         return next(new Error("Invalid token"));
       }
 
-      socket.user = user; 
-      next(); 
+      socket.user = user;
+      next();
     } catch (error) {
       console.log(" Socket auth error:", error.message);
-      next(new Error("Authentication failed")); 
+      next(new Error("Authentication failed"));
     }
   });
 };

@@ -142,7 +142,7 @@ export default function ProjectDetails() {
   }
 
   return (
-    <div className="px-8 py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
+    <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-4">
         Projects <span className="mx-1">›</span>

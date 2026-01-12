@@ -62,6 +62,15 @@ const projectsSlice = createSlice({
     setSelectedProjectData(state, action) {
       state.selectedProject.data = action.payload;
     },
+    addTaskStatusIntoProject(state, action) {
+      const payload = action.payload;
+      console.log("payload is ---> ",payload);
+
+      const data=state.selectedProject.data
+      console.log("data is on reducer---> ",data);
+      
+      
+    },
     setSelectedProjectLoading(state, action) {
       state.selectedProject.loading = action.payload;
     },
@@ -72,6 +81,7 @@ const projectsSlice = createSlice({
     setProjectMembersLoading(state, action) {
       state.projectMembers.loading = action.payload;
     },
+    
 
     /* ---------------------- ACTION LOADERS ---------------------- */
     setCreateProjectLoading(state, action) {
@@ -144,6 +154,7 @@ export const {
   // Selected project
   setSelectedProjectId,
   setSelectedProjectData,
+  addTaskStatusIntoProject,
   setSelectedProjectLoading,
 
   // Members
