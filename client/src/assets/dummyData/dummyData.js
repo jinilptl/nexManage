@@ -26,199 +26,173 @@ export const dummyProjects = [
 ];
 
 
-export const dummyTeams = [
-  { _id: "team1", teamName: "Design Team" },
-  { _id: "team2", teamName: "Development Team" },
-  { _id: "team3", teamName: "Marketing Team" },
-];
 
-
-
-
-// ===============================
-// USERS
-// ===============================
 export const mockUsers = [
   {
-    id: 'user-1',
-    name: 'John Doe',
-    email: 'john@company.com',
-    role: 'admin',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-    status: 'active',
+    id: "u1",
+    name: "Jinil Patel",
+    email: "jinil@example.com",
+    avatar: "",
   },
   {
-    id: 'user-2',
-    name: 'Sarah Johnson',
-    email: 'sarah@company.com',
-    role: 'manager',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    status: 'active',
+    id: "u2",
+    name: "Rahul Sharma",
+    email: "rahul@example.com",
+    avatar: "",
   },
   {
-    id: 'user-3',
-    name: 'Mike Ross',
-    email: 'mike@company.com',
-    role: 'member',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-    status: 'active',
+    id: "u3",
+    name: "Priya Singh",
+    email: "priya@example.com",
+    avatar: "",
   },
   {
-    id: 'user-4',
-    name: 'Jane Smith',
-    email: 'jane@company.com',
-    role: 'member',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
-    status: 'active',
+    id: "u4",
+    name: "Aman Verma",
+    email: "aman@example.com",
+    avatar: "",
+  },
+  {
+    id: "u5",
+    name: "Neha Patel",
+    email: "neha@example.com",
+    avatar: "",
   },
 ];
 
-// ===============================
-// PROJECTS (used in ProjectDetail)
-// ===============================
 export const mockProjects = [
   {
-    id: 'project-1',
-    name: 'Website Redesign',
-    description: 'Complete redesign of company website',
-    icon: '🌐',
-    color: '#3B82F6',
-    owner: 'user-2',
-    members: ['user-1', 'user-2', 'user-3'],
-    status: 'active',
+    id: "p1",
+    name: "NexManage Dashboard",
+    icon: "📌",
+    status: "active",
     stats: {
-      totalTasks: 5,
-      completedTasks: 1,
-      memberCount: 3,
+      totalTasks: 24,
+      completedTasks: 18,
     },
   },
   {
-    id: 'project-2',
-    name: 'Mobile App Development',
-    description: 'iOS & Android mobile application',
-    icon: '📱',
-    color: '#10B981',
-    owner: 'user-1',
-    members: ['user-1', 'user-3', 'user-4'],
-    status: 'active',
+    id: "p2",
+    name: "Task & Kanban Module",
+    icon: "🧩",
+    status: "active",
     stats: {
-      totalTasks: 3,
-      completedTasks: 1,
-      memberCount: 3,
+      totalTasks: 30,
+      completedTasks: 14,
+    },
+  },
+  {
+    id: "p3",
+    name: "Team Management",
+    icon: "👥",
+    status: "active",
+    stats: {
+      totalTasks: 16,
+      completedTasks: 6,
+    },
+  },
+  {
+    id: "p4",
+    name: "Authentication Setup",
+    icon: "🔐",
+    status: "completed",
+    stats: {
+      totalTasks: 12,
+      completedTasks: 12,
     },
   },
 ];
 
-// ===============================
-// TASKS (used in KanbanBoard)
-// ===============================
 export const mockTasks = [
-  // PROJECT 1
   {
-    id: 'task-1',
-    title: 'Design homepage UI',
-    description: 'Create homepage mockups',
-    project: 'project-1',
-    status: 'done',
-    columnId: 'done',
-    priority: 'high',
-    assignees: ['user-2'],
-    labels: ['design', 'ui'],
-    attachments: 2,
+    id: "t1",
+    title: "Create Analytics UI",
+    status: "in_progress", // todo | in_progress | review | done
+    priority: "high", // low | medium | high | critical
+    assignees: ["u1", "u2"],
     comments: 4,
-    dueDate: new Date('2025-01-20'),
-    position: 0,
+    dueDate: "2026-01-10",
   },
   {
-    id: 'task-2',
-    title: 'Build navbar component',
-    description: 'Responsive navbar',
-    project: 'project-1',
-    status: 'in_progress',
-    columnId: 'in_progress',
-    priority: 'high',
-    assignees: ['user-3'],
-    labels: ['frontend'],
-    attachments: 1,
-    comments: 2,
-    dueDate: new Date('2025-01-30'),
-    position: 0,
+    id: "t2",
+    title: "Fix Kanban drag issue",
+    status: "review",
+    priority: "critical",
+    assignees: ["u2"],
+    comments: 8,
+    dueDate: "2026-01-05",
   },
   {
-    id: 'task-3',
-    title: 'Optimize images',
-    description: 'Lazy load images',
-    project: 'project-1',
-    status: 'todo',
-    columnId: 'todo',
-    priority: 'medium',
-    assignees: ['user-3'],
-    labels: ['performance'],
-    attachments: 0,
-    comments: 1,
-    position: 1,
-  },
-
-  // PROJECT 2
-  {
-    id: 'task-4',
-    title: 'Setup React Native project',
-    description: 'Initialize RN app',
-    project: 'project-2',
-    status: 'done',
-    columnId: 'done',
-    priority: 'critical',
-    assignees: ['user-3'],
-    labels: ['setup', 'mobile'],
-    attachments: 1,
+    id: "t3",
+    title: "Add Task Attachments feature",
+    status: "done",
+    priority: "medium",
+    assignees: ["u1", "u3"],
     comments: 3,
-    position: 0,
+    dueDate: "2026-01-02",
   },
   {
-    id: 'task-5',
-    title: 'Design login screen',
-    description: 'Login UI & validation',
-    project: 'project-2',
-    status: 'in_progress',
-    columnId: 'in_progress',
-    priority: 'high',
-    assignees: ['user-4'],
-    labels: ['design'],
-    attachments: 2,
+    id: "t4",
+    title: "Implement role-based access",
+    status: "done",
+    priority: "high",
+    assignees: ["u4"],
+    comments: 6,
+    dueDate: "2025-12-20",
+  },
+  {
+    id: "t5",
+    title: "Build project progress section",
+    status: "todo",
+    priority: "low",
+    assignees: ["u5"],
     comments: 1,
-    position: 0,
+    dueDate: "2026-01-25",
   },
   {
-    id: 'task-6',
-    title: 'Auth API integration',
-    description: 'JWT auth flow',
-    project: 'project-2',
-    status: 'todo',
-    columnId: 'todo',
-    priority: 'critical',
-    assignees: ['user-3'],
-    labels: ['backend'],
-    attachments: 0,
+    id: "t6",
+    title: "Create API integration for tasks",
+    status: "in_progress",
+    priority: "high",
+    assignees: ["u1"],
+    comments: 5,
+    dueDate: "2026-01-12",
+  },
+  {
+    id: "t7",
+    title: "Add notifications UI",
+    status: "todo",
+    priority: "medium",
+    assignees: ["u3", "u5"],
+    comments: 2,
+    dueDate: "2026-01-28",
+  },
+  {
+    id: "t8",
+    title: "Optimize dashboard performance",
+    status: "review",
+    priority: "high",
+    assignees: ["u2", "u4"],
+    comments: 7,
+    dueDate: "2026-01-08",
+  },
+  {
+    id: "t9",
+    title: "Setup project settings page",
+    status: "done",
+    priority: "low",
+    assignees: ["u5"],
     comments: 0,
-    position: 1,
+    dueDate: "2025-12-30",
+  },
+  {
+    id: "t10",
+    title: "Create task filters",
+    status: "in_progress",
+    priority: "medium",
+    assignees: ["u1", "u2"],
+    comments: 3,
+    dueDate: "2026-01-15",
   },
 ];
-
-// ===============================
-// CURRENT USER
-// ===============================
-export const currentUser = mockUsers[0];
-
-// ===============================
-// HELPERS (USED BY UI)
-// ===============================
-export const getUserById = id =>
-  mockUsers.find(user => user.id === id);
-
-export const getProjectById = id =>
-  mockProjects.find(project => project.id === id);
-
-export const getTasksByProject = projectId =>
-  mockTasks.filter(task => task.project === projectId);
-
 

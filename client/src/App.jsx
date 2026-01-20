@@ -12,21 +12,12 @@ import TeamsPage from "./pages/DashBoard/TeamsPage";
 
 import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
-import ProjectDetails from "./pages/DashBoard/Projectdetails"
-// import { connectWs } from "./sockets/socket";
+import ProjectDetails from "./pages/DashBoard/Projectdetails";
+import AnalyticsPage from "./pages/Analytics/AnalyticsPage";
+
 
 const App = () => {
   const { user, token } = useSelector((state) => state.auth);
-  
-
-
- 
-
-
-
-  
-
-  
 
   return (
     <div>
@@ -47,7 +38,15 @@ const App = () => {
           <Route path="/dashboard/teams" element={<TeamsPage />} />
           <Route path="/dashboard/projects" element={<ProjectPage />} />
 
-          <Route path="/dashboard/projects/task/:projectId" element={<ProjectDetails />} />
+          <Route
+            path="/dashboard/projects/task/:projectId"
+            element={<ProjectDetails />}
+          />
+
+          <Route
+            path="/dashboard/analytics"
+            element={<AnalyticsPage/>}
+          />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
