@@ -1,7 +1,7 @@
 import { CheckCircle } from "lucide-react";
 
 export default function TaskActivity({ activities }) {
-  console.log("activites in task activits --> ",activities);
+  // console.log("activites in task activits --> ",activities);
   
   return (
     <section>

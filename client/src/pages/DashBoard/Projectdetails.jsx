@@ -51,9 +51,10 @@ export default function ProjectDetails() {
     Socket.current.connect();
 
     Socket.current.on("connect", () => {
-      console.log("connected to the server socket :: -->", Socket.current.id);
+      console.log("connected to the server socket ----->"
+      );
 
-      Socket.current.emit("client-message", "hello from client");
+      // Socket.current.emit("client-message", "hello from client");
 
       Socket.current.on("server-message", (msg) => {
         console.log(" Message from server:", msg);
@@ -64,7 +65,7 @@ export default function ProjectDetails() {
       const handleTaskCreate = ({ taskId, createdBy }) => {
         if (createdBy === user._id) return;
 
-        console.log("TASK:CREATED RECEIVED ", taskId);
+        // console.log("TASK:CREATED RECEIVED ", taskId);
 
         dispatch(getSingleTasksService(projectId, taskId, token));
       };
@@ -72,7 +73,7 @@ export default function ProjectDetails() {
       const handleTaskDelete = ({ taskId, createdBy }) => {
         if (createdBy === user._id) return;
 
-        console.log("TASK:DELETED RECEIVED ", taskId);
+        // console.log("TASK:DELETED RECEIVED ", taskId);
 
         dispatch(deleteTask(taskId));
       };
@@ -80,7 +81,7 @@ export default function ProjectDetails() {
       const handleTaskUpdate = ({ taskId, createdBy }) => {
         if (createdBy === user._id) return;
 
-        console.log("TASK:UPDATE RECEIVED ", taskId);
+        // console.log("TASK:UPDATE RECEIVED ", taskId);
 
         // dispatch(updateTask(updates))
 
@@ -88,7 +89,7 @@ export default function ProjectDetails() {
       };
 
       const handleTaskMove = ({ taskId, fromStatus, toStatus }) => {
-        console.log("TASK:MOVE RECEIVED ", taskId);
+        // console.log("TASK:MOVE RECEIVED ", taskId);
         dispatch(moveTaskRealtime({taskId, fromStatus, toStatus}));
       };
 
@@ -102,7 +103,7 @@ export default function ProjectDetails() {
       });
     });
 
-    console.log("socket cureent==> ", Socket);
+    // console.log("socket cureent==> ", Socket);
 
     return () => {
       Socket.current.off("connect");

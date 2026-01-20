@@ -63,15 +63,15 @@ export default function TaskDetailModal({ task, onClose }) {
   }, [task._id, task.project, token, dispatch]);
 
   useEffect(() => {
-    console.log("useeefct run");
+    // console.log("useeefct run");
 
     if (task?._id && token) {
-      console.log("fetch taskattech ment inuseeefect run");
+      // console.log("fetch taskattech ment inuseeefect run");
       dispatch(fetchTaskAttachmentsService(task.project, task._id, token));
     }
 
     return () => {
-      console.log("fetch taskattech ment return inuseeefect run");
+      // console.log("fetch taskattech ment return inuseeefect run");
 
       dispatch(clearSelectedTaskAttachments());
     };
