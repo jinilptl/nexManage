@@ -5,6 +5,7 @@ import { addTaskAttachmentService } from "../../../services/taskOperations/taskS
 export default function TaskAttachments({ task }) {
   const dispatch = useDispatch();
   const token = useSelector((s) => s.auth.token);
+  
 
   const { data: attachments = [], loading } = useSelector(
     (s) => s.tasks.selectedTaskAttachments
@@ -21,6 +22,13 @@ export default function TaskAttachments({ task }) {
     dispatch(addTaskAttachmentService(task.project, task._id, formData, token));
     e.target.value = null;
   };
+  
+  
+function handleDownload(att){
+  console.log(att);
+  
+  window.open(att.fileUrl,"_blank")
+}
 
   return (
     <section className="mt-6">
@@ -52,7 +60,7 @@ export default function TaskAttachments({ task }) {
             <span className="truncate text-sm">{att.fileName}</span>
 
             <div className="flex gap-3">
-              <button onClick={() => console.log("download btn clicked")}>
+              <button onClick={() => handleDownload(att) }>
                 <Download size={16} />
               </button>
               <button>
