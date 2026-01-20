@@ -1,9 +1,7 @@
 import { Project } from "../models/project.models.js";
 
 const registerRoomHandlers = (io, socket) => {
-  /**
-   * Secure Join Project Room
-   */
+ 
   socket.on("join-project", async ({ projectId }) => {
     try {
       if (!projectId) return;
@@ -58,7 +56,7 @@ const registerRoomHandlers = (io, socket) => {
 
       console.log(`👤 User ${userId} joined room ${roomName}`);
     } catch (error) {
-      console.error("❌ join-project error:", error.message);
+      console.error("join-project error:", error.message);
     }
   });
 

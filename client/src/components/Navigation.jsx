@@ -145,7 +145,7 @@ export default function Navigation({
               <div className="border-t border-slate-700" />
               <button
                 onClick={() => {
-                  console.log("true");
+                  // console.log("true");
 
                   setLogoutModalOpen(true);
                 }}

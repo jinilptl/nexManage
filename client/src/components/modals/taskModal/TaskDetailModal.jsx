@@ -48,7 +48,7 @@ export default function TaskDetailModal({ task, onClose }) {
   const [selectedAssignees, setSelectedAssignees] = React.useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = React.useState(false);
   const [updateTaskModalOpen, setUpdateTaskModalOpen] = React.useState(false);
-  console.log("attechments is --> ", task.attachments);
+
 
   //  FETCH SUBTASKS ON MODAL
   useEffect(() => {

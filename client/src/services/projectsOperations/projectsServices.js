@@ -22,6 +22,7 @@ import {
   setRemoveMemberLoading,
   setActiveMemberLoading,
   setProjectMembersLoading,
+  addTaskStatusIntoProject,
 } from "../../Redux_Config/Slices/projectsSlice";
 
 const {
@@ -32,14 +33,22 @@ const {
   UPDATE_PROJECT,
   DELETE_PROJECT,
   UPDATE_PROJECT_STATUS,
+  ADD_TASK_STATUSES,
 
   // members end points
   ADD_PROJECT_MEMBER,
   UPDATE_PROJECT_MEMBER,
   REMOVE_PROJECT_MEMBER,
   GET_PROJECT_MEMBERS,
-  ACTIVE_PROJECT_MEMBER
+  ACTIVE_PROJECT_MEMBER,
 } = PROJECTS_END_POINTS;
+
+function GenerateErrorMessage(error) {
+  const message =
+    error?.response?.data?.message || error.message || "Failed to create task";
+
+  return message;
+}
 
 // CREATE PROJECT
 
@@ -118,8 +127,7 @@ export const fetchSingleProjectService = (projectId, token) => {
       });
       // console.log("response is --> ",response);
 
-      console.log("response in projecvt data---> ",response.data.data);
-      
+      // console.log("response in projecvt data---> ",response.data.data);
 
       if (response.data.success) {
         dispatch(setSelectedProjectData(response.data.data));
@@ -151,7 +159,7 @@ export const updateProjectService = (
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("update responcse==> ", response);
+      // console.log("update responcse==> ", response);
 
       if (response.data.success) {
         toast.success("Project updated successfully!");
@@ -225,7 +233,7 @@ export const archiveProjectService = (projectId, status, token) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("response is ---> ", response);
+      // console.log("response is ---> ", response);
 
       if (response.data.success) {
         toast.success(
@@ -241,6 +249,41 @@ export const archiveProjectService = (projectId, status, token) => {
       );
     } finally {
       dispatch(setArchiveProjectLoading(false));
+    }
+  };
+};
+
+//ADD TASK STATUSES INTO PROJECT FOR ADD COLUMN
+
+export const addTaskStatusesIntoProjectService = (
+  formData,
+  projectId,
+  token
+) => {
+  return async (dispatch, getstate) => {
+    try {
+      const endpoint=ADD_TASK_STATUSES.replace(":projectId",projectId)
+      const response= await axiosInstance.post(endpoint,formData,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        },
+        withCredentials:true
+      })
+
+      console.log("response of the add task statuses --> ",response);
+      if(response.data.success){
+        dispatch(addTaskStatusIntoProject(response.data.data))
+        toast("Status Column added succesfully")
+
+      }
+      
+    } catch (error) {
+      console.log(
+        "error in the add taskStatuses into the project-->",
+        GenerateErrorMessage(error)
+      );
+
+      toast.error(GenerateErrorMessage(error)||"error in adding task Status")
     }
   };
 };
@@ -272,7 +315,7 @@ export const syncProjectMembersService = (projectId, token) => {
 
 // ---------------------------Members in Projects ----------------------------
 
-   //get all member
+//get all member
 
 export const fetchProjectMembersService = (projectId, token) => {
   return async (dispatch, getState) => {
@@ -287,8 +330,7 @@ export const fetchProjectMembersService = (projectId, token) => {
         }
       );
 
-      console.log("response --> ",response.data);
-      
+      // console.log("response --> ",response.data);
 
       if (response.data.success) {
         const members = response.data.data;
@@ -310,14 +352,12 @@ export const fetchProjectMembersService = (projectId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch members.");
-      console.log("fetchProjectMembersService error →", error);
+      // console.log("fetchProjectMembersService error →", error);
     } finally {
       dispatch(setProjectMembersLoading(false));
     }
   };
 };
-
-
 
 //  ADD MEMBER TO PROJECT
 export const addProjectMemberService = (
@@ -339,14 +379,14 @@ export const addProjectMemberService = (
         }
       );
 
-      console.log("response is---> ", response.data);
+      // console.log("response is---> ", response.data);
 
       if (response.data.success) {
         toast.success("Member added successfully!");
 
         const newMember = response.data.data;
 
-        // projectMembers.list 
+        // projectMembers.list
 
         const oldMembers = getState().projects.projectMembers.list;
         dispatch(setProjectMembers([...oldMembers, newMember]));
@@ -369,13 +409,12 @@ export const addProjectMemberService = (
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add member.");
-      console.log("Add member error →", error);
+      // console.log("Add member error →", error);
     } finally {
       dispatch(setAddMemberLoading(false));
     }
   };
 };
-
 
 //update member
 
@@ -399,8 +438,8 @@ export const updateProjectMemberService = (
         }
       );
 
-      console.log("response is --> ", response.data);
-    
+      // console.log("response is --> ", response.data);
+
       if (response.data.success) {
         toast.success("Member updated successfully!");
 
@@ -423,7 +462,6 @@ export const updateProjectMemberService = (
   };
 };
 
-
 //remove member(only status changing )
 
 export const removeProjectMemberService = (projectId, memberId, token) => {
@@ -443,7 +481,7 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
       if (response.data.success) {
         toast.success("Member removed!");
 
-      const prevMembers = getState().projects.projectMembers.list;
+        const prevMembers = getState().projects.projectMembers.list;
 
         // for the Update projectMembers.list
         const updatedMembersList = prevMembers.map((m) =>
@@ -451,8 +489,7 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
         );
         dispatch(setProjectMembers(updatedMembersList));
 
-
-        // for the selectedProjectData 
+        // for the selectedProjectData
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
@@ -470,15 +507,12 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to remove member.");
-      console.log("error is --> ",error);
-      
+      // console.log("error is --> ",error);
     } finally {
       dispatch(setRemoveMemberLoading(false));
     }
   };
 };
-
- 
 
 export const activeProjectMemberService = (projectId, memberId, token) => {
   return async (dispatch, getState) => {
@@ -505,8 +539,7 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
         );
         dispatch(setProjectMembers(updatedMembersList));
 
-
-          //for the SelectedProjectData
+        //for the SelectedProjectData
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
@@ -524,8 +557,7 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to active member.");
-      console.log("error is --> ",error);
-      
+      // console.log("error is --> ",error);
     } finally {
       dispatch(setActiveMemberLoading(false));
     }

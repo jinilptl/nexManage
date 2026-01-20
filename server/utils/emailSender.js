@@ -3,11 +3,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
-console.log("sendgrid api key ",process.env.SEND_GRID_API_KEY ? "is set----------":"is not set----------");
-
+// console.log("sendgrid api key ",process.env.SEND_GRID_API_KEY ? "is set----------":"is not set----------");
 
 export const sendEmail = async ({ email, subject, message }) => {
   const msg = {
@@ -16,8 +14,6 @@ export const sendEmail = async ({ email, subject, message }) => {
     subject,
     html: message,
   };
-
-
 
   await sgMail.send(msg);
 };
