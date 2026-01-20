@@ -7,37 +7,39 @@ import { isProjectManager } from "../../middlewares/taskMiddlewares/isProjectMan
 import { attachTaskToRequest } from "../../middlewares/taskMiddlewares/attachTaskToRequest.middlewares.js";
 import { isAssigneeOrProjectManager } from "../../middlewares/taskMiddlewares/isAssigneeOrProjectManager.middlewares.js";
 import { upload } from "../../middlewares/fileUploadMiddlewares/multer.middleware.js";
-import { addTaskAttachment, deleteTaskAttachment, getTaskAttachments } from "../../controllers/taskControllers/taskAttachment.controllers.js";
-
+import {
+  addTaskAttachment,
+  deleteTaskAttachment,
+  getTaskAttachments,
+} from "../../controllers/taskControllers/taskAttachment.controllers.js";
 
 const fileUploadRouter = express.Router();
 
+
+
+
 fileUploadRouter.route("/attachments/:projectId/:taskId").post(
+  verifyToken,
+  attachTaskToRequest,
+  isProjectMember,
+  isAssigneeOrProjectManager,
+  upload.single("file"), // only for uploading file
+  addTaskAttachment
+);
+
+fileUploadRouter
+  .route("/attachments/:projectId/:taskId")
+  .get(verifyToken, attachTaskToRequest, isProjectMember, getTaskAttachments);
+
+
+fileUploadRouter
+  .route("/attachments/:projectId/:taskId/:attachmentId")
+  .delete(
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
-    isAssigneeOrProjectManager,
-    upload.single("file"),   // only for uploading file
-    addTaskAttachment 
-
-)
-
-fileUploadRouter.route("/attachments/:projectId/:taskId").get(
-    verifyToken,
-    attachTaskToRequest,
-    isProjectMember,
-    getTaskAttachments
-
-)
-
-fileUploadRouter.route("/attachments/:projectId/:taskId/:attachmentId").delete(
-    verifyToken,
-    attachTaskToRequest,
-    isProjectMember,
-    deleteTaskAttachment 
-
-)
+    deleteTaskAttachment
+  );
 
 
-
-export default fileUploadRouter
+export default fileUploadRouter;

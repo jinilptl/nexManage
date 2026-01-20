@@ -21,8 +21,16 @@ const initialState = {
     error: null,
   },
 
-  subtasksByTaskId: {},
-  attachmentsByTaskId: {},
+  selectedTaskSubtasks: {
+    taskId: null,
+    data: null,
+    loading: false,
+  },
+  selectedTaskAttachments: {
+    taskId: null,
+    data: [],
+    loading: false,
+  },
 };
 
 const taskSlice = createSlice({
@@ -31,9 +39,8 @@ const taskSlice = createSlice({
   reducers: {
     // TASK LIST
 
-    setLoading(state,action){
-      state.loading=action.payload
-
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
 
     setAllTasks(state, action) {
@@ -41,7 +48,6 @@ const taskSlice = createSlice({
     },
 
     addTask(state, action) {
-      
       state.list.unshift(action.payload);
     },
 
@@ -120,53 +126,87 @@ const taskSlice = createSlice({
 
     setSubtasks(state, action) {
       const { taskId, subtasks } = action.payload;
-      state.subtasksByTaskId[taskId] = subtasks;
-    },
 
+      state.selectedTaskSubtasks.taskId = taskId;
+      state.selectedTaskSubtasks.data = subtasks;
+    },
     addSubtask(state, action) {
       const { taskId, subtask } = action.payload;
-      if (!state.subtasksByTaskId[taskId]) {
-        state.subtasksByTaskId[taskId] = [];
-      }
-      state.subtasksByTaskId[taskId].push(subtask);
-    },
 
+      if (state.selectedTaskSubtasks.taskId !== taskId) return;
+
+      if (!Array.isArray(state.selectedTaskSubtasks.data)) {
+        state.selectedTaskSubtasks.data = [];
+      }
+
+      state.selectedTaskSubtasks.data.push(subtask);
+    },
     updateSubtask(state, action) {
       const { taskId, subtask } = action.payload;
-      state.subtasksByTaskId[taskId] = state.subtasksByTaskId[taskId]?.map(
-        (s) => (s._id === subtask._id ? subtask : s)
-      );
+
+      if (state.selectedTaskSubtasks.taskId !== taskId) return;
+
+      state.selectedTaskSubtasks.data =
+        state.selectedTaskSubtasks.data?.map((s) => {
+          return s._id === subtask._id ? subtask : s;
+        }) || [];
     },
 
     deleteSubtask(state, action) {
       const { taskId, subtaskId } = action.payload;
-      state.subtasksByTaskId[taskId] = state.subtasksByTaskId[taskId]?.filter(
-        (s) => s._id !== subtaskId
-      );
+
+      if (state.selectedTaskSubtasks.taskId !== taskId) return;
+
+      state.selectedTaskSubtasks.data =
+        state.selectedTaskSubtasks.data?.filter((s) => s._id !== subtaskId) ||
+        [];
+    },
+    clearSelectedTaskSubtasks(state) {
+      state.selectedTaskSubtasks = {
+        taskId: null,
+        data: null,
+        loading: false,
+      };
+    },
+    setSubtaskLoading(state, action) {
+      state.selectedTaskSubtasks.loading = action.payload;
     },
 
     // ATTACHMENTS
 
     setAttachments(state, action) {
       const { taskId, attachments } = action.payload;
-      state.attachmentsByTaskId[taskId] = attachments;
+
+      state.selectedTaskAttachments.taskId = taskId;
+      state.selectedTaskAttachments.data = attachments;
     },
 
     addAttachment(state, action) {
       const { taskId, attachment } = action.payload;
-      if (!state.attachmentsByTaskId[taskId]) {
-        state.attachmentsByTaskId[taskId] = [];
-      }
-      state.attachmentsByTaskId[taskId].push(attachment);
+      if (state.selectedTaskAttachments.taskId !== taskId) return;
+
+      state.selectedTaskAttachments.data.unshift(attachment);
     },
 
     deleteAttachment(state, action) {
       const { taskId, attachmentId } = action.payload;
-      state.attachmentsByTaskId[taskId] = state.attachmentsByTaskId[
-        taskId
-      ]?.filter((a) => a._id !== attachmentId);
-    },
 
+      if (state.selectedTaskAttachments.taskId !== taskId) return;
+      state.selectedTaskAttachments.data =
+        state.selectedTaskAttachments.data.filter((attechment) => {
+          return attechment._id !== attachmentId;
+        });
+    },
+setAttachmentLoading(state, action) {
+  state.selectedTaskAttachments.loading = action.payload;
+},
+clearSelectedTaskAttachments(state){
+ state.selectedTaskAttachments={
+  data:[],
+  taskId:null,
+  loading:false
+ }
+},
     // ACTIVITY LOGS
 
     setActivityLogs(state, action) {
@@ -202,10 +242,14 @@ export const {
   addSubtask,
   updateSubtask,
   deleteSubtask,
+  clearSelectedTaskSubtasks,
+  setSubtaskLoading,
 
   setAttachments,
   addAttachment,
+  setAttachmentLoading,
   deleteAttachment,
+  clearSelectedTaskAttachments,
 
   setActivityLogs,
   addActivityLog,

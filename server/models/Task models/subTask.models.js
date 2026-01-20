@@ -14,11 +14,6 @@ const subTaskSchema = new mongoose.Schema(
       trim: true,
     },
 
-    description: {
-      type: String,
-      default: "",
-    },
-
     completed: {
       type: Boolean,
       default: false,
