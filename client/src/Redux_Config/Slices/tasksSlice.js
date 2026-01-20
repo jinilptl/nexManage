@@ -197,16 +197,16 @@ const taskSlice = createSlice({
           return attechment._id !== attachmentId;
         });
     },
-setAttachmentLoading(state, action) {
-  state.selectedTaskAttachments.loading = action.payload;
-},
-clearSelectedTaskAttachments(state){
- state.selectedTaskAttachments={
-  data:[],
-  taskId:null,
-  loading:false
- }
-},
+    setAttachmentLoading(state, action) {
+      state.selectedTaskAttachments.loading = action.payload;
+    },
+    clearSelectedTaskAttachments(state) {
+      state.selectedTaskAttachments = {
+        data: [],
+        taskId: null,
+        loading: false,
+      };
+    },
     // ACTIVITY LOGS
 
     setActivityLogs(state, action) {

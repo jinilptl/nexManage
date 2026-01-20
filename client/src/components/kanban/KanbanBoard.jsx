@@ -2,7 +2,11 @@ import React, { useMemo, useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import KanbanColumn from "./KanbanColumn";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateTaskOrderService,
+  updateTaskStatusService,
+} from "../../services/taskOperations/taskServices";
 
 export default function KanbanBoard({
   tasks: initialTasks,
@@ -11,12 +15,16 @@ export default function KanbanBoard({
   onModalOpen,
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
+  // console.log("project is -> ",project);
+  
+  const token = useSelector((state) => state.auth.token);
 
   const [tasks, setTasks] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setTasks(initialTasks || []);
-  }, [initialTasks]);
+  }, [project?.id,initialTasks]);
 
   const columns = useMemo(() => {
     return (
@@ -25,24 +33,34 @@ export default function KanbanBoard({
     );
   }, [project]);
 
-  const reorderTask = (columnId, fromIndex, toIndex) => {
-    setTasks((prev) => {
-      const columnTasks = prev.filter((t) => t.status === columnId);
-      const otherTasks = prev.filter((t) => t.status !== columnId);
+  
+  const reorderTask = (columnId, taskId, fromIndex, toIndex) => {
+  setTasks((prev) => {
+    const columnTasks = prev.filter((t) => t.status === columnId);
+    const otherTasks = prev.filter((t) => t.status !== columnId);
 
-      const updated = [...columnTasks];
-      const [moved] = updated.splice(fromIndex, 1);
-      updated.splice(toIndex, 0, moved);
+    const updated = [...columnTasks];
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
 
-      return [...otherTasks, ...updated];
-    });
-  };
+    return [...otherTasks, ...updated];
+  });
+
+  dispatch(
+    updateTaskOrderService(project.data._id, taskId, toIndex, token)
+  );
+};
+
 
   const moveTaskToColumn = (taskId, targetColumnId) => {
     setTasks((prev) =>
       prev.map((task) =>
         task._id === taskId ? { ...task, status: targetColumnId } : task
       )
+    );
+
+    dispatch(
+      updateTaskStatusService(project.data._id, taskId, targetColumnId, token)
     );
   };
 

@@ -32,14 +32,17 @@ export default function KanbanTaskCard({
 
   // SAME COLUMN REORDER
   const [, drop] = useDrop({
-    accept: ItemTypes.TASK,
-    hover(item) {
-      if (!ref.current || item.columnId !== columnId || item.index === index)
-        return;
-      moveTask(columnId, item.index, index);
-      item.index = index;
-    },
-  });
+  accept: ItemTypes.TASK,
+  hover(item) {
+    if (!ref.current) return;
+    if (item.columnId !== columnId) return;
+    if (item.index === index) return;
+
+    moveTask(columnId, item.id, item.index, index);
+    item.index = index;
+  },
+});
+
 
   // DRAG logic
   const [{ isDragging }, drag] = useDrag({
