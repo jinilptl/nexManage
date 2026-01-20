@@ -7,6 +7,7 @@ import {
   createProjectService,
   updateProjectService,
 } from "../../services/projectsOperations/projectsServices";
+import { fetchTeamsService } from "../../services/teamsOperations/teamsServices";
 
 export default function ProjectModal({
   open,
@@ -18,9 +19,16 @@ export default function ProjectModal({
   const isEdit = mode === "edit";
 
   const dispatch = useDispatch();
+  console.log("team list --> ",teamsList);
+   
+  
   
   const token = useSelector((state) => state.auth.token);
   const projectId = useSelector((state) => state.projects.selectedProject.id);
+  const teams = useSelector((state) => state.teams.list);
+  // console.log("team is -> ",teams);
+
+ 
 
   // Loaders
   const creating = useSelector((state) => state.projects.actions.creating);
@@ -35,6 +43,12 @@ export default function ProjectModal({
     teams: [],
   });
 
+   if (teamsList===undefined||teamsList===null||teamsList.length===0) {
+    teamsList=teams;
+  }
+  
+  
+
   useEffect(() => {
     if (!open) return;
 
@@ -45,8 +59,16 @@ export default function ProjectModal({
         projectType: initialData.projectType ?? "personal",
         teams: initialData?.teams?.map((t) => t._id) ?? [],
       });
-    } 
-  }, [open, isEdit, initialData]);
+    } else {
+      setFormData({
+        projectName: "",
+        description: "",
+        projectType: "personal",
+        teams: [],
+      });
+    }
+  
+  }, [open, isEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
