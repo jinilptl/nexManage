@@ -10,9 +10,9 @@ const TEAMS_END_POINTS = {
 
     // teams member endpoints ?
     ADD_TEAM_MEMBER: '/v1/team/add-member',
-    REMOVE_TEAM_MEMBER: '/v1/team/remove-member/:teamId/:memberId',
+    REMOVE_TEAM_MEMBER: '/v1/team/remove-member',
     GET_TEAM_MEMBERS: '/v1/team/get-all-members',  
-    UPDATE_TEAM_MEMBER: '/v1/team/update-member/:teamId/:memberId',
+    UPDATE_TEAM_MEMBER: '/v1/team/update-member',
 
 }
 

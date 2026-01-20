@@ -5,25 +5,35 @@ const teamsSlice = createSlice({
 
   initialState: {
     list: [],
-    loading: false,
+    loading: false, // only for GET ALL TEAMS page loader
     error: null,
 
     selectedTeam: {
       id: null,
       data: null,
-      loading: false,
+      loading: false, // loader for view modal fetch
       error: null,
     },
 
     teamMembers: {
       list: [],
-      loading: false,
+      loading: false, // loader for get members
       error: null,
+    },
+
+    actions: {
+      creatingTeam: false,
+      updatingTeam: false,
+      deletingTeam: false,
+
+      addingMember: false,
+      updatingMember: false,
+      removingMember: false,
     },
   },
 
   reducers: {
-    // LIST
+    /* ------------------------- TEAM LIST ----------------------------- */
     setTeams(state, action) {
       state.list = action.payload;
     },
@@ -31,31 +41,81 @@ const teamsSlice = createSlice({
       state.loading = action.payload;
     },
 
-    // SELECTED TEAM
+    /* ------------------------- SELECTED TEAM -------------------------- */
     setSelectedTeamId(state, action) {
       state.selectedTeam.id = action.payload;
     },
     setSelectedTeamData(state, action) {
       state.selectedTeam.data = action.payload;
     },
+    setSelectedTeamLoading(state, action) {
+      state.selectedTeam.loading = action.payload;
+    },
 
-    // TEAM MEMBERS
+    /* ------------------------- MEMBERS DATA --------------------------- */
     setTeamMembers(state, action) {
-      
-      
       state.teamMembers.list = action.payload;
+    },
+    setTeamMembersLoading(state, action) {
+      state.teamMembers.loading = action.payload;
+    },
+
+    /* ------------------------- ACTION LOADERS ------------------------- */
+    setCreateTeamLoading(state, action) {
+      state.actions.creatingTeam = action.payload;
+    },
+    setUpdateTeamLoading(state, action) {
+      state.actions.updatingTeam = action.payload;
+    },
+    setDeleteTeamLoading(state, action) {
+      state.actions.deletingTeam = action.payload;
+    },
+
+    setAddMemberLoading(state, action) {
+      state.actions.addingMember = action.payload;
+    },
+    setUpdateMemberLoading(state, action) {
+      state.actions.updatingMember = action.payload;
+    },
+    setRemoveMemberLoading(state, action) {
+      state.actions.removingMember = action.payload;
+    },
+
+    // after logout
+
+    clearTeams(state) {
+      state.list = [];
+      state.selectedTeam = { id: null, data: null };
+      state.teamMembers = { list: [] };
     },
   },
 });
 
 export const {
+  // Teams
   setTeams,
   setTeamsLoading,
 
+  // Selected team
   setSelectedTeamId,
   setSelectedTeamData,
+  setSelectedTeamLoading,
 
+  // Members
   setTeamMembers,
+  setTeamMembersLoading,
+
+  // Action loaders
+  setCreateTeamLoading,
+  setUpdateTeamLoading,
+  setDeleteTeamLoading,
+
+  setAddMemberLoading,
+  setUpdateMemberLoading,
+  setRemoveMemberLoading,
+
+  // Clear teams on logout
+  clearTeams,
 } = teamsSlice.actions;
 
 export default teamsSlice.reducer;

@@ -1,0 +1,144 @@
+import mongoose from "mongoose";
+
+// SUB-SCHEMA: projectMembers
+
+const projectMembersSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    roleInProject: {
+      type: String,
+      enum: [
+        "project-manager",
+        "developer",
+        "tester",
+        "designer",
+        "qa",
+        "reviewer",
+        "contributor",
+      ],
+      default: "contributor",
+    },
+
+    // null = directly added (NOT from any team)
+    addedFromTeam: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+      default: null,
+    },
+
+    addedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "removed"],
+      default: "active",
+    },
+
+    taskStatuses: {
+      type: [String],
+      default: ["To Do", "In Progress", "Review", "Done"],
+    },
+  },
+  { _id: false }
+);
+
+// SUB-SCHEMA: taskStatus (for dynamic and dynamic identification)
+
+const taskStatusSchema = new mongoose.Schema(
+  {
+    key: {
+      type: String, // todo, in_progress
+      required: true,
+      trim: true,
+    },
+
+    label: {
+      type: String, // To Do, In Progress
+      required: true,
+      trim: true,
+    },
+
+    order: {
+      type: Number,
+      required: true,
+    },
+
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: true }
+);
+
+// MAIN PROJECT SCHEMA
+
+const projectSchema = new mongoose.Schema(
+  {
+    projectName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    projectType: {
+      type: String,
+      enum: ["team", "personal", "mixed"],
+      default: "team",
+    },
+
+    teams: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Team",
+      },
+    ],
+
+    // project manager (optional but usually creator)
+    projectManager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    projectMembers: {
+      type: [projectMembersSchema],
+      default: [],
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "onhold", "completed", "archived"],
+      default: "active",
+    },
+
+    taskStatuses: {
+      type: [taskStatusSchema],
+      default:undefined
+    },
+  },
+  { timestamps: true }
+);
+
+const Project = mongoose.model("Project", projectSchema);
+export { Project };
