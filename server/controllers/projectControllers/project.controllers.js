@@ -179,7 +179,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
-  console.log("route hit");
+  // console.log("route hit");
   
 
   if (!projectId) {
@@ -389,7 +389,9 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     );
 });
 
-export const addProjectTaskStatus = async (req, res) => {
+const addProjectTaskStatus = async (req, res) => {
+  console.log("req is hit this add status column route--->");
+  
   try {
     const { projectId } = req.params;
     const { key, label } = req.body;
@@ -523,4 +525,5 @@ export {
   deleteProject,
   getUserProjects,
   updateProjectManager,
+  addProjectTaskStatus
 };

@@ -1,18 +1,26 @@
 import axiosInstance from "../../utils/axios_instance";
 import toast from "react-hot-toast";
-import { TASK_END_POINTS, SUB_TASK_END_POINTS } from "./taskEndPoints";
+import {
+  TASK_END_POINTS,
+  SUB_TASK_END_POINTS,
+  ATTACHMENT_END_POINTS,
+} from "./taskEndPoints";
 
 import {
+  addAttachment,
   addSubtask,
   addTask,
   deleteSubtask,
   deleteTask,
   setAllTasks,
+  setAttachmentLoading,
+  setAttachments,
   setLoading,
   setSubtaskLoading,
   setSubtasks,
   updateSubtask,
   updateTask,
+  upsertTask,
 } from "../../Redux_Config/Slices/tasksSlice";
 import { ToyBrick } from "lucide-react";
 
@@ -24,10 +32,19 @@ const {
   GET_PROJECT_TASKS,
   GET_TASK_DETAILS,
   UPDATE_TASK_ASSIGNEES,
+
+  UPDATE_TASK_ORDER,
+  UPDATE_TASK_STATUS,
 } = TASK_END_POINTS;
 
-const { CREATE_SUB_TASK, GET_ALL_SUB_TASK, TOGGLE_SUBTASK_COMPLETE,DELETE_SUBTASK } =
-  SUB_TASK_END_POINTS;
+const {
+  CREATE_SUB_TASK,
+  GET_ALL_SUB_TASK,
+  TOGGLE_SUBTASK_COMPLETE,
+  DELETE_SUBTASK,
+} = SUB_TASK_END_POINTS;
+
+const { ADD_TASK_ATTACHMENT, GET_TASK_ATTACHMENTS } = ATTACHMENT_END_POINTS;
 
 function GenerateErrorMessage(error) {
   const message =
@@ -57,14 +74,14 @@ export const createTaskService = (formData, projectId, token, onClose) => {
         withCredentials: true,
       });
 
-      console.log("response is ---> ", response.data);
+      // console.log("response is ---> ", response.data);
       if (response.data.success) {
         dispatch(addTask(response.data?.data));
         toast.success(response.data.message);
         onClose(false);
       }
     } catch (error) {
-      console.log("error in create Task---> ", error);
+      // console.log("error in create Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
@@ -92,7 +109,37 @@ export const getAllTasksService = (projectId, token) => {
         // toast.success(response.data.message)
       }
     } catch (error) {
-      console.log("error in get Task---> ", error);
+      // console.log("error in get Task---> ", error);
+      const message = GenerateErrorMessage(error);
+      toast.error(message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+};
+
+
+
+export const getSingleTasksService = (projectId,taskId, token) => {
+  return async (dispatch, getstate) => {
+    dispatch(setLoading(true));
+    try {
+      const endPoints = GET_TASK_DETAILS.replace(":projectId", projectId).replace(":taskId",taskId);
+
+      const response = await axiosInstance.get(endPoints, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        console.log("response of single task fetch is ---> ", response.data);
+        dispatch(upsertTask(response.data.data));
+        // toast.success(response.data.message)
+      }
+    } catch (error) {
+      // console.log("error in get Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
@@ -121,7 +168,7 @@ export const updateTaskService = (
         withCredentials: true,
       });
 
-      console.log("response is on update task ---> ", response.data);
+      // console.log("response is on update task ---> ", response.data);
 
       if (response.data.success) {
         dispatch(updateTask(response.data?.data));
@@ -130,7 +177,7 @@ export const updateTaskService = (
         dispatch(getAllTasksService(projectId, token));
       }
     } catch (error) {
-      console.log("error in update Task---> ", error);
+      // console.log("error in update Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
@@ -153,7 +200,7 @@ export const deleteTaskService = (projectId, taskId, token) => {
         withCredentials: true,
       });
 
-      console.log("response is on delete task ---> ", response.data);
+      // console.log("response is on delete task ---> ", response.data);
 
       if (response.data.success) {
         dispatch(deleteTask(response.data?.data));
@@ -161,7 +208,7 @@ export const deleteTaskService = (projectId, taskId, token) => {
         dispatch(getAllTasksService(projectId, token));
       }
     } catch (error) {
-      console.log("error in delete Task---> ", error);
+      // console.log("error in delete Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
@@ -196,7 +243,7 @@ export const updateAssigneesTaskService = (
         }
       );
 
-      console.log("response is on update Assignee task ---> ", response.data);
+      // console.log("response is on update Assignee task ---> ", response.data);
 
       // make sure backend send a whole update data not only array whichis updated okk..
       if (response.data.success) {
@@ -204,11 +251,81 @@ export const updateAssigneesTaskService = (
         toast.success(response.data.message);
       }
     } catch (error) {
-      console.log("error in update assignes Task---> ", error);
+      // console.log("error in update assignes Task---> ", error);
       const message = GenerateErrorMessage(error);
       toast.error(message);
     } finally {
       dispatch(setLoading(false));
+    }
+  };
+};
+
+
+// order and chnage status
+export const updateTaskStatusService = (projectId, taskId, statusId, token) => {
+  return async (dispatch) => {
+    try {
+      const endpoint = UPDATE_TASK_STATUS.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const response = await axiosInstance.patch(
+        endpoint,
+        { statusId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        const updatedTask = response.data.data;
+        console.log("update task status response--> ", updatedTask);
+
+        dispatch(updateTask(updatedTask));
+
+        toast.success("Task moved successfully");
+      }
+    } catch (error) {
+      console.error("Status update failed", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to update task status"
+      );
+    }
+  };
+};
+
+export const updateTaskOrderService = (projectId, taskId, newOrder, token) => {
+  return async (dispatch) => {
+    try {
+      const endpoint = UPDATE_TASK_ORDER.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const response = await axiosInstance.patch(
+        endpoint,
+        { order: newOrder },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.data.success) {
+        const updatedTask = response.data.data;
+
+        console.log("updated task Order response --> ", updatedTask);
+        dispatch(updateTask(updatedTask));
+        // toast.success("order chnage succesfully");
+      }
+    } catch (error) {
+      console.error("Order update failed", error);
+      toast.error(error?.response?.data?.message || "Failed to reorder task");
     }
   };
 };
@@ -340,13 +457,7 @@ export const toggleSubtaskCompleteService = (
   };
 };
 
-
-export const deleteSubtaskService = (
-  subtaskId,
-  taskId,
-  projectId,
-  token
-) => {
+export const deleteSubtaskService = (subtaskId, taskId, projectId, token) => {
   return async (dispatch) => {
     try {
       const endpoint = DELETE_SUBTASK.replace(":projectId", projectId)
@@ -364,17 +475,13 @@ export const deleteSubtaskService = (
         }
       );
 
-      console.log("response id for delete sub task --> ",response.data);
-      
+      console.log("response id for delete sub task --> ", response.data);
 
       if (response.data.success) {
-        
-
         dispatch(
           deleteSubtask({
             taskId,
-            subtaskId
-            
+            subtaskId,
           })
         );
       }
@@ -386,6 +493,77 @@ export const deleteSubtaskService = (
   };
 };
 
+//ATTECHMENT SERVICES
 
+export const addTaskAttachmentService = (
+  projectId,
+  taskId,
+  formData,
+  token
+) => {
+  return async (dispatch, getstate) => {
+    dispatch(setAttachmentLoading(true));
+    try {
+      const endpoint = ADD_TASK_ATTACHMENT.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
 
-//ATTECHMENT SERVICES 
+      console.log("form data---> ", formData);
+
+      const response = await axiosInstance.post(endpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        console.log("response in attechment----> ", response.data);
+
+        dispatch(
+          addAttachment({
+            taskId: taskId,
+            attachment: response.data.data,
+          })
+        );
+      }
+    } catch (error) {
+      toast.error(GenerateErrorMessage(error));
+    } finally {
+      dispatch(setAttachmentLoading(false));
+    }
+  };
+};
+
+export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
+  return async (dispatch) => {
+    dispatch(setAttachmentLoading(true));
+
+    try {
+      const endpoint = GET_TASK_ATTACHMENTS.replace(
+        ":projectId",
+        projectId
+      ).replace(":taskId", taskId);
+
+      const res = await axiosInstance.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.success) {
+        dispatch(
+          setAttachments({
+            taskId,
+            attachments: res.data.data,
+          })
+        );
+        toast.success("attechment fetch succesfully");
+      }
+    } catch (err) {
+      toast.error(GenerateErrorMessage(err));
+    } finally {
+      dispatch(setAttachmentLoading(false));
+    }
+  };
+};
