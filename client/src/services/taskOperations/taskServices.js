@@ -4,6 +4,7 @@ import {
   TASK_END_POINTS,
   SUB_TASK_END_POINTS,
   ATTACHMENT_END_POINTS,
+  ACTIVITY_END_POINTS
 } from "./taskEndPoints";
 
 import {
@@ -12,6 +13,7 @@ import {
   addTask,
   deleteSubtask,
   deleteTask,
+  setActivityLogs,
   setAllTasks,
   setAttachmentLoading,
   setAttachments,
@@ -22,7 +24,8 @@ import {
   updateTask,
   upsertTask,
 } from "../../Redux_Config/Slices/tasksSlice";
-import { ToyBrick } from "lucide-react";
+
+
 
 const {
   CREATE_TASK,
@@ -45,6 +48,7 @@ const {
 } = SUB_TASK_END_POINTS;
 
 const { ADD_TASK_ATTACHMENT, GET_TASK_ATTACHMENTS } = ATTACHMENT_END_POINTS;
+const { GET_TASK_ACTIVITY } = ACTIVITY_END_POINTS;
 
 function GenerateErrorMessage(error) {
   const message =
@@ -567,3 +571,35 @@ export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
     }
   };
 };
+
+
+// activity services
+
+export const fetchTaskActivityService = (taskId,projectId, token) => {
+  return async(dispatch)=>{
+
+    try {
+       const endPoints= GET_TASK_ACTIVITY.replace(":taskId",taskId).replace(":projectId",projectId)
+
+       const response= await axiosInstance.get(endPoints,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        },
+        withCredentials:true
+       })
+
+      //  console.log("response of get activity taask---> ",response);
+
+       if (response.data.success) {
+        dispatch(setActivityLogs(response.data.data.logs))
+        toast.success("activity log fetch succesfully")
+       }
+       
+      
+    } catch (error) {
+      console.log("error in fetch task activity --> ", GenerateErrorMessage(error));
+
+      toast.error(GenerateErrorMessage(error)||"Failed to fetch task activity");
+    }
+  }
+}

@@ -33,3 +33,7 @@ export const ATTACHMENT_END_POINTS={
   GET_TASK_ATTACHMENTS:"/v1/project/task/attachments/:projectId/:taskId"
   
 }
+
+export const ACTIVITY_END_POINTS={
+  GET_TASK_ACTIVITY: "/v1/project/task/activity/:projectId/:taskId"
+}

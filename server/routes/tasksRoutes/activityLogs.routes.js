@@ -9,7 +9,7 @@ import { getTaskActivityTimeline } from "../../controllers/taskControllers/activ
 
 
 const activityTaskRouter = express.Router();
-activityTaskRouter.route("/:taskId").get(
+activityTaskRouter.route("/activity/:projectId/:taskId").get(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
   attachTaskToRequest,

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTaskService,
   fetchAllSubTaskService,
+  fetchTaskActivityService,
   fetchTaskAttachmentsService,
   updateAssigneesTaskService,
   updateTaskService,
@@ -31,6 +32,7 @@ export default function TaskDetailModal({ task, onClose }) {
   const project = useSelector((state) => state.projects.selectedProject);
 
   const projectMembers = project?.data?.projectMembers || [];
+  const allTaskActivity = useSelector((state) => state.tasks.activityLogs);
 
   const {
     taskId,
@@ -54,9 +56,7 @@ export default function TaskDetailModal({ task, onClose }) {
   useEffect(() => {
     if (task?._id && token) {
       dispatch(fetchAllSubTaskService(task.project, task._id, token));
-      // setAttachments(task.attachments)
     }
-
     return () => {
       dispatch(clearSelectedTaskSubtasks());
     };
@@ -83,6 +83,12 @@ export default function TaskDetailModal({ task, onClose }) {
       onClose();
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchTaskActivityService(task._id, task.project, token));
+    }
+  }, []);
 
   const handleUpdateTask = (formData) => {
     dispatch(
@@ -164,7 +170,11 @@ export default function TaskDetailModal({ task, onClose }) {
             isSaving={isSavingAssignees}
           />
 
-          <TaskActivity activities={task.activities} />
+          <TaskActivity
+            activities={
+              allTaskActivity.list || ["Task created", "Assignees updated"]
+            }
+          />
         </div>
       </div>
 
