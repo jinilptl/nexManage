@@ -37,7 +37,6 @@ export default function ProjectsPage() {
   
 
   const [filterData, setfilterdata] = useState([]);
-  console.log("filterData --> ",filterData);
   
   useEffect(()=>{
     setfilterdata(projects)

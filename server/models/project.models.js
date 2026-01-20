@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-
 // SUB-SCHEMA: projectMembers
-
 
 const projectMembersSchema = new mongoose.Schema(
   {
@@ -43,13 +41,45 @@ const projectMembersSchema = new mongoose.Schema(
       enum: ["active", "removed"],
       default: "active",
     },
+
+    taskStatuses: {
+      type: [String],
+      default: ["To Do", "In Progress", "Review", "Done"],
+    },
   },
   { _id: false }
 );
 
+// SUB-SCHEMA: taskStatus (for dynamic and dynamic identification)
+
+const taskStatusSchema = new mongoose.Schema(
+  {
+    key: {
+      type: String, // todo, in_progress
+      required: true,
+      trim: true,
+    },
+
+    label: {
+      type: String, // To Do, In Progress
+      required: true,
+      trim: true,
+    },
+
+    order: {
+      type: Number,
+      required: true,
+    },
+
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: true }
+);
 
 // MAIN PROJECT SCHEMA
-
 
 const projectSchema = new mongoose.Schema(
   {
@@ -71,14 +101,12 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Determines project mode (team / personal / mixed)
     projectType: {
       type: String,
       enum: ["team", "personal", "mixed"],
       default: "team",
     },
 
-    // OPTIONAL TEAMS
     teams: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -93,7 +121,6 @@ const projectSchema = new mongoose.Schema(
       default: null,
     },
 
-    // all project members (team or custom manually added)
     projectMembers: {
       type: [projectMembersSchema],
       default: [],
@@ -103,6 +130,11 @@ const projectSchema = new mongoose.Schema(
       type: String,
       enum: ["active", "onhold", "completed", "archived"],
       default: "active",
+    },
+
+    taskStatuses: {
+      type: [taskStatusSchema],
+      default:undefined
     },
   },
   { timestamps: true }

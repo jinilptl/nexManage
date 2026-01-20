@@ -10,7 +10,11 @@ createRoot(document.getElementById("root")).render(
   <Provider store={Store}>
     <BrowserRouter>
       <App />
-      <Toaster/>
+      <Toaster  toastOptions={{
+          style: {
+            zIndex: 9999999,
+          },
+        }}/>
     </BrowserRouter>
   </Provider>
 );

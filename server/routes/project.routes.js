@@ -2,6 +2,7 @@ import express from "express";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
 import {
+  addProjectTaskStatus,
   createProject,
   deleteProject,
   getAllProjects,
@@ -30,40 +31,46 @@ projectRouter
   .route("/get-project/:projectId")
   .get(verifyToken, getSingleProject);
 
-projectRouter
-  .route("/get-my-projects")
-  .get(verifyToken, getUserProjects);
+projectRouter.route("/get-my-projects").get(verifyToken, getUserProjects);
 projectRouter
   .route("/update-project/:projectId")
   .post(verifyToken, updateProject);
 
+projectRouter
+  .route("/delete-project/:projectId")
+  .delete(verifyToken, deleteProject);
 
-  // this is are not checked by postman right now ..
+projectRouter
+  .route("/update-project-status/:projectId")
+  .post(verifyToken, updateProjectStatus);
 
-  projectRouter.route("/delete-project/:projectId").delete(verifyToken,deleteProject)
+projectRouter
+  .route("/:projectId/status")
+  .post(verifyToken,addProjectTaskStatus);
 
-  projectRouter.route("/update-project-status/:projectId").post(verifyToken,updateProjectStatus)
+projectRouter
+  .route("/update-project-manager/:projectId")
+  .post(verifyToken, updateProjectManager);
 
-  projectRouter.route("/update-project-manager/:projectId").post(verifyToken,updateProjectManager)
+
 
 // members routes
 
 projectRouter
   .route("/add-members/:projectId")
-  .post(verifyToken, addProjectMember); 
+  .post(verifyToken, addProjectMember);
 
 projectRouter
-    .route("/update-members/:projectId/:memberId")
-    .post(verifyToken, updateProjectMember);
+  .route("/update-members/:projectId/:memberId")
+  .post(verifyToken, updateProjectMember);
 
 projectRouter
   .route("/all-members/:projectId")
   .get(verifyToken, getAllProjectMembers);
 
-
 projectRouter
   .route("/active-members/:projectId/:memberId")
-  .patch(verifyToken,activateProjectMember);
+  .patch(verifyToken, activateProjectMember);
 
 projectRouter
   .route("/remove-members/:projectId/:memberId")

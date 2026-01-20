@@ -91,7 +91,7 @@ const createProject = asyncHandler(async (req, res) => {
 
   // console.log("converted in to array result in map ---> ", autoMembers);
 
-  // If creator already exists from team → update their role
+  // existing creator then make project manager
   const existingCreator = autoMembers.find(
     (m) => m.user.toString() === createdBy.toString()
   );
@@ -109,6 +109,13 @@ const createProject = asyncHandler(async (req, res) => {
     });
   }
 
+  const DEFAULT_TASK_STATUSES = [
+    { key: "todo", label: "To Do", order: 1, isDefault: true },
+    { key: "in_progress", label: "In Progress", order: 2 },
+    { key: "review", label: "Review", order: 3 },
+    { key: "done", label: "Done", order: 4 },
+  ];
+
   // CREATE PROJECT
 
   const newProject = await ProjectModel.create({
@@ -122,6 +129,7 @@ const createProject = asyncHandler(async (req, res) => {
     projectManager: createdBy,
 
     projectMembers: autoMembers,
+    taskStatuses: DEFAULT_TASK_STATUSES,
   });
 
   return res
@@ -142,9 +150,6 @@ const getAllProjects = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "All projects fetched successfully", projects));
 });
 
-
-
-
 const getUserProjects = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
@@ -156,8 +161,8 @@ const getUserProjects = asyncHandler(async (req, res) => {
     $or: [
       { createdBy: userId },
       { projectManager: userId },
-      { "projectMembers.user": userId }
-    ]
+      { "projectMembers.user": userId },
+    ],
   })
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
@@ -166,15 +171,16 @@ const getUserProjects = asyncHandler(async (req, res) => {
     .populate("projectMembers.addedFromTeam", "teamName")
     .sort({ createdAt: -1 });
 
-  return res.status(200).json(
-    new ApiResponse(200, "User projects fetched successfully", projects)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User projects fetched successfully", projects));
 });
-
-
 
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
+
+  // console.log("route hit");
+  
 
   if (!projectId) {
     throw new ApiError(400, "Project ID is required");
@@ -199,8 +205,6 @@ const getSingleProject = asyncHandler(async (req, res) => {
     );
 });
 
-
-
 const updateProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { projectName, description, projectType, teams, status } = req.body;
@@ -210,7 +214,8 @@ const updateProject = asyncHandler(async (req, res) => {
   }
 
   const project = await ProjectModel.findById(projectId).populate(
-    "projectMembers.user","name email role"
+    "projectMembers.user",
+    "name email role"
   );
   if (!project) {
     throw new ApiError(404, "Project not found");
@@ -301,7 +306,7 @@ const updateProject = asyncHandler(async (req, res) => {
 
   await project.save();
 
-  const updatedProject=await ProjectModel.findById(projectId)
+  const updatedProject = await ProjectModel.findById(projectId)
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
@@ -313,9 +318,6 @@ const updateProject = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Project updated successfully", updatedProject));
 });
-
-
-
 
 const deleteProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -368,7 +370,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
   project.status = status;
   await project.save();
 
-  const updatedProjectData=await ProjectModel.findById(projectId)
+  const updatedProjectData = await ProjectModel.findById(projectId)
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
@@ -376,19 +378,61 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     .populate("projectMembers.addedFromTeam", "teamName")
     .exec();
 
-
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        `Project has been ${
-          status 
-        } successfully`,
+        `Project has been ${status} successfully`,
         updatedProjectData
       )
     );
 });
+
+const addProjectTaskStatus = async (req, res) => {
+  console.log("req is hit this add status column route--->");
+  
+  try {
+    const { projectId } = req.params;
+    const { key, label } = req.body;
+
+    if (!key || !label) {
+      throw new ApiError(400, "key and label are required");
+    }
+
+    const project = await ProjectModel.findById(projectId);
+    if (!project) {
+      throw new ApiError(404, "Project not found");
+    }
+
+    const alreadyExists = project.taskStatuses.some((s) => s.key === key);
+
+    if (alreadyExists) {
+      throw new ApiError(400, "Status key already exists");
+    }
+
+    const nextOrder =
+      project.taskStatuses.length > 0
+        ? Math.max(...project.taskStatuses.map((s) => s.order)) + 1
+        : 1;
+
+    const newStatus = {
+      key,
+      label,
+      order: nextOrder,
+    };
+
+    project.taskStatuses.push(newStatus);
+    await project.save();
+
+    return res
+      .status(201)
+      .json(new ApiResponse(200, "Task status added successfully", newStatus));
+  } catch (error) {
+    console.error("Add Task Status Error:", error);
+    throw new ApiError(500, "Internal server error");
+  }
+};
 
 //extra controllers.... no need right now...
 
@@ -480,5 +524,6 @@ export {
   updateProjectStatus,
   deleteProject,
   getUserProjects,
-  updateProjectManager
+  updateProjectManager,
+  addProjectTaskStatus
 };
