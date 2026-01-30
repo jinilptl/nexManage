@@ -1,7 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function NotFoundPage() {
+
+  const navigate = useNavigate();
+
+  const handlenavigate=()=>{
+    navigate(-1);
+  }
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 relative overflow-hidden">
 
@@ -28,12 +34,14 @@ export default function NotFoundPage() {
         </p>
 
         {/* Button */}
-        <Link
-          to="/"
+        <button
+          onClick={()=>{
+            handlenavigate()
+          }}
           className="mt-6 inline-block px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-medium shadow-lg"
         >
           Go Home
-        </Link>
+        </button>
       </div>
 
       {/* Small Note */}

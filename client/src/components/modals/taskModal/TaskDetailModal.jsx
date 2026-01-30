@@ -136,7 +136,7 @@ export default function TaskDetailModal({ task, onClose }) {
       />
 
       {/* MODAL */}
-      <div className="relative z-10 h-[100dvh] w-full md:h-[90vh] md:max-w-6xl bg-white rounded-none md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
+      <div className="relative z-10 h-dvh w-full md:h-[90vh] md:max-w-6xl bg-white rounded-none md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
         {/* LEFT */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <TaskHeader
