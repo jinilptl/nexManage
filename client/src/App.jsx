@@ -14,6 +14,7 @@ import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProjectDetails from "./pages/DashBoard/Projectdetails";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage";
+import SettingsPage from "./pages/Settings/SettingsPage";
 
 
 const App = () => {
@@ -46,6 +47,10 @@ const App = () => {
           <Route
             path="/dashboard/analytics"
             element={<AnalyticsPage/>}
+          />
+          <Route
+            path="/dashboard/settings"
+            element={<SettingsPage/>}
           />
         </Route>
 

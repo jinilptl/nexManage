@@ -35,7 +35,7 @@ export default function Navigation({
     { label: "Projects", icon: FolderKanban, to: "/dashboard/projects" },
     { label: "Teams", icon: Users, to: "/dashboard/teams" },
     { label: "Analytics", icon: BarChart3, to: "/dashboard/analytics" },
-    { label: "Notifications", icon: Bell, to: "/dashboard/notifications" },
+    // { label: "Notifications", icon: Bell, to: "/dashboard/notifications" },
     { label: "Settings", icon: Settings, to: "/dashboard/settings" },
   ];
 
