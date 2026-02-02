@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import morgan from "morgan";
 import authRouter from './routes/auth.routes.js';
 import teamRouter from './routes/team.routes.js';
 import projectRouter from './routes/project.routes.js';
@@ -8,6 +9,7 @@ import taskRouter from './routes/tasksRoutes/task.routes.js';
 import fileUploadRouter from "./routes/tasksRoutes/fileUpload.routes.js"
 import subTaskRouter from './routes/tasksRoutes/subTask.routes.js';
 import activityTaskRouter from './routes/tasksRoutes/activityLogs.routes.js';
+import analyticsRouter from "./routes/analytics.routes.js";
 
 const app= express();
 
@@ -20,6 +22,7 @@ app.use(cors({
 app.use(express.json({extended:true}))
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser());
+app.use(morgan("dev"));
 
 //routes
 
@@ -30,6 +33,7 @@ app.use("/api/v1/project/task",taskRouter)
 app.use("/api/v1/project/task/subtask",subTaskRouter)
 app.use("/api/v1/project/task",fileUploadRouter)
 app.use("/api/v1/project/task",activityTaskRouter)
+app.use("/api/v1/analytics", analyticsRouter);
 
 
 

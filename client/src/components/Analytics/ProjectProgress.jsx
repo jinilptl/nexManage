@@ -1,7 +1,6 @@
-import React from "react";
 import SectionCard from "./SectionCard";
 
-export default function ProjectProgress({ projects }) {
+export default function ProjectProgress({ projects = [] }) {
   const badgeClasses = (type) => {
     if (type === "success") return "bg-green-100 text-green-700";
     if (type === "warning") return "bg-yellow-100 text-yellow-700";
@@ -15,9 +14,12 @@ export default function ProjectProgress({ projects }) {
       subtitle="Completion status across all active projects"
     >
       <div className="space-y-6">
-        {projects.map((project) => {
-          const progress = project.stats.totalTasks
-            ? Math.round((project.stats.completedTasks / project.stats.totalTasks) * 100)
+        {projects.map((project, index) => {
+          const totalTasks = project?.stats?.totalTasks ?? 0;
+          const completedTasks = project?.stats?.completedTasks ?? 0;
+
+          const progress = totalTasks
+            ? Math.round((completedTasks / totalTasks) * 100)
             : 0;
 
           const status =
@@ -27,29 +29,36 @@ export default function ProjectProgress({ projects }) {
             progress >= 75 ? "On Track" : progress >= 50 ? "At Risk" : "Behind";
 
           return (
-            <div key={project.id} className="space-y-2">
+            <div key={project?.id || index} className="space-y-2">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-2xl">{project.icon}</span>
+                  <span className="text-2xl">{project?.icon ?? "📁"}</span>
+
                   <div className="min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">
-                      {project.name}
+                      {project?.name ?? "Unnamed Project"}
                     </h4>
+
                     <p className="text-xs text-gray-500">
-                      {project.stats.completedTasks} of {project.stats.totalTasks} tasks completed
+                      {completedTasks} of {totalTasks} tasks completed
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-900">{progress}%</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${badgeClasses(status)}`}>
+                  <span className="text-sm font-medium text-gray-900">
+                    {progress}%
+                  </span>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${badgeClasses(
+                      status
+                    )}`}
+                  >
                     {statusText}
                   </span>
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-600 rounded-full"

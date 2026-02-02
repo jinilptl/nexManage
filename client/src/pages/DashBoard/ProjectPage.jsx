@@ -34,22 +34,31 @@ export default function ProjectsPage() {
   const projects = UserRole !== "member" ? allProjects : myProjects;
   const dispatch = useDispatch();
   // console.log("all project is --> ",projects);
-  
-
+  const [searchInput, setSearchInput] = useState("");
   const [filterData, setfilterdata] = useState([]);
+
+  const handleFilter = (value) => {
+    setSearchInput(value);
+  };
   
   useEffect(()=>{
     setfilterdata(projects)
   },[projects])
 
-  const handleFilter = (inputText) => {
-    const filtered = projects.filter((project) => {
-      return project.projectName
+  useEffect(() => {
+    if (!searchInput.trim()) {
+      setfilterdata(projects);
+      return;
+    }
+
+    const filtered = projects.filter((project) =>
+      project.projectName
         .toLowerCase()
-        .includes(inputText.toLowerCase());
-    });
+        .includes(searchInput.toLowerCase())
+    );
+
     setfilterdata(filtered);
-  };
+  }, [searchInput, projects]);
 
   useEffect(() => {
     if (token && user) {
@@ -99,7 +108,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Filters */}
-      <ProjectFilters OnFilter={handleFilter} />
+      <ProjectFilters  searchInput={searchInput} OnFilter={handleFilter} />
 
       {/* Project Cards */}
       {filterData.length > 0 ? (

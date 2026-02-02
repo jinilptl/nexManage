@@ -562,7 +562,6 @@ export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
             attachments: res.data.data,
           })
         );
-        toast.success("attechment fetch succesfully");
       }
     } catch (err) {
       toast.error(GenerateErrorMessage(err));
@@ -592,7 +591,6 @@ export const fetchTaskActivityService = (taskId,projectId, token) => {
 
        if (response.data.success) {
         dispatch(setActivityLogs(response.data.data.logs))
-        toast.success("activity log fetch succesfully")
        }
        
       

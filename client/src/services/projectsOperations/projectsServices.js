@@ -131,7 +131,6 @@ export const fetchSingleProjectService = (projectId, token) => {
 
       if (response.data.success) {
         dispatch(setSelectedProjectData(response.data.data));
-        toast.success("succesfully fetched single project");
       }
     } catch (error) {
       toast.error("Failed to fetch project details.");

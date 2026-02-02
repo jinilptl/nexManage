@@ -6,7 +6,9 @@ import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewa
 const authRouter=express.Router()
 
 //register and login routes
-authRouter.route('/register').post(verifyToken,roleChecker(["super_admin"]),registerUser)
+authRouter.route('/register').post(
+    verifyToken,roleChecker(["super_admin"]),
+    registerUser)
 authRouter.route('/login').post(loginUser)
 authRouter.route('/logout').post(verifyToken,logoutUser)
 

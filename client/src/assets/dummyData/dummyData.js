@@ -6,9 +6,9 @@ export const dummyProjects = [
     projectType: "team",
     status: "active",
     createdAt: "2025-01-20T10:00:00Z",
-    createdBy: { name: "Jinil Patel" },
+    createdBy: { name: "Chintan Rabari" },
     projectMembers: [
-      { user: { name: "Jinil" } },
+      { user: { name: "Chintan" } },
       { user: { name: "Rohan" } },
       { user: { name: "Aditi" } }
     ]

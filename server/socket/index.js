@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { registerRoomHandlers } from "./socketRooms.js";
 import { log } from "console";
 let io;
-console.log("req comes in this ");
 
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
@@ -25,7 +24,6 @@ const initSocket = (httpServer) => {
     // Receive message from client
     socket.on("client-message",(data)=>{
       console.log("client message-->",data);
-      
     })
 
 

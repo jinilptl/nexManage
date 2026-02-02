@@ -29,7 +29,7 @@ export default function TeamsPage() {
   const { list, loading } = useSelector((state) => state.teams);
   const teamLoading = useSelector((state) => state.teams.selectedTeam.loading);
   const membersLoading = useSelector(
-    (state) => state.teams.teamMembers.loading
+    (state) => state.teams.teamMembers.loading,
   );
 
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
@@ -58,7 +58,7 @@ export default function TeamsPage() {
   /* ---------------- SEARCH FILTER ---------------- */
   useEffect(() => {
     const filtered = list.filter((team) =>
-      team.teamName.toLowerCase().includes(searchInput.toLowerCase())
+      team.teamName.toLowerCase().includes(searchInput.toLowerCase()),
     );
     setFilterTeams(filtered);
   }, [searchInput]);
@@ -82,35 +82,35 @@ export default function TeamsPage() {
     else document.body.style.overflow = "auto";
   }, [openTeamModal, modalOpen]);
 
-  const capitalizedName = (name)=>{
-    let firstName =
-        name.split(" ")[0].slice(0, 1).toUpperCase() +
-        name.split(" ")[0].slice(1).toLowerCase();
-      let lastName =
-        name.split(" ")[1].slice(0, 1).toUpperCase() +
-        name.split(" ")[1].slice(1).toLowerCase();
+  const capitalizedName = (name = "") => {
+    if (!name || typeof name !== "string") return "Unknown";
 
-      return `${firstName} ${lastName}`;
-  }
+    const parts = name.trim().split(" ");
 
+    const firstName =
+      parts[0]?.charAt(0).toUpperCase() + parts[0]?.slice(1).toLowerCase();
+
+    const lastName = parts[1]
+      ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase()
+      : "";
+
+    return lastName ? `${firstName} ${lastName}` : firstName;
+  };
 
   const findTeamLeadName = (team) => {
-   
     const lead = team.members.find(
-      (member) => member.roleInTeam === "team lead"
+      (member) => member.roleInTeam === "team lead",
     );
     if (lead) {
-      return capitalizedName(lead.user.name)
+      return capitalizedName(lead.user.name);
     }
   };
-  
 
-  const findCreatedBy = (team)=>{
-    if(team.createdby){
-      return capitalizedName(team.createdby.name)
+  const findCreatedBy = (team) => {
+    if (team.createdby) {
+      return capitalizedName(team.createdby.name);
     }
-    
-  }
+  };
 
   return (
     <div
@@ -236,7 +236,7 @@ export default function TeamsPage() {
                         e.stopPropagation();
                         if (!loading)
                           setOpenMenuId(
-                            openMenuId === team._id ? null : team._id
+                            openMenuId === team._id ? null : team._id,
                           );
                       }}
                     >
@@ -253,7 +253,7 @@ export default function TeamsPage() {
                               dispatch(setSelectedTeamId(team._id));
                               dispatch(fetchSingleTeamService(team._id, token));
                               dispatch(
-                                fetchTeamMembersService(team._id, token)
+                                fetchTeamMembersService(team._id, token),
                               );
                               setOpenMenuId(null);
                             }
@@ -296,9 +296,9 @@ export default function TeamsPage() {
                         </span>
                       </div>
                     ) : (
-                       <span className="text-sm text-gray-900">
-                          No team Lead available now
-                        </span>
+                      <span className="text-sm text-gray-900">
+                        No team Lead available now
+                      </span>
                     )}
                   </div>
 
@@ -310,7 +310,7 @@ export default function TeamsPage() {
 
                     <div className="flex items-center gap-1 text-gray-600">
                       <FolderKanban className="w-4 h-4" />
-                      <span>0 projects</span>
+                      <span>{team.projectsCount ?? 0} projects</span>
                     </div>
                   </div>
 
@@ -329,7 +329,7 @@ export default function TeamsPage() {
                   </div>
 
                   <div className="p-1 flex justify-center">
-                     <span className="text-xs text-gray-500 flex  gap-1">
+                    <span className="text-xs text-gray-500 flex  gap-1">
                       Created By :
                       <span className=" font-semibold whitespace-nowrap">
                         {findCreatedBy(team)}

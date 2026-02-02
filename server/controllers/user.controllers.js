@@ -69,7 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
   let userdDetailes = await UserModel.findOne({ email }).select("-password");
 
   let token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
-    expiresIn: "2d",
+    expiresIn: "7d",
   });
 
   const data = {

@@ -20,7 +20,6 @@ export default function ProjectCard({
   const navigate=useNavigate()
   const dispatch=useDispatch()
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = () => setMenuOpen(false);
     window.addEventListener("click", handler);
@@ -52,17 +51,15 @@ export default function ProjectCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative" onClick={()=>{
+    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer" onClick={()=>{
       ProjectDetails()
     }}>
       <div className="p-6">
-        {/* HEADER */}
         <div className="flex items-start justify-between">
           <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
             <Users className="w-6 h-6 text-blue-600" />
           </div>
 
-          {/* MENU BUTTON */}
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
               className="p-1 rounded-md hover:bg-gray-100"
@@ -74,10 +71,8 @@ export default function ProjectCard({
               <MoreVertical className="w-5 h-5 text-gray-600" />
             </button>
 
-            {/* DROPDOWN */}
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg z-50 animate-fadeIn border border-gray-100 overflow-hidden">
-                {/* VIEW */}
                 <button
                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 text-sm"
                   onClick={() => {
@@ -90,7 +85,6 @@ export default function ProjectCard({
 
                 {UserRole !== "member" && <div className="border-t"></div>}
 
-                {/* ARCHIVE */}
                 {UserRole !== "member" && (
                   <button
                     className="w-full flex items-center justify-between px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
@@ -100,7 +94,6 @@ export default function ProjectCard({
                     }}
                   >
                     <span>Archive Project</span>
-                    {/* 🔥 Small Loader (ButtonLoader) */}
                     {loading && <ButtonLoader />}
                   </button>
                 )}
@@ -109,15 +102,12 @@ export default function ProjectCard({
           </div>
         </div>
 
-        {/* TITLE */}
         <h2 className="text-lg font-semibold mt-3">{project.projectName}</h2>
 
-        {/* DESC */}
         <p className="text-gray-600 text-sm mt-1 line-clamp-2">
           {project.description || "No description provided"}
         </p>
 
-        {/* METADATA */}
         <div className="mt-6 space-y-4">
           <div className="flex items-center text-gray-600 gap-2 text-sm">
             <Calendar className="w-4 h-4" />
@@ -146,7 +136,6 @@ export default function ProjectCard({
             </span>
           </div>
 
-          {/* CREATED BY */}
           <div className="p-1 flex justify-center">
             <span className="text-xs text-gray-500 flex gap-1">
               Created By :

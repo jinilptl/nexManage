@@ -3,6 +3,8 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { Team as TeamModel } from "../../models/team.models.js";
+import generateRandomHexColor from "../../utils/generateColor.js";
+
 
 const createProject = asyncHandler(async (req, res) => {
   const { projectName, description, projectType, teams } = req.body;
@@ -420,6 +422,7 @@ const addProjectTaskStatus = async (req, res) => {
       key,
       label,
       order: nextOrder,
+      color:generateRandomHexColor(),
     };
 
     project.taskStatuses.push(newStatus);

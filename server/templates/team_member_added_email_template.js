@@ -39,7 +39,7 @@ const team_member_added_email_template = (memberName, teamRole,teamName, teamLin
 
       <!-- Footer -->
       <div style="text-align: center; padding: 20px; font-size: 13px; color: #999; background-color: #f9fafb;">
-        Need help? <a href="mailto:jinil@nexmanage.tech" style="color: #007bff; text-decoration: none;">Contact Support</a><br />
+        Need help? <a href="mailto:chintan@nexmanage.tech" style="color: #007bff; text-decoration: none;">Contact Support</a><br />
         © 2025 NexForge Tech. All rights reserved.
       </div>
     </div>

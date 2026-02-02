@@ -3,6 +3,13 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import SectionCard from "./SectionCard";
 
 export default function StatusPieChart({ statusData }) {
+  const STATUS_COLORS = {
+    "To Do": "#e41a1c",
+    "In Progress": "#377eb8",
+    Review: "#ff7f00",
+    Done: "#4daf4a",
+  };
+
   return (
     <SectionCard
       title="Task Status Distribution"
@@ -20,10 +27,15 @@ export default function StatusPieChart({ statusData }) {
               outerRadius={100}
               dataKey="value"
             >
-              {statusData.map((entry, index) => (
-                <Cell key={index} fill={entry.color} />
-              ))}
+              {statusData.map((entry, index) => {
+                const fillColor =
+                  STATUS_COLORS[entry.name] || 
+                  entry.color  
+
+                return <Cell key={index} fill={fillColor} />;
+              })}
             </Pie>
+
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>

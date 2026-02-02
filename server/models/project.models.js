@@ -75,6 +75,10 @@ const taskStatusSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    color: {
+      type: String,
+      // required: true,
+    },
   },
   { _id: true }
 );

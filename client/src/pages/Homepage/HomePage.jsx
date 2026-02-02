@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUserService } from "../../services/authOperations/authServices";
 
-
 const HomePage = () => {
   const {loading}= useSelector((state)=>state.auth)
   
@@ -23,7 +22,6 @@ const HomePage = () => {
    setEmail("");
    setPassword("")
   }
-
   
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex">

@@ -1,4 +1,3 @@
-import React from "react";
 import SectionCard from "./SectionCard";
 
 export default function TopContributors({ contributors }) {
@@ -31,7 +30,7 @@ export default function TopContributors({ contributors }) {
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
                 <p className="text-xs text-gray-500">
-                  {c.tasksCompleted} tasks • {c.comments} comments
+                  {c.tasksCompleted} tasks
                 </p>
               </div>
             </div>
