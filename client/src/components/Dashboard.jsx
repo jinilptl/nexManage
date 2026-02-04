@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   FolderKanban,
   CheckCircle2,
@@ -21,7 +21,10 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { data, loading } = useSelector((state) => state.dashboard);
   const projects = data?.projectProgress || [];
-  console.log(data);
+    const upcomingDeadlines = data?.upcomingDeadlines || [];
+  const recentActivity = data?.recentActivity || [];
+  const [showAllDeadlines, setShowAllDeadlines] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
   useEffect(() => {
     dispatch(getDashboardData());
@@ -80,6 +83,14 @@ export default function Dashboard() {
 
   if (loading) return <div>Loading...</div>;
   if (!data) return null;
+
+    const visibleDeadlines = showAllDeadlines
+    ? upcomingDeadlines
+    : upcomingDeadlines.slice(0, 3);
+
+  const visibleProjects = showAllProjects
+    ? projects
+    : projects.slice(0, 3);
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -167,21 +178,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* -------------------- DEADLINES + PROGRESS -------------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Deadlines */}
+        {/* -------- Upcoming Deadlines -------- */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
           </h3>
-          <p className="text-sm text-gray-500 mb-4">Tasks due within 7 days</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Tasks due within 7 days
+          </p>
 
-          {data?.upcomingDeadlines?.length === 0 && (
+          {visibleDeadlines.length === 0 && (
             <p className="text-sm text-gray-400">No upcoming deadlines</p>
           )}
 
-          {data?.upcomingDeadlines?.map((d, i) => {
+          {visibleDeadlines.map((d, i) => {
             const dueIn = Math.ceil(
-              (new Date(d.dueDate) - new Date()) / (1000 * 60 * 60 * 24),
+              (new Date(d.dueDate) - new Date()) /
+                (1000 * 60 * 60 * 24),
             );
 
             const isHigh = dueIn <= 1;
@@ -190,30 +205,37 @@ export default function Dashboard() {
               <div
                 key={i}
                 className={`p-3 rounded-lg mb-2 ${
-                  isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                  isHigh
+                    ? "bg-red-50 text-red-700"
+                    : "bg-blue-50 text-blue-700"
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium bg-white px-2 py-0.5 rounded">
-                        TASK
-                      </span>
-                      <span className="text-sm">{d.title}</span>
-                    </div>
+                    <span className="text-sm">{d.title}</span>
                     <p className="text-xs opacity-75">
-                      Due in {dueIn} {dueIn === 1 ? "day" : "days"}
+                      Due in {dueIn} day{dueIn !== 1 && "s"}
                     </p>
                   </div>
-
-                  {isHigh && <AlertCircle className="w-4 h-4 text-red-500" />}
+                  {isHigh && (
+                    <AlertCircle className="w-4 h-4 text-red-500" />
+                  )}
                 </div>
               </div>
             );
           })}
+
+          {upcomingDeadlines.length > 3 && (
+            <button
+              onClick={() => setShowAllDeadlines(!showAllDeadlines)}
+              className="text-sm text-blue-600 hover:underline mt-2"
+            >
+              {showAllDeadlines ? "Show less" : "Show more"}
+            </button>
+          )}
         </div>
 
-        {/* Project Progress */}
+        {/* -------- Project Progress -------- */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Project Progress
@@ -222,18 +244,19 @@ export default function Dashboard() {
             Completion status of active projects
           </p>
 
-          {projects.length === 0 && (
-            <p className="text-sm text-gray-400">No active projects yet</p>
+          {visibleProjects.length === 0 && (
+            <p className="text-sm text-gray-400">
+              No active projects yet
+            </p>
           )}
 
-          {projects.map((p) => (
+          {visibleProjects.map((p) => (
             <div key={p.id} className="space-y-2 mb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FolderKanban className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm text-gray-800">{p.name}</span>
-                </div>
-                <span className="text-sm text-gray-500">{p.progress}%</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-800">{p.name}</span>
+                <span className="text-sm text-gray-500">
+                  {p.progress}%
+                </span>
               </div>
 
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -242,12 +265,17 @@ export default function Dashboard() {
                   style={{ width: `${p.progress}%` }}
                 />
               </div>
-
-              <p className="text-xs text-gray-500">
-                {p.progress}% tasks completed
-              </p>
             </div>
           ))}
+
+          {projects.length > 3 && (
+            <button
+              onClick={() => setShowAllProjects(!showAllProjects)}
+              className="text-sm text-blue-600 hover:underline mt-2"
+            >
+              {showAllProjects ? "Show less" : "Show more"}
+            </button>
+          )}
         </div>
       </div>
     </div>
