@@ -23,7 +23,7 @@ export default function AnalyticsPage() {
     contributors,
     activeProjects,
   } = useAnalyticsData();
-  console.log(statusData)
+  console.log(statusData);
 
   if (loading) {
     return (
@@ -34,11 +34,7 @@ export default function AnalyticsPage() {
   }
 
   if (error) {
-    return (
-      <div className="text-red-500 text-center py-4">
-        {error}
-      </div>
-    );
+    return <div className="text-red-500 text-center py-4">{error}</div>;
   }
 
   return (
@@ -54,9 +50,7 @@ export default function AnalyticsPage() {
           value={totalTasks}
           icon={<CheckCircle2 className="h-4 w-4 text-blue-600" />}
           footer={
-            <p className="text-xs text-blue-600 mt-1">
-              All created tasks
-            </p>
+            <p className="text-xs text-blue-600 mt-1">All created tasks</p>
           }
         />
 
@@ -65,22 +59,24 @@ export default function AnalyticsPage() {
           value={
             <>
               {completedTasks}{" "}
-              <span className="text-base text-gray-500">({completionRate}%)</span>
+              <span className="text-base text-gray-500">
+                ({completionRate}%)
+              </span>
             </>
           }
           icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
           footer={
-          <p className="text-xs text-green-600 mt-1">
-            Successfully finished
-          </p>
-        }
+            <p className="text-xs text-green-600 mt-1">Successfully finished</p>
+          }
         />
 
         <MetricCard
           title="In Progress"
           value={inProgressTasks}
           icon={<Clock className="h-4 w-4 text-blue-600" />}
-          footer={<p className="text-xs text-blue-600 mt-1">Active development</p>}
+          footer={
+            <p className="text-xs text-blue-600 mt-1">Active development</p>
+          }
         />
 
         <MetricCard

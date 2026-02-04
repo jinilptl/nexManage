@@ -12,7 +12,7 @@ import {
   getSingleTasksService,
   updateTaskService,
 } from "../../services/taskOperations/taskServices";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
 import { connectWs } from "../../sockets/socket";
 import {
@@ -146,7 +146,7 @@ export default function ProjectDetails() {
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-4">
-        Projects <span className="mx-1">›</span>
+        <Link to="/dashboard/projects" className="hover:text-blue-600">Projects</Link> <span className="mx-1">›</span>
         <span className="text-gray-700">{projectData?.data?.projectName}</span>
       </div>
 

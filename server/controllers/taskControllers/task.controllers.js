@@ -33,13 +33,12 @@ const createTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "At least one assignee is required");
   }
 
-  // validate assignees
   const activeMemberIds = project.projectMembers
     .filter((m) => m.status === "active")
     .map((m) => m.user.toString());
 
   const isValid = assignees.every((id) =>
-    activeMemberIds.includes(id.toString())
+    activeMemberIds.includes(id.toString()),
   );
 
   if (!isValid) {
@@ -67,6 +66,7 @@ const createTask = asyncHandler(async (req, res) => {
     dueDate: dueDate || null,
     assignees,
     createdBy: userId,
+    updatedBy: userId,
     project: projectId,
     order: existingCount,
   });
@@ -136,6 +136,7 @@ const getProjectTasks = asyncHandler(async (req, res) => {
     .sort({ status: 1, order: 1 })
     .populate("assignees", "name email")
     .populate("createdBy", "name email")
+    .populate("updatedBy", "name email")
     .exec();
 
   return res
@@ -172,8 +173,6 @@ const updateTask = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
   const projectId = req.params.projectId;
 
-  console.log("request comes here ");
-
   if (!taskId) {
     throw new ApiError(400, "Task id is required");
   }
@@ -189,9 +188,7 @@ const updateTask = asyncHandler(async (req, res) => {
   }
 
   const { title, description, priority, dueDate } = req.body;
-  console.log("data --> ", title);
 
-  //validations and updation
   let updates = {};
 
   let meta = {};
@@ -213,7 +210,7 @@ const updateTask = asyncHandler(async (req, res) => {
     if (!["low", "medium", "high", "critical"].includes(priority)) {
       throw new ApiError(
         400,
-        "Priority must be one of: low, medium, high, critical"
+        "Priority must be one of: low, medium, high, critical",
       );
     }
     updates.priority = priority;
@@ -232,12 +229,12 @@ const updateTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No valid fields provided for update");
   }
 
-  // console.log("request comes here above updation");
+  updates.updatedBy = userId;
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
     { $set: updates },
-    { new: true }
+    { new: true },
   );
 
   updates._id = updatedTask._id;
@@ -287,7 +284,7 @@ const deleteTask = asyncHandler(async (req, res) => {
       status,
       order: { $gt: order },
     },
-    { $inc: { order: -1 } }
+    { $inc: { order: -1 } },
   );
 
   // ACTIVITY LOG
@@ -342,13 +339,13 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   //  Validate all assignees
 
   const areAssigneesValid = assignees.every((assigneeId) =>
-    activeProjectMemberIds.includes(assigneeId.toString())
+    activeProjectMemberIds.includes(assigneeId.toString()),
   );
 
   if (!areAssigneesValid) {
     throw new ApiError(
       400,
-      "One or more assignees are not active project members"
+      "One or more assignees are not active project members",
     );
   }
 
@@ -358,19 +355,22 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   const newAssignees = assignees.map((id) => id.toString());
 
   const addedAssignees = newAssignees.filter(
-    (id) => !previousAssignees.includes(id)
+    (id) => !previousAssignees.includes(id),
   );
 
   const removedAssignees = previousAssignees.filter(
-    (id) => !newAssignees.includes(id)
+    (id) => !newAssignees.includes(id),
   );
 
   //  Update task
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
-    { assignees: newAssignees },
-    { new: true }
+    {
+      assignees: newAssignees,
+      updatedBy: userId,
+    },
+    { new: true },
   );
 
   // Activity log
@@ -401,7 +401,7 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Task assignees updated successfully", updatedTask)
+      new ApiResponse(200, "Task assignees updated successfully", updatedTask),
     );
 });
 
@@ -427,7 +427,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   // console.log(project);
 
   const targetStatus = await project.taskStatuses.find(
-    (s) => s._id.toString() === statusId
+    (s) => s._id.toString() === statusId,
   );
 
   if (!targetStatus) {
@@ -448,7 +448,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
       status: oldStatusId,
       order: { $gt: oldOrder },
     },
-    { $inc: { order: -1 } }
+    { $inc: { order: -1 } },
   );
 
   const targetCount = await TaskModel.countDocuments({
@@ -456,14 +456,27 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     status: statusId,
   });
 
-  const updatedTask = await TaskModel.findByIdAndUpdate(
-    taskId,
-    {
-      status: statusId,
-      order: targetCount,
-    },
-    { new: true }
-  ).populate("assignees", "name");
+  const COMPLETED_STATUSES = ["done"];
+
+  const isCompletedStatus = COMPLETED_STATUSES.includes(
+    targetStatus.label?.toLowerCase(),
+  );
+
+  const updateData = {
+    status: statusId,
+    order: targetCount,
+    updatedBy: userId,
+  };
+
+  if (isCompletedStatus) {
+    updateData.completedAt = new Date();
+  } else {
+    updateData.completedAt = null;
+  }
+
+  const updatedTask = await TaskModel.findByIdAndUpdate(taskId, updateData, {
+    new: true,
+  }).populate("assignees", "name");
 
   await createTaskActivityLog({
     taskId: task._id,
@@ -476,9 +489,8 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     },
   });
 
-
   try {
-    const io = getIO()
+    const io = getIO();
     io.to(`project:${projectId}`).emit("TASK:MOVE", {
       taskId: task._id,
       fromStatus: oldStatusId.toString(),
@@ -523,7 +535,7 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
         status,
         order: { $gte: newOrder, $lt: oldOrder },
       },
-      { $inc: { order: 1 } }
+      { $inc: { order: 1 } },
     );
   }
 
@@ -538,7 +550,7 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
         status,
         order: { $gt: oldOrder, $lte: newOrder },
       },
-      { $inc: { order: -1 } }
+      { $inc: { order: -1 } },
     );
   }
 
@@ -546,9 +558,12 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
-    { order: newOrder },
-    { new: true }
-  ).populate("assignees", "name");
+    {
+      order: newOrder,
+      updatedBy: userId,
+    },
+    { new: true },
+  );
 
   // ACTIVITY LOG
 

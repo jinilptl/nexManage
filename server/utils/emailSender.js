@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
+console.log("SENDGRID KEY:", process.env.SEND_GRID_API_KEY);
+console.log("EMAIL_FROM:", process.env.EMAIL_FROM);
 
 // console.log("sendgrid api key ",process.env.SEND_GRID_API_KEY ? "is set----------":"is not set----------");
 

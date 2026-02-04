@@ -1,4 +1,5 @@
 import SectionCard from "./SectionCard";
+import { FolderKanban } from "lucide-react";
 
 export default function ProjectProgress({ projects = [] }) {
   const badgeClasses = (type) => {
@@ -32,7 +33,9 @@ export default function ProjectProgress({ projects = [] }) {
             <div key={project?.id || index} className="space-y-2">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-2xl">{project?.icon ?? "📁"}</span>
+                  <span className="text-2xl">
+                    {<FolderKanban className="w-6 h-6" />}
+                  </span>
 
                   <div className="min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">
@@ -51,7 +54,7 @@ export default function ProjectProgress({ projects = [] }) {
                   </span>
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${badgeClasses(
-                      status
+                      status,
                     )}`}
                   >
                     {statusText}

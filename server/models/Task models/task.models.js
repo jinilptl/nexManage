@@ -28,9 +28,11 @@ const taskSchema = new mongoose.Schema(
 
     status: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "TaskStatus",
       required: true,
       index: true,
     },
+
     assignees: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +51,12 @@ const taskSchema = new mongoose.Schema(
       },
     },
 
-    // Used for Kanban ordering
+    completedAt: {
+      type: Date,
+      index: true,
+      default: null,
+    },
+
     order: {
       type: Number,
       default: 0,
@@ -59,6 +66,13 @@ const taskSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
     },
   },
   { timestamps: true }

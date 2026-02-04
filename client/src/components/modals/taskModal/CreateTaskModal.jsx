@@ -59,7 +59,6 @@ export default function CreateTaskModal({
     onSubmit(form);
   };
 
-  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
@@ -89,7 +88,7 @@ export default function CreateTaskModal({
               value={form.title}
               onChange={handleChange}
               placeholder="Enter task title"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
             />
           </div>
 
@@ -104,7 +103,7 @@ export default function CreateTaskModal({
               onChange={handleChange}
               placeholder="Optional description"
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
             />
           </div>
 
@@ -118,7 +117,7 @@ export default function CreateTaskModal({
                 name="priority"
                 value={form.priority}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -136,7 +135,7 @@ export default function CreateTaskModal({
                 name="dueDate"
                 value={form.dueDate}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
           </div>
@@ -149,26 +148,28 @@ export default function CreateTaskModal({
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {projectMembers.map((member) => (
-                  <label
-                    key={member.user._id}
-                    className="flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={form.assignees.includes(member.user._id)}
-                      onChange={() => toggleAssignee(member.user._id)}
-                    />
-                    {/* <img
+                {projectMembers
+                  .filter((member) => member.user)
+                  .map((member) => (
+                    <label
+                      key={member.user._id}
+                      className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-200"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.assignees.includes(member.user._id)}
+                        onChange={() => toggleAssignee(member.user._id)}
+                      />
+                      {/* <img
                     src={member.avatar}
                     alt={member.name}
                     className="w-6 h-6 rounded-full"
                   /> */}
-                    <span className="text-sm text-gray-700">
-                      {member.user.name}
-                    </span>
-                  </label>
-                ))}
+                      <span className="text-sm text-gray-700">
+                        {member.user.name}
+                      </span>
+                    </label>
+                  ))}
               </div>
             </div>
           )}

@@ -35,6 +35,17 @@ const registerUser = asyncHandler(async (req, res) => {
     .select("-password")
     .populate("createdby", "name email role ");
 
+
+  // try {
+  //   sendEmail({
+  //     email: registeredUser.email,
+  //     subject: "Welcome to NexManage!",
+  //     message: `<p>Hi ${registeredUser.name},</p><p>Welcome to NexManage! Your account has been successfully created.</p><p>We're excited to have you on board.</p><p>Best regards,<br/>The NexManage Team</p>`,
+  //   })
+  // } catch (error) {
+  //   throw new ApiError(500, "error while registering user");
+  // }
+
   return res
     .status(200)
     .json(new ApiResponse(200, "user register succesfully", registeredUser));
@@ -170,10 +181,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     await user.save()
     throw new ApiError(500,"Email could not be send in forgot password")
-    
+  
   }
-
-
 })
 
 const resetPassword=asyncHandler(async(req,res)=>{

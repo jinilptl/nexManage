@@ -18,7 +18,7 @@ export default function AccountSettings() {
       subtitle="Update your personal profile information"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField label="Full Name" value={user?.name.toUpperCase()}  />
+        <InputField label="Full Name" value={user?.name}  />
         <InputField label="Email Address" value={user?.email}  />
         {/* <InputField label="Phone Number" value={user?.phone} onChange={setPhone} /> */}
 

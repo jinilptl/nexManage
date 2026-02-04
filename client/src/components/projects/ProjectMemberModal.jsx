@@ -106,7 +106,7 @@ export default function ProjectMemberModal({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email"
-                  className="w-full pl-10 pr-3 py-2 border rounded-md text-sm"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function ProjectMemberModal({
               <input
                 disabled
                 value={email}
-                className="w-full pl-3 pr-3 py-2 border bg-gray-100 rounded-md text-sm cursor-not-allowed"
+                className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md text-sm cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
           )}
@@ -133,7 +133,7 @@ export default function ProjectMemberModal({
               disabled={isBusy}
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+              className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
               {roleOptions.map((r) => (
                 <option key={r} value={r}>

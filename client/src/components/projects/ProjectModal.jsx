@@ -114,7 +114,7 @@ export default function ProjectModal({
             onChange={(e) =>
               setFormData({ ...formData, projectName: e.target.value })
             }
-            className="w-full border rounded-md px-3 py-2"
+            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
             placeholder="Project Name"
           />
 
@@ -126,7 +126,7 @@ export default function ProjectModal({
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            className="w-full border rounded-md px-3 py-2"
+            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
             placeholder="Short description..."
           />
 
@@ -140,7 +140,7 @@ export default function ProjectModal({
                 teams: e.target.value === "personal" ? [] : formData.teams,
               })
             }
-            className="w-full border rounded-md px-3 py-2"
+            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
           >
             <option value="team">Team Project</option>
             <option value="personal">Personal Project</option>
@@ -149,7 +149,7 @@ export default function ProjectModal({
 
           {/* TEAM CHECKBOXES */}
           {formData.projectType !== "personal" && (
-            <div className="border rounded-md p-3 max-h-32 overflow-y-auto">
+            <div className="bg-gray-200 focus:outline-none rounded-md p-3 max-h-32 overflow-y-auto">
               {teamsList.length === 0 && (
                 <p className="text-sm text-gray-500">No teams found</p>
               )}

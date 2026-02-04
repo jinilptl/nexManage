@@ -34,14 +34,15 @@ const createNewTeam = asyncHandler(async (req, res) => {
     teamName,
     description,
     createdby: creatorId,
-  })
+  });
 
   if (!createdTeamDoc) {
     throw new ApiError(500, "Internal server error while creating team");
   }
 
-  const populatedTeamDoc = await TeamModel.findById(createdTeamDoc._id).populate("createdby","name email").populate("members.user", "name email roleInTeam");
-
+  const populatedTeamDoc = await TeamModel.findById(createdTeamDoc._id)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email roleInTeam");
 
   return res
     .status(201)
@@ -50,7 +51,9 @@ const createNewTeam = asyncHandler(async (req, res) => {
 
 const getAllTeams = asyncHandler(async (req, res) => {
   // Fetch all teams
-  const teamList = await TeamModel.find().populate("createdby","name email").populate("members.user", "name email roleInTeam");
+  const teamList = await TeamModel.find()
+    .populate("createdby", "name email")
+    .populate("members.user", "name email roleInTeam");
 
   return res
     .status(200)
@@ -58,20 +61,19 @@ const getAllTeams = asyncHandler(async (req, res) => {
 });
 
 const getUsersAllTeams = asyncHandler(async (req, res) => {
-  const userId = req.user._id; 
- 
-  if(!userId){
+  const userId = req.user._id;
+
+  if (!userId) {
     throw new ApiError(400, "User ID is required");
   }
-  const allTeams = await TeamModel.find({ 'members.user': userId }).populate("createdby","name email").populate('members.user', 'name email');
-
-  console.log("users all teams:----> ",allTeams);
-  
+  const allTeams = await TeamModel.find({ "members.user": userId })
+    .populate("createdby", "name email")
+    .populate("members.user", "name email");
 
   return res
     .status(200)
     .json(new ApiResponse(200, "User's teams fetched successfully", allTeams));
-})
+});
 
 const getTeamById = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
@@ -82,7 +84,9 @@ const getTeamById = asyncHandler(async (req, res) => {
   }
 
   // Find team by ID
-  const teamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate("members.user", "name email role");
+  const teamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email role");
 
   if (!teamDoc) {
     throw new ApiError(404, "No team found with the provided ID");
@@ -120,7 +124,9 @@ const updateTeamDetails = asyncHandler(async (req, res) => {
   await teamDoc.save();
 
   // Fetch updated team details
-  const updatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate("members.user", "name email roleInTeam");
+  const updatedTeamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email roleInTeam");
 
   // Send success response
   return res
@@ -144,13 +150,15 @@ const deleteTeamById = asyncHandler(async (req, res) => {
   }
 
   // Delete the team
-  const deletedTeamDoc = await TeamModel.findByIdAndDelete(teamId).populate("createdby","name email").populate("members.user", "name email roleInTeam");
+  const deletedTeamDoc = await TeamModel.findByIdAndDelete(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email roleInTeam");
 
   // Respond based on deletion result
   if (!deletedTeamDoc) {
     throw new ApiError(
       500,
-      "Something went wrong while deleting the team. Please try again."
+      "Something went wrong while deleting the team. Please try again.",
     );
   }
 
@@ -163,8 +171,7 @@ const deleteTeamById = asyncHandler(async (req, res) => {
 const addTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const { email, roleInTeam, status } = req.body;
-  console.log(email,roleInTeam,status);
-  
+  console.log(email, roleInTeam, status);
 
   // Validate inputs
   if (!email || !roleInTeam) {
@@ -193,7 +200,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
 
   // Check duplicate membership
   const isMemberAlreadyPresent = teamDoc.members.find(
-    (member) => member.user.toString() === userId.toString()
+    (member) => member.user.toString() === userId.toString(),
   );
   if (isMemberAlreadyPresent) {
     throw new ApiError(409, "This member is already part of the team");
@@ -201,13 +208,13 @@ const addTeamMember = asyncHandler(async (req, res) => {
 
   // TEAMLEAD CHECK HERE — only 1 allowed
   const isTeamLeadAlreadyPresent = teamDoc.members.find(
-    (member) => member.roleInTeam === "team lead"
+    (member) => member.roleInTeam === "team lead",
   );
 
   if (roleInTeam === "team lead" && isTeamLeadAlreadyPresent) {
     throw new ApiError(
       400,
-      "Only one team lead is allowed in this team. Please update existing team lead first."
+      "Only one team lead is allowed in this team. Please update existing team lead first.",
     );
   }
 
@@ -223,13 +230,12 @@ const addTeamMember = asyncHandler(async (req, res) => {
   await teamDoc.save();
 
   // Populate new member
-  const populatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
-    "members.user",
-    "name email"
-  );
+  const populatedTeamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email");
 
   const addedTeamMember = populatedTeamDoc.members.find(
-    (member) => member.user && member.user._id.toString() === userId.toString()
+    (member) => member.user && member.user._id.toString() === userId.toString(),
   );
 
   if (!addedTeamMember) {
@@ -243,7 +249,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
       userDoc.name || "New Member",
       addedTeamMember.roleInTeam || "Member",
       teamDoc.teamName,
-      teamLink
+      teamLink,
     );
 
     await sendEmail({
@@ -263,11 +269,10 @@ const addTeamMember = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         "Member added successfully and welcome email sent",
-        addedTeamMember
-      )
+        addedTeamMember,
+      ),
     );
 });
-
 
 const getTeamMembers = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
@@ -291,7 +296,7 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "All team members fetched successfully", teamDoc)
+      new ApiResponse(200, "All team members fetched successfully", teamDoc),
     );
 });
 
@@ -314,19 +319,18 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   }
 
   const existingMember = teamDoc.members.find(
-    (member) => member.user.toString() === memberId.toString()
+    (member) => member.user.toString() === memberId.toString(),
   );
 
   if (!existingMember) {
     throw new ApiError(404, "Member not found in this team");
   }
 
-  // 🚨 ONLY ONE TEAM LEAD ALLOWED
   if (roleInTeam === "team lead") {
     const existingTeamLead = teamDoc.members.find(
       (member) =>
         member.roleInTeam === "team lead" &&
-        member.user.toString() !== memberId.toString()
+        member.user.toString() !== memberId.toString(),
     );
 
     if (existingTeamLead) {
@@ -340,23 +344,21 @@ const updateTeamMember = asyncHandler(async (req, res) => {
 
   await teamDoc.save();
 
-  const updatedTeamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
-    "members.user",
-    "name email"
-  );
+  const updatedTeamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email");
 
   const updatedMember = updatedTeamDoc.members.find(
-    (member) => member.user._id.toString() === memberId.toString()
+    (member) => member.user._id.toString() === memberId.toString(),
   );
 
   return res.status(200).json(
     new ApiResponse(200, "Member updated successfully", {
       updatedMember,
       allMembers: updatedTeamDoc.members,
-    })
+    }),
   );
 });
-
 
 const removeTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
@@ -372,10 +374,9 @@ const removeTeamMember = asyncHandler(async (req, res) => {
   }
 
   // Find the team
-  const teamDoc = await TeamModel.findById(teamId).populate("createdby","name email").populate(
-    "members.user",
-    "name email"
-  );
+  const teamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email");
 
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
@@ -383,7 +384,7 @@ const removeTeamMember = asyncHandler(async (req, res) => {
 
   // Check if member exists in the team
   const existingMember = teamDoc.members.find(
-    (member) => member.user._id.toString() === memberId.toString()
+    (member) => member.user._id.toString() === memberId.toString(),
   );
 
   if (!existingMember) {
@@ -401,7 +402,7 @@ const removeTeamMember = asyncHandler(async (req, res) => {
   // Remove member using MongoDB $pull
   const removeResult = await TeamModel.updateOne(
     { _id: teamId },
-    { $pull: { members: { user: memberId } } }
+    { $pull: { members: { user: memberId } } },
   );
 
   console.log("Member removal acknowledged:", removeResult.acknowledged);
@@ -413,13 +414,13 @@ const removeTeamMember = asyncHandler(async (req, res) => {
   // Optional: fetch updated team members
   const updatedTeamDoc = await TeamModel.findById(teamId).populate(
     "members.user",
-    "name email"
+    "name email",
   );
 
   // Build response payload
   const responsePayload = {
     removedMember: removedMemberDetails,
-    allMembers:updatedTeamDoc.members
+    allMembers: updatedTeamDoc.members,
   };
 
   // Return response
@@ -429,14 +430,10 @@ const removeTeamMember = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         "Member removed from team successfully",
-        responsePayload
-      )
+        responsePayload,
+      ),
     );
 });
-
-
-
-
 
 export {
   createNewTeam,
@@ -448,5 +445,5 @@ export {
   getTeamMembers,
   updateTeamMember,
   removeTeamMember,
-  getUsersAllTeams
+  getUsersAllTeams,
 };

@@ -11,11 +11,12 @@ import ProjectPage from "./pages/DashBoard/ProjectPage";
 import TeamsPage from "./pages/DashBoard/TeamsPage";
 
 import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
+import AdminWrapper from "./components/Wrappers/AdminWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProjectDetails from "./pages/DashBoard/Projectdetails";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage";
+import InviteMembers from "./pages/DashBoard/InviteMembers";
 import SettingsPage from "./pages/Settings/SettingsPage";
-
 
 const App = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -44,14 +45,19 @@ const App = () => {
             element={<ProjectDetails />}
           />
 
+          <Route path="/dashboard/analytics" element={<AnalyticsPage />} />
           <Route
-            path="/dashboard/analytics"
-            element={<AnalyticsPage/>}
+            path="/dashboard/invite-members"
+            element={
+              <ProtectedWrapper>
+                <AdminWrapper>
+                  <InviteMembers />
+                </AdminWrapper>
+              </ProtectedWrapper>
+            }
           />
-          <Route
-            path="/dashboard/settings"
-            element={<SettingsPage/>}
-          />
+
+          <Route path="/dashboard/settings" element={<SettingsPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

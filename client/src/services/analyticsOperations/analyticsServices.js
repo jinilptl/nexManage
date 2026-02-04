@@ -7,3 +7,10 @@ export const fetchDashboardAnalytics = async () => {
   );
   return response.data;
 };
+
+export const fetchMainDashboard = async () => {
+  const response = await axiosInstance.get(
+    ANALYTICS_END_POINTS.MAIN_DASHBOARD
+  );
+  return response.data;
+};
