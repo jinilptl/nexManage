@@ -17,6 +17,7 @@ import ProjectDetails from "./pages/DashBoard/Projectdetails";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage";
 import InviteMembers from "./pages/DashBoard/InviteMembers";
 import SettingsPage from "./pages/Settings/SettingsPage";
+import Members from "./pages/DashBoard/MembersPage";
 
 const App = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -52,6 +53,16 @@ const App = () => {
               <ProtectedWrapper>
                 <AdminWrapper>
                   <InviteMembers />
+                </AdminWrapper>
+              </ProtectedWrapper>
+            }
+          />
+          <Route
+            path="/dashboard/members"
+            element={
+              <ProtectedWrapper>
+                <AdminWrapper>
+                  <Members />
                 </AdminWrapper>
               </ProtectedWrapper>
             }

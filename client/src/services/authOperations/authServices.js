@@ -44,7 +44,7 @@ export function loginUserService(email, password, navigate) {
       }
     } catch (error) {
       // Logger("login error from service", error);
-      toast.error(error.response.data.message||"error while login")
+      toast.error(error?.response?.data?.message||"error while login")
       dispatch(setAuthLoading(false));
     } finally {
       dispatch(setAuthLoading(false));

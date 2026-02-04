@@ -36,9 +36,15 @@ export default function Navigation({
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
     { label: "Projects", icon: FolderKanban, to: "/dashboard/projects" },
     { label: "Teams", icon: Users, to: "/dashboard/teams" },
+    {
+      label: "Members",
+      icon: Users,
+      to: "/dashboard/members",
+      adminOnly: true,
+    },
     { label: "Analytics", icon: BarChart3, to: "/dashboard/analytics" },
     // { label: "Notifications", icon: Bell, to: "/dashboard/notifications" },
-    // { label: "Invite Members", icon: UserPlus, to: "/dashboard/invite-members", adminOnly: true },
+    { label: "Invite Members", icon: UserPlus, to: "/dashboard/invite-members", adminOnly: true },
     { label: "Settings", icon: Settings, to: "/dashboard/settings" },
   ];
 
@@ -89,37 +95,22 @@ export default function Navigation({
         </div>
 
         <nav className="flex-1 p-2 overflow-y-auto">
-          {menuItems.map((item, idx) => (
-            <Link
-              to={item.to}
-              key={idx}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${
-                collapsed
-                  ? "justify-center"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
-              } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
-            >
-              <item.icon className="w-5 h-5" />
-              {!collapsed && <span className="text-sm">{item.label}</span>}
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link
-              to="/dashboard/invite-members"
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${
-                collapsed
-                  ? "justify-center"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
-              } ${
-                location.pathname === "/dashboard/invite-members"
-                  ? "bg-slate-700 text-white"
-                  : ""
-              }`}
-            >
-              <UserPlus className="w-5 h-5" />
-              {!collapsed && <span className="text-sm">Invite Members</span>}
-            </Link>
-          )}
+          {menuItems
+            .filter((item) => !item.adminOnly || isAdmin)
+            .map((item, idx) => (
+              <Link
+                to={item.to}
+                key={idx}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${
+                  collapsed
+                    ? "justify-center"
+                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
+              >
+                <item.icon className="w-5 h-5" />
+                {!collapsed && <span className="text-sm">{item.label}</span>}
+              </Link>
+            ))}
         </nav>
 
         <div className="relative p-2 border-t border-slate-700">
@@ -204,30 +195,21 @@ export default function Navigation({
         </div>
 
         <nav className="flex-1 p-2 overflow-y-auto">
-          {menuItems.map((item, idx) => (
-            <Link
-              key={idx}
-              to={item.to}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm">{item.label}</span>
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link
-              to="/dashboard/invite-members"
-              onClick={() => setMobileOpen(false)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors ${
-                location.pathname === "/dashboard/invite-members"
-                  ? "bg-slate-700 text-white"
-                  : ""
-              }`}
-            >
-              <UserPlus className="w-5 h-5" />
-              <span className="text-sm">Invite Members</span>
-            </Link>
-          )}
+          {menuItems
+            .filter((item) => !item.adminOnly || isAdmin)
+            .map((item, idx) => (
+              <Link
+                key={idx}
+                to={item.to}
+                onClick={() => setMobileOpen(false)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors ${
+                  location.pathname === item.to ? "bg-slate-700 text-white" : ""
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-sm">{item.label}</span>
+              </Link>
+            ))}
         </nav>
 
         <div className="relative p-2 border-t border-slate-700">
