@@ -10,6 +10,7 @@ import fileUploadRouter from "./routes/tasksRoutes/fileUpload.routes.js"
 import subTaskRouter from './routes/tasksRoutes/subTask.routes.js';
 import activityTaskRouter from './routes/tasksRoutes/activityLogs.routes.js';
 import analyticsRouter from "./routes/analytics.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 const app= express();
 
@@ -34,6 +35,7 @@ app.use("/api/v1/project/task/subtask",subTaskRouter)
 app.use("/api/v1/project/task",fileUploadRouter)
 app.use("/api/v1/project/task",activityTaskRouter)
 app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/users", userRouter);
 
 
 

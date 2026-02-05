@@ -35,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
     .select("-password")
     .populate("createdby", "name email role ");
 
-
   // try {
   //   sendEmail({
   //     email: registeredUser.email,
@@ -99,6 +98,64 @@ const allUsers = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "all users", users));
 });
 
+const updateUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { name, email, role } = req.body;
+
+  if (!userId) {
+    throw new ApiError(400, "userId is required");
+  }
+
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (email && email !== user.email) {
+    const emailExists = await UserModel.findOne({ email });
+    if (emailExists) {
+      throw new ApiError(400, "Email already in use");
+    }
+  }
+
+  user.name = name ?? user.name;
+  user.email = email ?? user.email;
+  user.role = role ?? user.role;
+
+  await user.save();
+
+  const updatedUser = await UserModel.findById(user._id).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User updated successfully", updatedUser));
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    throw new ApiError(400, "userId is required");
+  }
+
+  if (req.user._id.toString() === userId) {
+    throw new ApiError(400, "You cannot delete your own account");
+  }
+
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  await user.deleteOne();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User deleted successfully"));
+});
+
 const changePassword = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -141,86 +198,116 @@ const changePassword = asyncHandler(async (req, res) => {
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-  const {email}=req.body
-  
-  if(!email){
-    throw new ApiError(400,"all fileds are required")
+  if (!email) {
+    throw new ApiError(400, "all fileds are required");
   }
 
-  const user=await UserModel.findOne({email})
+  const user = await UserModel.findOne({ email });
 
-  if(!user){
-    throw new ApiError(400,"user not found with this email..enter registerd email")
+  if (!user) {
+    throw new ApiError(
+      400,
+      "user not found with this email..enter registerd email",
+    );
   }
 
-  const resetToken=crypto.randomBytes(32).toString("hex");
+  const resetToken = crypto.randomBytes(32).toString("hex");
 
-  const hashToken=crypto.createHash("sha256").update(resetToken).digest("hex");
+  const hashToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
-  user.resetPasswordToken=hashToken;
-  user.resetPasswordExpire=Date.now()+ 15 * 60 * 1000 //15 minutes expires time
+  user.resetPasswordToken = hashToken;
+  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; //15 minutes expires time
 
- await user.save()
+  await user.save();
 
-  const reset_url=`${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-  console.log("reset url is -----> ",reset_url);
-  
+  const reset_url = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  console.log("reset url is -----> ", reset_url);
 
-  const message=forgot_password_email_template(reset_url)
+  const message = forgot_password_email_template(reset_url);
 
   try {
-
-    sendEmail({email:user.email,subject:"NexManage Password Reset",message:message});
-    return res.status(200).json(new ApiResponse(200,"Email sent successfully at your registered email address"))
-    
+    sendEmail({
+      email: user.email,
+      subject: "NexManage Password Reset",
+      message: message,
+    });
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Email sent successfully at your registered email address",
+        ),
+      );
   } catch (error) {
-    console.error("SendGrid Email Error in forgot password ",error.response?error.response.body:error)
-    user.resetPasswordExpire=undefined;
-    user.resetPasswordToken=undefined;
+    console.error(
+      "SendGrid Email Error in forgot password ",
+      error.response ? error.response.body : error,
+    );
+    user.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
 
-    await user.save()
-    throw new ApiError(500,"Email could not be send in forgot password")
-  
-  }
-})
-
-const resetPassword=asyncHandler(async(req,res)=>{
-
-   const {token}=req.params;
-   const{newPassword}=req.body;
-
-   if(!newPassword){
-    throw new ApiError(400,"all fields are required")
-   }
-   if(!token){
-    throw new ApiError(400,"token not found")
-   }
-
-   console.log("reset token is --------> ", token);
-   
-    
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-    console.log("hased token -------> ", hashedToken);
-    
-   const user=await UserModel.findOne({resetPasswordToken:hashedToken,resetPasswordExpire:{$gt:Date.now()}})
-
-   if(!user){
-    throw new ApiError(400,"Invalid or expired token")
-   }
-
-   const hashedNewPassword=await bcrypt.hash(newPassword,10);
-
-   user.password=hashedNewPassword;
-   user.resetPasswordToken=undefined;
-   user.resetPasswordExpire=undefined;
     await user.save();
-    return res.status(200).json(new ApiResponse(200,"Password reset successfully"))
-
-})
-
-const logoutUser=asyncHandler(async(req,res)=>{
-    return res.status(200).cookie("token","",{httponly:true,secure:true}).json(new ApiResponse(200,"user logged out successfully"))
+    throw new ApiError(500, "Email could not be send in forgot password");
+  }
 });
 
-export { registerUser, loginUser, allUsers, changePassword,forgotPassword,resetPassword,logoutUser };
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    throw new ApiError(400, "all fields are required");
+  }
+  if (!token) {
+    throw new ApiError(400, "token not found");
+  }
+
+  console.log("reset token is --------> ", token);
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  console.log("hased token -------> ", hashedToken);
+
+  const user = await UserModel.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(400, "Invalid or expired token");
+  }
+
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  user.password = hashedNewPassword;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Password reset successfully"));
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .cookie("token", "", { httponly: true, secure: true })
+    .json(new ApiResponse(200, "user logged out successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  allUsers,
+  changePassword,
+  forgotPassword,
+  resetPassword,
+  logoutUser,
+  updateUser,
+  deleteUser,
+};

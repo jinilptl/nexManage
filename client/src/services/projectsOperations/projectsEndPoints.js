@@ -1,5 +1,3 @@
-
-
 const PROJECTS_END_POINTS = {
 
     CREATE_PROJECT: '/v1/project/create-project',

@@ -4,6 +4,7 @@ import teamsReducer from "../Slices/teamsSlice"
 import projectReducer from "../Slices/projectsSlice"
 import taskreducer from "../Slices/tasksSlice"
 import dashboardReducer from "../Slices/dashboardSlice"
+import usersReducer from "../Slices/usersSlice";
 
 export const rootReducer=combineReducers({
     // your reducers here
@@ -12,4 +13,5 @@ export const rootReducer=combineReducers({
     projects:projectReducer,
     tasks:taskreducer,
     dashboard:dashboardReducer,
-})
+    users: usersReducer,
+});
