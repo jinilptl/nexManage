@@ -13,7 +13,6 @@ export default function Members() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { list: members, loading } = useSelector((state) => state.users);
-  console.log("========>", members);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
@@ -96,7 +95,7 @@ export default function Members() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <h2 className="text-2xl font-semibold text-gray-800">Members</h2>
         <button
           onClick={() => navigate("/dashboard/invite-members")}
@@ -174,7 +173,7 @@ export default function Members() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
               />
 
               <input
@@ -185,7 +184,7 @@ export default function Members() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
               />
 
               <select
@@ -193,7 +192,7 @@ export default function Members() {
                 onChange={(e) =>
                   setFormData({ ...formData, role: e.target.value })
                 }
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
@@ -226,7 +225,7 @@ export default function Members() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+                className="px-4 py-2 border-gray-300 rounded-lg border text-gray-700 hover:bg-gray-100"
               >
                 Cancel
               </button>

@@ -16,36 +16,72 @@ const {
   LOGIN,
   ADD_MEMBER,
   LOGOUT,
-  FORGET_PASSWORD, 
+  FORGET_PASSWORD,
   RESET_PASSWORD,
   CHANGE_PASSWORD,
 } = AUTH_END_POINTS;
 
-export function loginUserService(email, password, navigate) {
+export function loginUserService(email, password, navigate, rememberMe) {
   return async (dispatch) => {
     dispatch(setAuthLoading(true));
+
     try {
       const Login_response = await axiosInstance.post(
         LOGIN,
         { email, password },
         { withCredentials: true }
       );
-      // Logger("login response from service", Login_response.data);
 
       if (Login_response.data.success) {
-        let token = Login_response.data.data.token;
-        let user = Login_response.data.data.userdDetailes;
-        toast.success(Login_response.data.data.message||"login succesfully")
-        // Logger("login success, dispatching to slice", user, token.slice(0,20));
+        const token = Login_response.data.data.token;
+        const user = Login_response.data.data.userdDetailes;
+
+        if (rememberMe) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+        } else {
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("user", JSON.stringify(user));
+        }
+
         dispatch(setUser(user));
         dispatch(setToken(token));
         dispatch(setIsLogin(true));
+
+        toast.success(Login_response.data.data.message || "Login successfully");
         navigate("/dashboard");
       }
     } catch (error) {
-      // Logger("login error from service", error);
-      toast.error(error?.response?.data?.message||"error while login")
+      toast.error(error?.response?.data?.message || "Error while login");
+    } finally {
       dispatch(setAuthLoading(false));
+    }
+  };
+}
+
+export function addMemberService(memberData, token) {
+  return async (dispatch) => {
+    dispatch(setAuthLoading(true));
+
+    try {
+      const response = await axiosInstance.post(ADD_MEMBER, memberData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      toast.success(response.data.message || "User registered successfully");
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to add member",
+      );
     } finally {
       dispatch(setAuthLoading(false));
     }
@@ -60,7 +96,7 @@ export function forgotPasswordService(email) {
       const forgot_password_response = await axiosInstance.post(
         FORGET_PASSWORD,
         { email },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       // Logger("forgot password response from service", forgot_password_response);
     } catch (error) {
@@ -79,7 +115,7 @@ export function resetPasswordService(newPassword, token) {
       const resetPassword_response = await axiosInstance.post(
         `${RESET_PASSWORD}/${token}`,
         { newPassword },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       // Logger("reset password response from service", resetPassword_response);
@@ -103,17 +139,16 @@ export const logoutService = (token, navigate) => {
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
 
       // Redux clear
       dispatch(clearAuth());
       dispatch(clearTeams());
-      localStorage.removeItem("user")
-      localStorage.removeItem("token")
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
       toast.success("Logged out successfully!");
       navigate("/");
-
     } catch (error) {
       toast.error("Logout failed!");
     } finally {
@@ -121,4 +156,3 @@ export const logoutService = (token, navigate) => {
     }
   };
 };
-

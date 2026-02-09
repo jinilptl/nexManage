@@ -21,11 +21,10 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { data, loading } = useSelector((state) => state.dashboard);
   const projects = data?.projectProgress || [];
-    const upcomingDeadlines = data?.upcomingDeadlines || [];
+  const upcomingDeadlines = data?.upcomingDeadlines || [];
   const recentActivity = data?.recentActivity || [];
   const [showAllDeadlines, setShowAllDeadlines] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
-
   useEffect(() => {
     dispatch(getDashboardData());
   }, [dispatch]);
@@ -84,13 +83,11 @@ export default function Dashboard() {
   if (loading) return <div>Loading...</div>;
   if (!data) return null;
 
-    const visibleDeadlines = showAllDeadlines
+  const visibleDeadlines = showAllDeadlines
     ? upcomingDeadlines
     : upcomingDeadlines.slice(0, 3);
 
-  const visibleProjects = showAllProjects
-    ? projects
-    : projects.slice(0, 3);
+  const visibleProjects = showAllProjects ? projects : projects.slice(0, 3);
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -141,7 +138,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white p-4 rounded-xl shadow-sm  ">
+        <div className="bg-white p-4 rounded-xl shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Recent Activity
           </h3>
@@ -149,7 +146,8 @@ export default function Dashboard() {
             Latest updates across your projects
           </p>
 
-          <div className="space-y-4">
+          {/* SCROLL CONTAINER */}
+          <div className="space-y-4 max-h-[246px] overflow-y-auto pr-2">
             {data?.recentActivity?.map((a, i) => (
               <div key={i} className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold">
@@ -185,9 +183,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
           </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Tasks due within 7 days
-          </p>
+          <p className="text-sm text-gray-500 mb-4">Tasks due within 7 days</p>
 
           {visibleDeadlines.length === 0 && (
             <p className="text-sm text-gray-400">No upcoming deadlines</p>
@@ -195,8 +191,7 @@ export default function Dashboard() {
 
           {visibleDeadlines.map((d, i) => {
             const dueIn = Math.ceil(
-              (new Date(d.dueDate) - new Date()) /
-                (1000 * 60 * 60 * 24),
+              (new Date(d.dueDate) - new Date()) / (1000 * 60 * 60 * 24),
             );
 
             const isHigh = dueIn <= 1;
@@ -205,9 +200,7 @@ export default function Dashboard() {
               <div
                 key={i}
                 className={`p-3 rounded-lg mb-2 ${
-                  isHigh
-                    ? "bg-red-50 text-red-700"
-                    : "bg-blue-50 text-blue-700"
+                  isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
                 }`}
               >
                 <div className="flex justify-between items-start">
@@ -217,9 +210,7 @@ export default function Dashboard() {
                       Due in {dueIn} day{dueIn !== 1 && "s"}
                     </p>
                   </div>
-                  {isHigh && (
-                    <AlertCircle className="w-4 h-4 text-red-500" />
-                  )}
+                  {isHigh && <AlertCircle className="w-4 h-4 text-red-500" />}
                 </div>
               </div>
             );
@@ -245,18 +236,14 @@ export default function Dashboard() {
           </p>
 
           {visibleProjects.length === 0 && (
-            <p className="text-sm text-gray-400">
-              No active projects yet
-            </p>
+            <p className="text-sm text-gray-400">No active projects yet</p>
           )}
 
           {visibleProjects.map((p) => (
             <div key={p.id} className="space-y-2 mb-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-800">{p.name}</span>
-                <span className="text-sm text-gray-500">
-                  {p.progress}%
-                </span>
+                <span className="text-sm text-gray-500">{p.progress}%</span>
               </div>
 
               <div className="w-full bg-gray-200 rounded-full h-2">

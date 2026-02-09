@@ -22,8 +22,7 @@ export default function AnalyticsPage() {
     velocityData,
     contributors,
     activeProjects,
-  } = useAnalyticsData();
-  console.log(statusData);
+  } = useAnalyticsData(); 
 
   if (loading) {
     return (

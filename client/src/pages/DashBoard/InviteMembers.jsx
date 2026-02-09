@@ -11,39 +11,34 @@ import {
   MailCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { addMemberService } from "../../services/authOperations/authServices";
+import { useSelector } from "react-redux";
 
 const InviteMembers = () => {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("contributor");
+  const [role, setRole] = useState("member");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleInvite = async (e) => {
+  const handleInvite = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      toast.error("Email and password are required");
+    if (!name || !email || !password) {
+      toast.error("Name, email and password are required");
       return;
     }
 
-    try {
-      setLoading(true);
+    dispatch(addMemberService({ name, email, password, role }, token));
 
-      // 🔥 API / Redux call
-      // await dispatch(inviteMember({ email, password, role })).unwrap();
-
-      toast.success("Invitation sent successfully!");
-      setEmail("");
-      setPassword("");
-      setRole("contributor");
-    } catch (error) {
-      toast.error(error?.message || "Failed to invite member");
-    } finally {
-      setLoading(false);
-    }
+    setName("");
+    setEmail("");
+    setPassword("");
+    setRole("member");
   };
 
   return (
@@ -71,7 +66,21 @@ const InviteMembers = () => {
 
             {/* Form */}
             <form onSubmit={handleInvite} className="p-6 space-y-6">
-              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <div className="relative">
+                  <UserPlus className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-gray-400 "
+                  />
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email address
@@ -83,15 +92,14 @@ const InviteMembers = () => {
                     placeholder="user@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:ring-2  focus:border-gray-400"
+                    className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-gray-400"
                   />
                 </div>
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Temporary Password
+                 Password
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -100,7 +108,7 @@ const InviteMembers = () => {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 pl-10 pr-10 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-lg border border-gray-300 pl-10 pr-10 py-2.5 text-sm"
                   />
                   <button
                     type="button"
@@ -124,10 +132,10 @@ const InviteMembers = () => {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-gray-400"
                 >
-                  <option value="contributor">Contributor</option>
-                  <option value="project-manager">Project Manager</option>
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
 
@@ -153,23 +161,17 @@ const InviteMembers = () => {
           <div className="space-y-4 text-sm text-gray-600">
             <div className="flex gap-3">
               <MailCheck className="w-5 h-5 text-blue-600" />
-              <p>
-                An invitation email will be sent with login credentials.
-              </p>
+              <p>An invitation email will be sent with login credentials.</p>
             </div>
 
             <div className="flex gap-3">
               <Users className="w-5 h-5 text-blue-600" />
-              <p>
-                Members can access projects based on their assigned role.
-              </p>
+              <p>Members can access projects based on their assigned role.</p>
             </div>
 
             <div className="flex gap-3">
               <Shield className="w-5 h-5 text-blue-600" />
-              <p>
-                Roles control permissions across the workspace.
-              </p>
+              <p>Roles control permissions across the workspace.</p>
             </div>
           </div>
 

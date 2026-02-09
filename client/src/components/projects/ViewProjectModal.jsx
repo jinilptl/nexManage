@@ -105,7 +105,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
     }
   };
 
-  // ⭐ Project loading loader
   if (loadingProject) {
     return (
       <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm">
@@ -258,7 +257,9 @@ export default function ViewProjectModal({ open, onClose, project }) {
               <p className="text-gray-500 text-sm">No members found.</p>
             ) : (
               <div className="space-y-3">
-                {allProjectMembers.map((member, index) => (
+                {allProjectMembers.map((member, index) => {
+                  if (!member.user) return null;
+                  return (
                   <div
                     key={index}
                     className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
@@ -354,8 +355,8 @@ export default function ViewProjectModal({ open, onClose, project }) {
                         {member.status}
                       </span>
                     </div>
-                  </div>
-                ))}
+                  </div>)
+})}
               </div>
             )}
           </div>

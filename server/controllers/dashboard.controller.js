@@ -21,9 +21,7 @@ export const getDashboardData = asyncHandler(async (req, res) => {
 
   /* -------------------- TASK COUNTS -------------------- */
   const myTasksCount = await Task.countDocuments(
-    isAdmin
-      ? { project: { $in: userProjectIds } }
-      : { assignees: userId },
+    isAdmin ? { project: { $in: userProjectIds } } : { assignees: userId },
   );
 
   const completedThisWeek = await Task.countDocuments({
@@ -82,12 +80,13 @@ export const getDashboardData = asyncHandler(async (req, res) => {
       : 0,
   ]);
 
-  /* -------------------- RECENT ACTIVITY (FIXED) -------------------- */
+  const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
   const recentActivity = await Task.find({
-    project: { $in: userProjectIds }, // 🔥 MAIN FIX
+    project: { $in: userProjectIds },
+    updatedAt: { $gte: last24Hours },
   })
     .sort({ updatedAt: -1 })
-    .limit(5)
     .populate("updatedBy", "name")
     .lean();
 

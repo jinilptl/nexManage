@@ -1,5 +1,3 @@
-
-
 const AUTH_END_POINTS = {
     LOGIN: '/v1/user/login',
     ADD_MEMBER: '/v1/user/register', // THIS IS SECURE ENDPOINT FOR ONLY ADMINS ANS SUPERS ADMIN

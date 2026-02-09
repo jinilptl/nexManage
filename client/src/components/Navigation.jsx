@@ -94,7 +94,7 @@ export default function Navigation({
           </button>
         </div>
 
-        <nav className="flex-1 p-2 overflow-y-auto">
+        <nav className="flex-1 p-2 overflow-y-auto sidebar-scroll">
           {menuItems
             .filter((item) => !item.adminOnly || isAdmin)
             .map((item, idx) => (
@@ -194,7 +194,7 @@ export default function Navigation({
           </button>
         </div>
 
-        <nav className="flex-1 p-2 overflow-y-auto">
+        <nav className="flex-1 p-2 overflow-y-auto sidebar-scroll">
           {menuItems
             .filter((item) => !item.adminOnly || isAdmin)
             .map((item, idx) => (

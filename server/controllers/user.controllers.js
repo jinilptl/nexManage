@@ -31,19 +31,20 @@ const registerUser = asyncHandler(async (req, res) => {
     createdby: req.user?._id,
   });
 
+  // await sendEmail({
+  //   email: email,
+  //   subject: "You are invited to NexManage 🚀",
+  //   message: `
+  //   <h2>Hello ${name},</h2>
+  //   <p>You have been invited to join NexManage.</p>
+  //   <p><b>Email:</b> ${email}</p>
+  //   <p><b>Password:</b> ${password}</p>
+  // `,
+  // });
+
   const registeredUser = await UserModel.findById(createdUser._id)
     .select("-password")
     .populate("createdby", "name email role ");
-
-  // try {
-  //   sendEmail({
-  //     email: registeredUser.email,
-  //     subject: "Welcome to NexManage!",
-  //     message: `<p>Hi ${registeredUser.name},</p><p>Welcome to NexManage! Your account has been successfully created.</p><p>We're excited to have you on board.</p><p>Best regards,<br/>The NexManage Team</p>`,
-  //   })
-  // } catch (error) {
-  //   throw new ApiError(500, "error while registering user");
-  // }
 
   return res
     .status(200)

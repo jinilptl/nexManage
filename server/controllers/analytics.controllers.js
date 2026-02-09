@@ -217,7 +217,6 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     { $unwind: "$project" },
     { $unwind: "$project.taskStatuses" },
 
-    // only DONE tasks
     {
       $match: {
         $expr: {
@@ -250,12 +249,14 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     { $limit: 5 },
   ]);
 
-  const contributors = await User.populate(contributorsAgg, {
-    path: "_id",
-    select: "name email",
-  });
+const contributors = await User.populate(contributorsAgg, {
+  path: "_id",
+  select: "name email",
+});
 
-  const formattedContributors = contributors.map((c) => ({
+const formattedContributors = contributors
+  .filter(c => c._id)
+  .map((c) => ({
     id: c._id._id,
     name: c._id.name,
     avatar: null,
@@ -263,6 +264,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     comments: 0,
     avgCompletionTime: Math.round(c.avgCompletionTime || 0),
   }));
+
 
   const projectStatsAgg = await Task.aggregate([
     {
