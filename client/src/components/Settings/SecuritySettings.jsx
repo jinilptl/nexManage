@@ -211,7 +211,7 @@ export default function SecuritySettings() {
           onClick={handleUpdatePassword}
           disabled={loading}
           className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium
-                     hover:bg-black transition disabled:opacity-50"
+                     hover:bg-black transition disabled:opacity-50 cursor-pointer"
         >
           {loading ? "Updating..." : "Update Password"}
         </button>

@@ -104,7 +104,7 @@ export default function Members() {
 
         <button
           onClick={() => navigate("/dashboard/invite-members")}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="flex items-center cursor-pointer gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
           <Plus size={18} />
           Invite Member
@@ -142,10 +142,10 @@ export default function Members() {
                   <td className="p-4">{member.email}</td>
                   <td className="p-4 capitalize">{member.role}</td>
                   <td className="p-4 flex justify-end gap-3">
-                    <button onClick={() => handleOpenModal(member)}>
+                    <button onClick={() => handleOpenModal(member)} className="cursor-pointer">
                       <Edit size={18} color="blue" />
                     </button>
-                    <button onClick={() => openDeleteModal(member._id)}>
+                    <button onClick={() => openDeleteModal(member._id)} className="cursor-pointer">
                       <Trash2 size={18} color="red" />
                     </button>
                   </td>
@@ -158,14 +158,24 @@ export default function Members() {
 
       {/* ================= MODAL ================= */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-xl p-6">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          {/* BACKDROP */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+            onClick={handleCloseModal}
+          />
+
+          {/* MODAL BOX */}
+          <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-gray-900">
                 {editingMember ? "Edit Member" : "Add Member"}
               </h3>
-              <button onClick={handleCloseModal}>
-                <X />
+              <button
+                onClick={handleCloseModal}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
 
@@ -178,7 +188,7 @@ export default function Members() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <input
@@ -189,7 +199,7 @@ export default function Members() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <select
@@ -197,32 +207,48 @@ export default function Members() {
                 onChange={(e) =>
                   setFormData({ ...formData, role: e.target.value })
                 }
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
                 <option value="superadmin">Super Admin</option>
               </select>
 
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-              >
-                {editingMember ? "Update Member" : "Create Member"}
-              </button>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 cursor-pointer text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 cursor-pointer text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {editingMember ? "Update Member" : "Create Member"}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
       {/* ================= DELETE CONFIRM MODAL ================= */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-sm rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          {/* BACKDROP */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+            onClick={closeDeleteModal}
+          />
+
+          {/* MODAL BOX */}
+          <div className="relative bg-white w-full max-w-sm rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Delete User
             </h3>
 
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-6">
               Are you sure you want to delete this user? This action cannot be
               undone.
             </p>
@@ -230,14 +256,14 @@ export default function Members() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 border-gray-300 rounded-lg border text-gray-700 hover:bg-gray-100"
+                className="px-4 py-2 text-sm cursor-pointer font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 Cancel
               </button>
 
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                className="px-4 py-2 text-sm cursor-pointer font-medium bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors"
               >
                 Delete
               </button>

@@ -102,7 +102,7 @@ export default function AccountSettings() {
                 email: user.email,
               });
             }}
-            className="border px-4 py-2 rounded-lg text-sm"
+            className="border px-4 py-2 rounded-lg text-sm cursor-pointer"
           >
             Cancel
           </button>
@@ -112,7 +112,7 @@ export default function AccountSettings() {
           type="button"
           onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer"
         >
           {loading
             ? "Saving..."

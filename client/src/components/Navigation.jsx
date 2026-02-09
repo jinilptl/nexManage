@@ -69,7 +69,7 @@ export default function Navigation({
       </div>
 
       <div
-        className={`hidden md:flex fixed z-2000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
+        className={`hidden md:flex fixed cursor-pointer z-2000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
           collapsed ? "w-20" : "w-64"
         }`}
       >
@@ -215,7 +215,7 @@ export default function Navigation({
         <div className="relative p-2 border-t border-slate-700">
           <button
             onClick={toggleUserMenu}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
               {user.name[0].toUpperCase()}
@@ -236,11 +236,11 @@ export default function Navigation({
               >
                 My Account
               </div>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
+              <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Profile
               </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
+              <button className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
               </button>
@@ -249,7 +249,7 @@ export default function Navigation({
                 onClick={() => {
                   setLogoutModalOpen(true);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
+                className="w-full cursor-pointer text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out

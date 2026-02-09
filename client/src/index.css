@@ -102,3 +102,66 @@ html, body {
 .sidebar-scroll:hover::-webkit-scrollbar-thumb {
   opacity: 1;
 }
+
+/* ===== Consistent Modal Animations ===== */
+@keyframes modalBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalContentFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalBackdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalContentFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+}
+
+.modal-backdrop-enter {
+  animation: modalBackdropFadeIn 0.2s ease-out forwards;
+}
+
+.modal-backdrop-exit {
+  animation: modalBackdropFadeOut 0.2s ease-in forwards;
+}
+
+.modal-content-enter {
+  animation: modalContentFadeIn 0.2s ease-out forwards;
+}
+
+.modal-content-exit {
+  animation: modalContentFadeOut 0.2s ease-in forwards;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  padding-right: 0;
+}

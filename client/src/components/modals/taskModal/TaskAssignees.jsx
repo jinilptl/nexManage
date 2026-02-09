@@ -50,7 +50,7 @@ import { Plus, X } from "lucide-react";
 
           <button
             onClick={openEditor}
-            className="flex h-8 w-8 items-center justify-center rounded-full border text-gray-500 hover:bg-gray-100"
+            className="flex h-8 w-8 items-center cursor-pointer justify-center rounded-full border text-gray-500 hover:bg-gray-100"
             title="Edit assignees"
           >
             <Plus size={14} />

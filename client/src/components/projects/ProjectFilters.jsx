@@ -26,7 +26,7 @@ export default function ProjectFilters({ OnFilter }) {
         </div>
 
         {/* Status Filter (future use) */}
-        <select className="shadow-sm rounded-md px-3 py-2 text-sm w-full sm:w-48">
+        <select className="shadow-sm rounded-md px-3 py-2 text-sm w-full sm:w-48 cursor-pointer">
           <option value="">Status</option>
           <option value="active">Active</option>
           <option value="completed">Completed</option>

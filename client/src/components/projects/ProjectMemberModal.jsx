@@ -75,13 +75,28 @@ export default function ProjectMemberModal({
 
   const isBusy = adding || updating;
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (open) {
+      document.body.classList.add("modal-open");
+      return () => document.body.classList.remove("modal-open");
+    }
+  }, [open]);
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6 relative animate-slideUp">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      {/* BACKDROP */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+        onClick={() => !isBusy && onClose()}
+      />
+
+      {/* MODAL BOX */}
+      <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
         
         {/* Close */}
         <button
-          className="absolute top-3 right-3 p-1 rounded-lg hover:bg-gray-100"
+          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={onClose}
           disabled={isBusy}
         >
@@ -89,7 +104,7 @@ export default function ProjectMemberModal({
         </button>
 
         {/* Header */}
-        <h2 className="text-xl font-bold mb-2">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {mode === "add" ? "Add Member" : "Update Member"}
         </h2>
 
@@ -149,7 +164,7 @@ export default function ProjectMemberModal({
           <button
             disabled={isBusy}
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300"
+            className="px-4 py-2 text-sm font-medium bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
@@ -157,7 +172,7 @@ export default function ProjectMemberModal({
           <button
             disabled={isBusy}
             onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-blue-700"
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isBusy ? <ButtonLoader /> : mode === "add" ? "Add Member" : "Update"}
           </button>

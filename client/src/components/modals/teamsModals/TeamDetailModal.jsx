@@ -86,10 +86,30 @@ export default function TeamDetailModal({ open, onClose }) {
     setSelectedMemberId(null);
   };
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (open) {
+      document.body.classList.add("modal-open");
+      return () => document.body.classList.remove("modal-open");
+    }
+  }, [open]);
+
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-3xl my-10">
-        <div className="bg-white rounded-xl shadow-xl w-full relative p-5 md:p-6 animate-slideUp max-h-[92vh] md:max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      {/* BACKDROP */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+        onClick={() => {
+          if (!updating && !deleting) {
+            onClose();
+            dispatch(setSelectedTeamData(null));
+            dispatch(setSelectedTeamId(null));
+          }
+        }}
+      />
+
+      {/* MODAL BOX */}
+      <div className="relative bg-white w-full max-w-3xl rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
           {/* Close Button */}
           <button
             disabled={updating || deleting}
@@ -98,7 +118,7 @@ export default function TeamDetailModal({ open, onClose }) {
               dispatch(setSelectedTeamData(null));
               dispatch(setSelectedTeamId(null));
             }}
-            className={`absolute top-3 right-3 p-1 rounded-md hover:bg-gray-100 
+            className={`absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer
               ${updating || deleting ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <X className="w-5 h-5 text-gray-600" />
@@ -141,7 +161,7 @@ export default function TeamDetailModal({ open, onClose }) {
                   setModalOpen(true);
                   dispatch(fetchSingleTeamService(teamId, token));
                 }}
-                className={`px-3 py-1 text-sm bg-blue-600 text-white rounded-md flex items-center gap-1 hover:bg-blue-700 
+                className={`px-3 py-1 text-sm bg-blue-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-blue-700 
                   ${updating ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {updating ? <ButtonLoader /> : <Edit className="w-4 h-4" />}
@@ -149,7 +169,7 @@ export default function TeamDetailModal({ open, onClose }) {
               </button>
 
               {/* Archive */}
-              <button className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600">
+              <button className="px-3 py-1 text-sm bg-yellow-500 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-yellow-600">
                 <Archive className="w-4 h-4" /> Archive
               </button>
 
@@ -157,7 +177,7 @@ export default function TeamDetailModal({ open, onClose }) {
               <button
                 disabled={deleting}
                 onClick={handleDeleteTeam}
-                className={`px-3 py-1 text-sm bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700 
+                className={`px-3 py-1 text-sm bg-red-600 text-white rounded-md cursor-pointer flex items-center gap-1 hover:bg-red-700 
                   ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {deleting ? <ButtonLoader /> : <Trash2 className="w-4 h-4" />}
@@ -178,7 +198,7 @@ export default function TeamDetailModal({ open, onClose }) {
                     setMemberModalMode("add");
                     setMemberModalOpen(true);
                   }}
-                  className={`px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700 
+                  className={`px-3 py-1 text-sm bg-green-600 text-white rounded-md cursor-pointer flex items-center gap-1 hover:bg-green-700 
                     ${addingMember ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {addingMember ? (
@@ -225,7 +245,7 @@ export default function TeamDetailModal({ open, onClose }) {
                           setMemberModalMode("update");
                           setMemberModalOpen(true);
                         }}
-                        className="p-1 hover:bg-gray-200 rounded-md"
+                        className="p-1 hover:bg-gray-200 rounded-md cursor-pointer"
                       >
                         {updatingMember ? (
                           <ButtonLoader />
@@ -238,7 +258,7 @@ export default function TeamDetailModal({ open, onClose }) {
                       <button
                         disabled={removingMember}
                         onClick={() => handleRemoveMember(m.user._id)}
-                        className="p-1 hover:bg-gray-200 rounded-md"
+                        className="p-1 hover:bg-gray-200 rounded-md cursor-pointer"
                       >
                         {removingMember ? (
                           <ButtonLoader />
@@ -256,14 +276,17 @@ export default function TeamDetailModal({ open, onClose }) {
           {/* FOOTER */}
           <div className="mt-6 flex justify-end">
             <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-md"
+              onClick={() => {
+                onClose();
+                dispatch(setSelectedTeamData(null));
+                dispatch(setSelectedTeamId(null));
+              }}
+              className="px-4 py-2 cursor-pointer text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
               Close
             </button>
           </div>
         </div>
-      </div>
 
       {/* CHILD MODALS */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} mode="update" />

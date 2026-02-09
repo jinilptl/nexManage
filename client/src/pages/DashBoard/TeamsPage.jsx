@@ -139,7 +139,7 @@ export default function TeamsPage() {
           <button
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
-            className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm 
+            className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
              ${
                loading
                  ? "bg-blue-300 cursor-not-allowed"
@@ -240,7 +240,7 @@ export default function TeamsPage() {
                           );
                       }}
                     >
-                      <MoreVertical className="w-5 h-5 text-gray-600" />
+                      <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
                     </button>
 
                     {/* DROPDOWN */}
@@ -258,7 +258,7 @@ export default function TeamsPage() {
                               setOpenMenuId(null);
                             }
                           }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm cursor-pointer"
                         >
                           View Team
                         </button>
@@ -267,7 +267,7 @@ export default function TeamsPage() {
 
                         <button
                           disabled={loading}
-                          className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 text-sm"
+                          className="w-full cursor-pointer text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
                         >
                           Archive Team
                         </button>

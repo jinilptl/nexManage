@@ -68,13 +68,13 @@ export default function ProjectCard({
                 setMenuOpen(!menuOpen);
               }}
             >
-              <MoreVertical className="w-5 h-5 text-gray-600" />
+              <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
             </button>
 
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg z-50 animate-fadeIn border border-gray-100 overflow-hidden">
                 <button
-                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 text-sm"
+                  className="w-full flex items-center cursor-pointer justify-between px-4 py-2 hover:bg-gray-100 text-sm"
                   onClick={() => {
                     onView(project);
                     setMenuOpen(false);
@@ -87,7 +87,7 @@ export default function ProjectCard({
 
                 {UserRole !== "member" && (
                   <button
-                    className="w-full flex items-center justify-between px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
+                    className="w-full flex items-center cursor-pointer justify-between px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
                     onClick={() => {
                       onArchive?.(project);
                       setMenuOpen(false);

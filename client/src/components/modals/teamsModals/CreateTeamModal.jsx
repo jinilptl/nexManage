@@ -50,23 +50,30 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-99999 flex items-center justify-center">
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (open) {
+      document.body.classList.add("modal-open");
+      return () => document.body.classList.remove("modal-open");
+    }
+  }, [open]);
 
+  return (
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
       <div
-        className="absolute inset-0  bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => !modalLoading && setOpen(false)}
       />
 
       {/* MODAL BOX */}
-      <div className="relative bg-white w-[90%] sm:w-[420px] rounded-lg shadow-lg p-6 animate-fadeIn">
+      <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
 
         {/* CLOSE BUTTON */}
         <button
           disabled={modalLoading}
           onClick={() => !modalLoading && setOpen(false)}
-          className={`absolute top-4 right-4 p-2 rounded-md hover:bg-gray-100 
+          className={`absolute top-4 right-4 p-2 rounded-md hover:bg-gray-100 cursor-pointer
           ${modalLoading && "opacity-40 cursor-not-allowed"}`}
         >
           <X className="w-5 h-5 text-gray-600" />
@@ -118,7 +125,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
               type="button"
               disabled={modalLoading}
               onClick={() => !modalLoading && setOpen(false)}
-              className={`px-4 py-2 text-sm rounded-md border bg-gray-100 hover:bg-gray-200 
+              className={`px-4 py-2 text-sm rounded-md border bg-gray-100 hover:bg-gray-200 cursor-pointer
               ${modalLoading && "opacity-40 cursor-not-allowed"}`}
             >
               Cancel
@@ -127,7 +134,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
             <button
               type="submit"
               disabled={modalLoading}
-              className={`px-4 py-2 text-sm rounded-md text-white 
+              className={`px-4 py-2 text-sm rounded-md text-white cursor-pointer
               ${modalLoading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
             >
               {modalLoading ? (

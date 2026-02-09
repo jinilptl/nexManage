@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   deleteTaskService,
   fetchAllSubTaskService,
@@ -8,23 +9,30 @@ import {
   updateAssigneesTaskService,
   updateTaskService,
 } from "../../../services/taskOperations/taskServices";
-import CreateTaskModal from "./CreateTaskModal";
 
+import CreateTaskModal from "./CreateTaskModal";
 import TaskHeader from "./TaskHeader";
 import TaskDescription from "./TaskDescription";
 import TaskSubtasks from "./TaskSubtasks";
 import TaskAttachments from "./TaskAttachments";
 import TaskAssignees from "./TaskAssignees";
 import TaskActivity from "./TaskActivity";
+
 import {
   clearSelectedTaskAttachments,
   clearSelectedTaskSubtasks,
 } from "../../../Redux_Config/Slices/tasksSlice";
 
+import ConfirmModal from "../teamsModals/ConfirmModal";
+import toast from "react-hot-toast";
+
 export default function TaskDetailModal({ task, onClose }) {
+  // Prevent body scroll when modal is open
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = "auto");
+    document.body.classList.add("modal-open");
+    return () => {
+      document.body.classList.remove("modal-open");
+    };
   }, []);
 
   const dispatch = useDispatch();
@@ -35,7 +43,6 @@ export default function TaskDetailModal({ task, onClose }) {
   const allTaskActivity = useSelector((state) => state.tasks.activityLogs);
 
   const {
-    taskId,
     data: subtasks,
     loading: subtaskLoading,
   } = useSelector((state) => state.tasks.selectedTaskSubtasks);
@@ -44,15 +51,18 @@ export default function TaskDetailModal({ task, onClose }) {
     (state) => state.tasks.selectedTask?.data?.assignees || []
   );
 
-  const [attachments, setAttachments] = React.useState(task.attachments || []);
-  const [assignees, setAssignees] = React.useState(task.assignees || []);
-  const [isAssignMode, setIsAssignMode] = React.useState(false);
-  const [selectedAssignees, setSelectedAssignees] = React.useState([]);
-  const [isSavingAssignees, setIsSavingAssignees] = React.useState(false);
-  const [updateTaskModalOpen, setUpdateTaskModalOpen] = React.useState(false);
+  const [attachments] = useState(task.attachments || []);
+  const [assignees, setAssignees] = useState(task.assignees || []);
+  const [isAssignMode, setIsAssignMode] = useState(false);
+  const [selectedAssignees, setSelectedAssignees] = useState([]);
+  const [isSavingAssignees, setIsSavingAssignees] = useState(false);
+  const [updateTaskModalOpen, setUpdateTaskModalOpen] = useState(false);
 
+  /* -------- CONFIRM MODAL STATES -------- */
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmType, setConfirmType] = useState(null);
 
-  //  FETCH SUBTASKS ON MODAL
+  /* -------- FETCH SUBTASKS -------- */
   useEffect(() => {
     if (task?._id && token) {
       dispatch(fetchAllSubTaskService(task.project, task._id, token));
@@ -62,33 +72,39 @@ export default function TaskDetailModal({ task, onClose }) {
     };
   }, [task._id, task.project, token, dispatch]);
 
+  /* -------- FETCH ATTACHMENTS -------- */
   useEffect(() => {
-    // console.log("useeefct run");
-
     if (task?._id && token) {
-      // console.log("fetch taskattech ment inuseeefect run");
       dispatch(fetchTaskAttachmentsService(task.project, task._id, token));
     }
-
     return () => {
-      // console.log("fetch taskattech ment return inuseeefect run");
-
       dispatch(clearSelectedTaskAttachments());
     };
-  }, [task._id, token]);
+  }, [task._id, token, dispatch]);
 
-  const handleDeleteTask = () => {
-    if (confirm("do you want to delete this task??")) {
-      dispatch(deleteTaskService(task.project, task._id, token));
-      onClose();
-    }
-  };
-
+  /* -------- FETCH ACTIVITY -------- */
   useEffect(() => {
     if (token) {
       dispatch(fetchTaskActivityService(task._id, task.project, token));
     }
-  }, []);
+  }, [task._id, task.project, token, dispatch]);
+
+  /* -------- DELETE TASK (OPEN CONFIRM) -------- */
+  const handleDeleteTask = () => {
+    setConfirmType("deleteTask");
+    setConfirmOpen(true);
+  };
+
+  /* -------- CONFIRM ACTION -------- */
+  const handleConfirmAction = () => {
+    if (confirmType === "deleteTask") {
+      dispatch(deleteTaskService(task.project, task._id, token));
+      onClose();
+    }
+
+    setConfirmOpen(false);
+    setConfirmType(null);
+  };
 
   const handleUpdateTask = (formData) => {
     dispatch(
@@ -121,22 +137,25 @@ export default function TaskDetailModal({ task, onClose }) {
 
   if (subtaskLoading) {
     return (
-      <div className="fixed inset-0 z-5555 flex items-center justify-center">
-        <div className="text-sm text-gray-400">Loading subtasks...</div>
+      <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter" />
+        <div className="relative text-sm text-gray-400 modal-content-enter">
+          Loading subtasks...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-5555 flex items-center justify-center">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-md"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={onClose}
       />
 
       {/* MODAL */}
-      <div className="relative z-10 h-dvh w-full md:h-[90vh] md:max-w-6xl bg-white rounded-none md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
+      <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden modal-content-enter">
         {/* LEFT */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <TaskHeader
@@ -147,14 +166,8 @@ export default function TaskDetailModal({ task, onClose }) {
           />
 
           <TaskDescription description={task.description} />
-
           <TaskSubtasks subtasks={subtasks || []} task={task} />
-
-          <TaskAttachments
-            task={task}
-            // attachments={attachments}
-            // setAttachments={setAttachments}
-          />
+          <TaskAttachments task={task} />
         </div>
 
         {/* RIGHT */}
@@ -184,6 +197,17 @@ export default function TaskDetailModal({ task, onClose }) {
         onSubmit={handleUpdateTask}
         mode="edit"
         editableData={task}
+      />
+
+      {/* CONFIRM MODAL */}
+      <ConfirmModal
+        open={confirmOpen}
+        title="Delete Task"
+        message="Are you sure you want to delete this task?"
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmOpen(false)}
       />
     </div>
   );

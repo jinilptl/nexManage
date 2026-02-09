@@ -100,7 +100,7 @@ export default function ProjectsPage() {
             onClick={() => {
               setShowModal(true);
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer flex items-center gap-2 text-sm hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" /> Create Project
           </button>

@@ -19,16 +19,12 @@ export default function ProjectModal({
   const isEdit = mode === "edit";
 
   const dispatch = useDispatch();
-  console.log("team list --> ",teamsList);
-   
-  
-  
+  console.log("team list --> ", teamsList);
+
   const token = useSelector((state) => state.auth.token);
   const projectId = useSelector((state) => state.projects.selectedProject.id);
   const teams = useSelector((state) => state.teams.list);
   // console.log("team is -> ",teams);
-
- 
 
   // Loaders
   const creating = useSelector((state) => state.projects.actions.creating);
@@ -43,11 +39,9 @@ export default function ProjectModal({
     teams: [],
   });
 
-   if (teamsList===undefined||teamsList===null||teamsList.length===0) {
-    teamsList=teams;
+  if (teamsList === undefined || teamsList === null || teamsList.length === 0) {
+    teamsList = teams;
   }
-  
-  
 
   useEffect(() => {
     if (!open) return;
@@ -67,7 +61,6 @@ export default function ProjectModal({
         teams: [],
       });
     }
-  
   }, [open, isEdit]);
 
   const handleSubmit = (e) => {
@@ -80,31 +73,45 @@ export default function ProjectModal({
     }
   };
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.classList.add("modal-open");
+      return () => document.body.classList.remove("modal-open");
+    }
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      {/* BACKDROP */}
       <div
-        className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 animate-fadeIn relative"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+        onClick={() => !isBusy && onClose()}
+      />
+
+      {/* MODAL BOX */}
+      <div
+        className="relative bg-white w-full max-w-lg rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter"
         onClick={(e) => e.stopPropagation()}
       >
         {/* CLOSE */}
         <button
           onClick={onClose}
           disabled={isBusy}
-          className={`absolute top-3 right-3 p-1 rounded-md ${
+          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${
             isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
           }`}
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        <h2 className="text-lg font-semibold mb-4">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {isEdit ? "Update Project" : "Create Project"}
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          
           <input
             disabled={isBusy}
             type="text"
@@ -180,12 +187,12 @@ export default function ProjectModal({
           )}
 
           {/* FOOTER */}
-          <div className="flex justify-end gap-3 pt-3">
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               disabled={isBusy}
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 rounded-md"
+              className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
@@ -193,7 +200,7 @@ export default function ProjectModal({
             <button
               disabled={isBusy}
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isBusy ? <ButtonLoader /> : isEdit ? "Update" : "Create"}
             </button>

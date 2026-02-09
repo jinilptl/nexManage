@@ -60,10 +60,10 @@ function handleDownload(att){
             <span className="truncate text-sm">{att.fileName}</span>
 
             <div className="flex gap-3">
-              <button onClick={() => handleDownload(att) }>
+              <button className="cursor-pointer" onClick={() => handleDownload(att) }>
                 <Download size={16} />
               </button>
-              <button>
+              <button className="cursor-pointer" onClick={() => console.log("delete ", att._id)}>
                 <Trash2 size={16} />
               </button>
             </div>

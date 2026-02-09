@@ -71,11 +71,24 @@ export default function MemberModal({
     if (mode === "update") handleUpdateMember(inputValue);
   };
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (open) {
+      document.body.classList.add("modal-open");
+      return () => document.body.classList.remove("modal-open");
+    }
+  }, [open]);
+
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-5000 flex items-center justify-center">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      {/* BACKDROP */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+        onClick={() => !loading && onClose(false)}
+      />
 
       {/* MODAL BOX */}
-      <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-md p-6 animate-fadeIn">
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 modal-content-enter">
 
         {/* HEADER */}
         <div className="flex items-center justify-between mb-4">
@@ -86,11 +99,13 @@ export default function MemberModal({
           <button
             disabled={loading}
             onClick={() => !loading && onClose(false)}
-            className={`text-gray-500 hover:text-gray-700 ${
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${
               loading && "opacity-40 cursor-not-allowed"
             }`}
           >
-            ✕
+            <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -154,12 +169,11 @@ export default function MemberModal({
 
           {/* FOOTER BUTTONS */}
           <div className="mt-6 flex items-center justify-end gap-3">
-
             <button
               type="button"
               disabled={loading}
               onClick={() => !loading && onClose(false)}
-              className={`px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 
+              className={`px-4 py-2 text-sm cursor-pointer font-medium bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors
                 ${loading && "opacity-50 cursor-not-allowed"}`}
             >
               Cancel
@@ -168,7 +182,7 @@ export default function MemberModal({
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 text-sm rounded-md text-white flex items-center gap-2 
+              className={`px-4 py-2 text-sm font-medium cursor-pointer rounded-lg text-white flex items-center gap-2 transition-colors
                 ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
             >
               {loading ? (

@@ -132,7 +132,7 @@ const InviteMembers = () => {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-gray-400"
+                  className="w-full rounded-lg border border-gray-300 cursor-pointer px-3 py-2.5 text-sm focus:border-gray-400"
                 >
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>
@@ -143,7 +143,7 @@ const InviteMembers = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white py-2.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                className="w-full flex items-center cursor-pointer justify-center gap-2 rounded-lg bg-blue-600 text-white py-2.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
               >
                 <UserPlus className="w-4 h-4" />
                 {loading ? "Sending invite..." : "Send Invitation"}

@@ -83,10 +83,9 @@ export default function KanbanBoard({
               />
             ))}
 
-            {/* ➕ Add Column Button */}
             <button
               onClick={() => setIsAddColumnOpen(true)}
-              className="h-12 w-12 flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-100 text-gray-500"
+              className="h-12 w-12 cursor-pointer flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-100 text-gray-500"
             >
               <Plus size={30} />
             </button>

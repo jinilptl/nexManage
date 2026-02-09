@@ -60,7 +60,7 @@ export default function TaskSubtasks({ subtasks, task }) {
                   handleCheckBox(e, sub);
                 }}
                 checked={sub.completed}
-                className=""
+                className="cursor-pointer"
               />
               <span
                 className={sub.completed ? "line-through text-gray-400" : ""}
@@ -71,7 +71,7 @@ export default function TaskSubtasks({ subtasks, task }) {
 
             <button onClick={()=>{
               handleDeleteSubTask(sub)
-            }} className="text-gray-400 hover:text-red-500">
+            }} className="text-gray-400 hover:text-red-500 cursor-pointer">
               <Trash2 size={14} />
             </button>
           </div>
@@ -87,7 +87,7 @@ export default function TaskSubtasks({ subtasks, task }) {
         />
         <button
           onClick={addSubtask}
-          className="rounded-lg bg-blue-600 px-4 text-white flex items-center gap-1"
+          className="rounded-lg bg-blue-600 px-4 text-white flex items-center cursor-pointer gap-1"
         >
           <Plus size={14} /> Add
         </button>
