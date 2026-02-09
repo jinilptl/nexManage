@@ -45,3 +45,24 @@ export const deleteUser = createAsyncThunk(
     }
   }
 );
+
+export const updatePassword = createAsyncThunk(
+  "users/updatePassword",
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(
+        usersEndpoints.CHANGE_PASSWORD,
+        {
+          oldPassword: currentPassword,
+          newPassword,
+        }
+      );
+
+      return res.data.message;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update password"
+      );
+    }
+  }
+);

@@ -96,7 +96,12 @@ export default function Members() {
     <div className="p-6">
       {/* Header */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Members</h2>
+        <div>
+          {" "}
+          <h2 className="text-2xl font-semibold text-gray-800">Members</h2>
+          <p className="text-sm text-gray-500">Manage your account members</p>
+        </div>
+
         <button
           onClick={() => navigate("/dashboard/invite-members")}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -138,7 +143,7 @@ export default function Members() {
                   <td className="p-4 capitalize">{member.role}</td>
                   <td className="p-4 flex justify-end gap-3">
                     <button onClick={() => handleOpenModal(member)}>
-                      <Edit size={18} color="blue"/>
+                      <Edit size={18} color="blue" />
                     </button>
                     <button onClick={() => openDeleteModal(member._id)}>
                       <Trash2 size={18} color="red" />

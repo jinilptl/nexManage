@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { 
-  X, Edit, Trash2, Archive, UserPlus 
-} from "lucide-react";
+import { X, Edit, Trash2, Archive, UserPlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -20,6 +18,7 @@ import MemberModal from "./MemberModal";
 
 import ModalSmallLoader from "../../Lodders/ModalSmallLoader";
 import ButtonLoader from "../../Lodders/ButtonLoader";
+import ConfirmModal from "./ConfirmModal";
 
 export default function TeamDetailModal({ open, onClose }) {
   if (!open) return null;
@@ -32,11 +31,19 @@ export default function TeamDetailModal({ open, onClose }) {
   const deleting = useSelector((state) => state.teams.actions.deletingTeam);
   const updating = useSelector((state) => state.teams.actions.updatingTeam);
   const addingMember = useSelector((state) => state.teams.actions.addingMember);
-  const updatingMember = useSelector((state) => state.teams.actions.updatingMember);
-  const removingMember = useSelector((state) => state.teams.actions.removingMember);
+  const updatingMember = useSelector(
+    (state) => state.teams.actions.updatingMember,
+  );
+  const removingMember = useSelector(
+    (state) => state.teams.actions.removingMember,
+  );
 
-  const fetchTeamLoading = useSelector((state) => state.teams.selectedTeam.loading);
-  const membersLoading = useSelector((state) => state.teams.teamMembers.loading);
+  const fetchTeamLoading = useSelector(
+    (state) => state.teams.selectedTeam.loading,
+  );
+  const membersLoading = useSelector(
+    (state) => state.teams.teamMembers.loading,
+  );
 
   const teamId = useSelector((state) => state.teams.selectedTeam.id);
   const team = useSelector((state) => state.teams.selectedTeam.data);
@@ -48,28 +55,41 @@ export default function TeamDetailModal({ open, onClose }) {
   const [memberModalOpen, setMemberModalOpen] = useState(false);
   const [memberModalMode, setMemberModalMode] = useState("add");
   const [selectedMember, setSelectedMember] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmType, setConfirmType] = useState(null);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
 
-  /* ---------------- DELETE TEAM ---------------- */
   const handleDeleteTeam = () => {
-    if (confirm("Delete this team?")) {
+    setConfirmType("deleteTeam");
+    setConfirmOpen(true);
+  };
+
+  const handleRemoveMember = (memberID) => {
+    setConfirmType("removeMember");
+    setSelectedMemberId(memberID);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmType === "deleteTeam") {
       dispatch(deleteTeamService(teamId, token));
       onClose();
       dispatch(setSelectedTeamId(null));
     }
-  };
 
-  /* ---------------- REMOVE MEMBER ---------------- */
-  const handleRemoveMember = (memberID) => {
-    if (confirm("Remove member?")) {
-      dispatch(removeTeamMemberService(teamId, memberID, token));
+    if (confirmType === "removeMember") {
+      dispatch(removeTeamMemberService(teamId, selectedMemberId, token));
     }
+
+    setConfirmOpen(false);
+    setConfirmType(null);
+    setSelectedMemberId(null);
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center p-4 overflow-y-auto">
       <div className="w-full max-w-3xl my-10">
         <div className="bg-white rounded-xl shadow-xl w-full relative p-5 md:p-6 animate-slideUp max-h-[92vh] md:max-h-[85vh] overflow-y-auto">
-
           {/* Close Button */}
           <button
             disabled={updating || deleting}
@@ -114,7 +134,6 @@ export default function TeamDetailModal({ open, onClose }) {
           {/* ACTION BUTTONS */}
           {isAdmin && (
             <div className="mt-5 flex flex-wrap gap-2">
-
               {/* Update */}
               <button
                 disabled={updating}
@@ -130,9 +149,7 @@ export default function TeamDetailModal({ open, onClose }) {
               </button>
 
               {/* Archive */}
-              <button
-                className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600"
-              >
+              <button className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-md flex items-center gap-1 hover:bg-yellow-600">
                 <Archive className="w-4 h-4" /> Archive
               </button>
 
@@ -164,7 +181,11 @@ export default function TeamDetailModal({ open, onClose }) {
                   className={`px-3 py-1 text-sm bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700 
                     ${addingMember ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  {addingMember ? <ButtonLoader /> : <UserPlus className="w-4 h-4" />}
+                  {addingMember ? (
+                    <ButtonLoader />
+                  ) : (
+                    <UserPlus className="w-4 h-4" />
+                  )}
                   {addingMember ? "Please wait..." : "Add Member"}
                 </button>
               )}
@@ -196,7 +217,6 @@ export default function TeamDetailModal({ open, onClose }) {
 
                   {isAdmin && (
                     <div className="flex items-center gap-2">
-
                       {/* Edit */}
                       <button
                         disabled={updatingMember}
@@ -253,6 +273,22 @@ export default function TeamDetailModal({ open, onClose }) {
         mode={memberModalMode}
         member={selectedMember}
         setMember={setSelectedMember}
+      />
+
+      {/* CONFIRMATION MODAL */}
+      <ConfirmModal
+        open={confirmOpen}
+        title={confirmType === "deleteTeam" ? "Delete Team" : "Remove Member"}
+        message={
+          confirmType === "deleteTeam"
+            ? "This action cannot be undone. Do you want to delete this team?"
+            : "Are you sure you want to remove this member from the team?"
+        }
+        confirmText="Yes"
+        cancelText="Cancel"
+        loading={deleting || removingMember}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmOpen(false)}
       />
     </div>
   );

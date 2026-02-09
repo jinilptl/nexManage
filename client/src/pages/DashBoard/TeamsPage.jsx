@@ -290,7 +290,7 @@ export default function TeamsPage() {
                     </p>
                     {findTeamLeadName(team) ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+                        <div className="w-6 h-6 bg-gray-200 rounded-full text-blue-500 text-center">{findTeamLeadName(team)?.charAt(0)}</div>
                         <span className="text-sm text-gray-900">
                           {findTeamLeadName(team)}
                         </span>

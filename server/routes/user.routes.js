@@ -27,7 +27,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 router.get("/all-users", verifyToken, roleChecker(["admin", "super_admin"]), allUsers);
-router.put("/update-user/:userId", verifyToken, roleChecker(["admin", "super_admin"]), updateUser);
+router.put("/update-user/:userId", verifyToken, updateUser);
 router.delete("/delete-user/:userId", verifyToken, roleChecker(["admin", "super_admin"]), deleteUser);
 
 export default router;

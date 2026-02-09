@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import SettingsCard from "./SettingsCard";
 import SettingToggle from "./SettingToggle";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { updatePassword } from "../../services/usersOperations/usersServices";
 
 export default function SecuritySettings() {
+  const dispatch = useDispatch();
+
   const [twoFA, setTwoFA] = useState(false);
   const [loginAlerts, setLoginAlerts] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [password, setPassword] = useState({
     currentPassword: "",
@@ -30,7 +36,6 @@ export default function SecuritySettings() {
       [name]: value,
     }));
 
-    // remove error when user starts typing
     setErrors((prev) => ({
       ...prev,
       [name]: "",
@@ -53,7 +58,8 @@ export default function SecuritySettings() {
       newErrors.newPassword = "New password must be at least 6 characters";
       isValid = false;
     } else if (password.currentPassword === password.newPassword) {
-      newErrors.newPassword = "New password must be different from current password";
+      newErrors.newPassword =
+        "New password must be different from current password";
       isValid = false;
     }
 
@@ -61,26 +67,36 @@ export default function SecuritySettings() {
     return isValid;
   };
 
-  const handleUpdatePassword = () => {
+  const handleUpdatePassword = async () => {
     const isValid = validatePassword();
     if (!isValid) return;
-console.log("password object --> ",password.currentPassword,password.newPassword);
 
-    // Dummy success
-    alert("Password Updated 🔒 (Dummy)");
+    try {
+      setLoading(true);
 
+      await dispatch(
+        updatePassword({
+          currentPassword: password.currentPassword,
+          newPassword: password.newPassword,
+        }),
+      ).unwrap();
 
-    setPassword({
-      currentPassword: "",
-      newPassword: "",      
-      
-    });
+      toast.success("Password updated successfully");
 
-    
-    setShowPassword({
-      currentPassword: false,
-      newPassword: false,
-    });
+      setPassword({
+        currentPassword: "",
+        newPassword: "",
+      });
+
+      setShowPassword({
+        currentPassword: false,
+        newPassword: false,
+      });
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,7 +104,7 @@ console.log("password object --> ",password.currentPassword,password.newPassword
       title="Security"
       subtitle="Protect your account with extra security options"
     >
-      <SettingToggle
+      {/* <SettingToggle
         title="Enable Two-Factor Authentication (2FA)"
         desc="Add extra security by verifying login with OTP"
         enabled={twoFA}
@@ -100,14 +116,12 @@ console.log("password object --> ",password.currentPassword,password.newPassword
         desc="Get notified when someone logs into your account"
         enabled={loginAlerts}
         onToggle={() => setLoginAlerts((p) => !p)}
-      />
+      /> */}
 
-      {/* Change Password */}
       <div className="border border-gray-200 rounded-xl p-4 space-y-3">
         <h3 className="text-sm font-semibold text-gray-900">Change Password</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Current Password */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Current Password
@@ -119,6 +133,7 @@ console.log("password object --> ",password.currentPassword,password.newPassword
                 name="currentPassword"
                 value={password.currentPassword}
                 onChange={handleChange}
+                disabled={loading}
                 placeholder="Enter current password"
                 className={`w-full border rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.currentPassword ? "border-red-500" : "border-gray-300"
@@ -133,7 +148,7 @@ console.log("password object --> ",password.currentPassword,password.newPassword
                     currentPassword: !prev.currentPassword,
                   }))
                 }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword.currentPassword ? (
                   <EyeOff size={18} />
@@ -144,11 +159,12 @@ console.log("password object --> ",password.currentPassword,password.newPassword
             </div>
 
             {errors.currentPassword && (
-              <p className="text-xs text-red-600 mt-1">{errors.currentPassword}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {errors.currentPassword}
+              </p>
             )}
           </div>
 
-          {/* New Password */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               New Password
@@ -160,6 +176,7 @@ console.log("password object --> ",password.currentPassword,password.newPassword
                 name="newPassword"
                 value={password.newPassword}
                 onChange={handleChange}
+                disabled={loading}
                 placeholder="Enter new password"
                 className={`w-full border rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.newPassword ? "border-red-500" : "border-gray-300"
@@ -174,9 +191,13 @@ console.log("password object --> ",password.currentPassword,password.newPassword
                     newPassword: !prev.newPassword,
                   }))
                 }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
-                {showPassword.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword.newPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
 
@@ -188,9 +209,11 @@ console.log("password object --> ",password.currentPassword,password.newPassword
 
         <button
           onClick={handleUpdatePassword}
-          className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition"
+          disabled={loading}
+          className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium
+                     hover:bg-black transition disabled:opacity-50"
         >
-          Update Password
+          {loading ? "Updating..." : "Update Password"}
         </button>
       </div>
     </SettingsCard>
