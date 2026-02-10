@@ -1,4 +1,9 @@
-const team_member_added_email_template = (memberName, teamRole,teamName, teamLink) => {
+const team_member_added_email_template = (
+  memberName,
+  teamRole,
+  teamName,
+  teamLink,
+) => {
   return `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; padding: 30px; color: #333;">
     <div style="max-width: 600px; background-color: #ffffff; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">

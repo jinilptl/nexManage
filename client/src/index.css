@@ -76,12 +76,21 @@ html, body {
   width: 6px;
 }
 
+.kanban-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #c4c4c4; /* slate-700 */
+  border-radius: 9999px;
+}
+
 .sidebar-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
   background-color: #334155; /* slate-700 */
+  border-radius: 9999px;
+}
+.kanban-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #c4c4c4; /* slate-700 */
   border-radius: 9999px;
 }
 

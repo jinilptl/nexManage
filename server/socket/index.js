@@ -22,10 +22,9 @@ const initSocket = (httpServer) => {
     socket.emit("server-message", "Hello from server 👋");
 
     // Receive message from client
-    socket.on("client-message",(data)=>{
-      console.log("client message-->",data);
-    })
-
+    socket.on("client-message", (data) => {
+      console.log("client message-->", data);
+    });
 
     registerRoomHandlers(io, socket);
 

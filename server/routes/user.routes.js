@@ -9,7 +9,7 @@ import {
   logoutUser,
   updateUser,
   deleteUser,
-  } from "../controllers/user.controllers.js";
+} from "../controllers/user.controllers.js";
 
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
@@ -26,8 +26,18 @@ router.post("/change-password", verifyToken, changePassword);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
-router.get("/all-users", verifyToken, roleChecker(["admin", "super_admin"]), allUsers);
+router.get(
+  "/all-users",
+  verifyToken,
+  roleChecker(["admin", "super_admin"]),
+  allUsers,
+);
 router.put("/update-user/:userId", verifyToken, updateUser);
-router.delete("/delete-user/:userId", verifyToken, roleChecker(["admin", "super_admin"]), deleteUser);
+router.delete(
+  "/delete-user/:userId",
+  verifyToken,
+  roleChecker(["admin", "super_admin"]),
+  deleteUser,
+);
 
 export default router;

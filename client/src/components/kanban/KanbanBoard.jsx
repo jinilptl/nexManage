@@ -68,7 +68,7 @@ export default function KanbanBoard({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="w-full min-w-0 overflow-hidden">
-        <div className="overflow-x-auto overflow-y-hidden max-w-full">
+        <div className="overflow-x-auto overflow-y-hidden max-w-full kanban-scrollbar">
           <div className="flex gap-2 min-w-max px-2 pb-4 items-start">
             {columns.map((column) => (
               <KanbanColumn

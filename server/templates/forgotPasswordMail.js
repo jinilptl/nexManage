@@ -1,5 +1,3 @@
-
-
 const forgot_password_email_template = (resetlink) => {
   return `
     <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; padding: 30px; color: #333;">
@@ -44,4 +42,4 @@ const forgot_password_email_template = (resetlink) => {
   `;
 };
 
-export { forgot_password_email_template }; 
+export { forgot_password_email_template };

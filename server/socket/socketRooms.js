@@ -1,7 +1,6 @@
 import { Project } from "../models/project.models.js";
 
 const registerRoomHandlers = (io, socket) => {
- 
   socket.on("join-project", async ({ projectId }) => {
     try {
       if (!projectId) return;
@@ -42,7 +41,7 @@ const registerRoomHandlers = (io, socket) => {
       const isActiveMember = project.projectMembers.some(
         (member) =>
           member.user.toString() === userId.toString() &&
-          member.status === "active"
+          member.status === "active",
       );
 
       if (!isActiveMember) {

@@ -28,9 +28,9 @@
 // const transporter = nodemailer.createTransport({
 //   host: process.env.SMTP_HOST,
 //   port: Number(process.env.SMTP_PORT),
-//   secure: false, 
+//   secure: false,
 //   auth: {
-//     user: process.env.SMTP_USER, 
+//     user: process.env.SMTP_USER,
 //     pass: process.env.SMTP_PASS,
 //   },
 // });
@@ -43,7 +43,6 @@
 //     html: message,
 //   });
 // };
-
 
 import SibApiV3Sdk from "sib-api-v3-sdk";
 import dotenv from "dotenv";

@@ -15,22 +15,18 @@ import {
 
 const fileUploadRouter = express.Router();
 
-
-
-
 fileUploadRouter.route("/attachments/:projectId/:taskId").post(
   verifyToken,
   attachTaskToRequest,
   isProjectMember,
   isAssigneeOrProjectManager,
   upload.single("file"), // only for uploading file
-  addTaskAttachment
+  addTaskAttachment,
 );
 
 fileUploadRouter
   .route("/attachments/:projectId/:taskId")
   .get(verifyToken, attachTaskToRequest, isProjectMember, getTaskAttachments);
-
 
 fileUploadRouter
   .route("/attachments/:projectId/:taskId/:attachmentId")
@@ -38,8 +34,7 @@ fileUploadRouter
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
-    deleteTaskAttachment
+    deleteTaskAttachment,
   );
-
 
 export default fileUploadRouter;

@@ -1,5 +1,6 @@
 import React from "react";
 import KanbanBoard from "../kanban/KanbanBoard";
+import ListView from "../list/ListView";
 
 export default function ProjectContent({
   activeTab,
@@ -9,8 +10,8 @@ export default function ProjectContent({
   onModalOpen,
 }) {
 
-    
-    
+
+
   const handleMoveTask = (taskId, newStatus) => {
     setTasks((prev) =>
       prev.map((t) =>
@@ -19,24 +20,31 @@ export default function ProjectContent({
     );
   };
 
- if (activeTab === "board") {
-  return (
-    <div className="w-full min-w-0 overflow-x-hidden">
-      <div className="overflow-x-auto max-w-full">
-        <div className="min-w-0">
-          <KanbanBoard
-            tasks={tasks}
-            onTaskClick={(task) => console.log("open task", task)}
-            onAddTask={(status) => console.log("add task in", status)}
-            onMoveTask={handleMoveTask}
-            onReorderTask={reorderTaskInColumn}
-            onModalOpen={onModalOpen}
-          />
-        </div>
+  if (activeTab === "list") {
+    return (
+      <div className="w-full h-full overflow-hidden p-4">
+        <ListView
+          tasks={tasks}
+          onTaskClick={(task) => console.log("List View Task Click", task)}
+        />
       </div>
-    </div>
-  );
-}
+    );
+  }
+
+  if (activeTab === "board") {
+    return (
+      <div className="w-full min-w-0 overflow-x-hidden h-full flex flex-col">
+        <KanbanBoard
+          tasks={tasks}
+          onTaskClick={(task) => console.log("open task", task)}
+          onAddTask={(status) => console.log("add task in", status)}
+          onMoveTask={handleMoveTask}
+          onReorderTask={reorderTaskInColumn}
+          onModalOpen={onModalOpen}
+        />
+      </div>
+    );
+  }
 
 
   return (

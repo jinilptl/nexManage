@@ -7,18 +7,16 @@ import { attachTaskToRequest } from "../../middlewares/taskMiddlewares/attachTas
 import { isAssigneeOrProjectManager } from "../../middlewares/taskMiddlewares/isAssigneeOrProjectManager.middlewares.js";
 import { getTaskActivityTimeline } from "../../controllers/taskControllers/activityLog.controllers.js";
 
-
 const activityTaskRouter = express.Router();
-activityTaskRouter.route("/activity/:projectId/:taskId").get(
+activityTaskRouter
+  .route("/activity/:projectId/:taskId")
+  .get(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
-  attachTaskToRequest,
-  isProjectMember,
-  isAssigneeOrProjectManager,
-   getTaskActivityTimeline
+    attachTaskToRequest,
+    isProjectMember,
+    isAssigneeOrProjectManager,
+    getTaskActivityTimeline,
+  );
 
-)
-
-
-
-export default activityTaskRouter
+export default activityTaskRouter;

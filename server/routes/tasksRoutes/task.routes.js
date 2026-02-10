@@ -17,7 +17,6 @@ import {
   updateTaskStatus,
 } from "../../controllers/taskControllers/task.controllers.js";
 
-
 const taskRouter = express.Router();
 
 // task routes
@@ -30,7 +29,7 @@ taskRouter
     roleChecker(["admin", "member", "super_admin"]),
     isProjectMember,
     isProjectManager,
-    createTask
+    createTask,
   );
 
 //get all tasks for a project
@@ -40,7 +39,7 @@ taskRouter
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     isProjectMember,
-    getProjectTasks
+    getProjectTasks,
   );
 
 //get single task details
@@ -52,7 +51,7 @@ taskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isProjectMember,
-    getTaskDetails
+    getTaskDetails,
   );
 
 //update task
@@ -64,48 +63,47 @@ taskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isAssigneeOrProjectManager,
-    updateTask
+    updateTask,
   );
 
-
-  taskRouter.route("/status/:projectId/:taskId").patch(
+taskRouter
+  .route("/status/:projectId/:taskId")
+  .patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isAssigneeOrProjectManager,
-    updateTaskStatus
-  )
+    updateTaskStatus,
+  );
 
-  taskRouter.route("/order/:projectId/:taskId").patch(
+taskRouter
+  .route("/order/:projectId/:taskId")
+  .patch(
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isAssigneeOrProjectManager,
-    updateTaskOrder
-  )
+    updateTaskOrder,
+  );
 
-  taskRouter.route("/delete/:projectId/:taskId").delete(
+taskRouter
+  .route("/delete/:projectId/:taskId")
+  .delete(
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
     isProjectManager,
-    deleteTask
+    deleteTask,
+  );
 
-  )
-
-  taskRouter
+taskRouter
   .route("/updatetask-assignees/:projectId/:taskId")
   .patch(
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
     isProjectManager,
-    updateTaskAssignees
-
-  )
-
- 
-
-
+    updateTaskAssignees,
+  );
 
 export default taskRouter;

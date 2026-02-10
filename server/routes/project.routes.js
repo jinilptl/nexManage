@@ -46,13 +46,11 @@ projectRouter
 
 projectRouter
   .route("/:projectId/status")
-  .post(verifyToken,addProjectTaskStatus);
+  .post(verifyToken, addProjectTaskStatus);
 
 projectRouter
   .route("/update-project-manager/:projectId")
   .post(verifyToken, updateProjectManager);
-
-
 
 // members routes
 
