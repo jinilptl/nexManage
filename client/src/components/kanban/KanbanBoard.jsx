@@ -15,6 +15,7 @@ export default function KanbanBoard({
   onTaskClick,
   onAddTask,
   onModalOpen,
+  onMoveTask,
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
@@ -63,6 +64,10 @@ export default function KanbanBoard({
     dispatch(
       updateTaskStatusService(project.data._id, taskId, targetColumnId, token)
     );
+
+    if (onMoveTask) {
+      onMoveTask(taskId, targetColumnId);
+    }
   };
 
   return (
@@ -95,7 +100,7 @@ export default function KanbanBoard({
 
       {/* Add Column Modal */}
       {isAddColumnOpen && (
-        <AddColumnModal onClose={() => setIsAddColumnOpen(false)} projectId={project.data._id} token={token}/>
+        <AddColumnModal onClose={() => setIsAddColumnOpen(false)} projectId={project.data._id} token={token} />
       )}
     </DndProvider>
   );

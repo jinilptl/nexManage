@@ -26,6 +26,7 @@ export default function ProjectContent({
         <ListView
           tasks={tasks}
           onTaskClick={(task) => console.log("List View Task Click", task)}
+          onMoveTask={handleMoveTask}
         />
       </div>
     );
