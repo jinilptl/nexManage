@@ -16,9 +16,6 @@ import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewa
 
 const teamRouter = express.Router();
 
-// ✅ TEAM ROUTES
-
-// Create a new team
 teamRouter
   .route("/create-team")
   .post(verifyToken, roleChecker(["super_admin", "admin"]), createNewTeam);
@@ -39,8 +36,6 @@ teamRouter.route("/delete-team/:teamId").post(verifyToken, deleteTeamById);
 
 // Get all teams of a user
 teamRouter.route("/user-teams").get(verifyToken, getUsersAllTeams);
-
-// ✅ TEAM MEMBER ROUTES
 
 // Add a new member to a team
 teamRouter.route("/add-member/:teamId").post(verifyToken, addTeamMember);

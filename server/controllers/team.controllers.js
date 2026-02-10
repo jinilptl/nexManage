@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendEmail } from "../utils/emailSender.js";
 import { team_member_added_email_template } from "../templates/team_member_added_email_template.js";
 import { Project } from "../models/project.models.js";
-
+import mongoose from "mongoose";
 const createNewTeam = asyncHandler(async (req, res) => {
   const { teamName, description } = req.body;
 
@@ -56,7 +56,7 @@ const getAllTeams = asyncHandler(async (req, res) => {
       $lookup: {
         from: "projects",
         localField: "_id",
-        foreignField: "teams", // ✅ CORRECT FIELD
+        foreignField: "teams", 
         as: "projects",
       },
     },
@@ -83,7 +83,8 @@ const getAllTeams = asyncHandler(async (req, res) => {
 });
 
 const getUsersAllTeams = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  const userId = new mongoose.Types.ObjectId(req.user._id);
+  // const userId = req.user._id;
 
   const teams = await TeamModel.aggregate([
     {
@@ -95,7 +96,7 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
       $lookup: {
         from: "projects",
         localField: "_id",
-        foreignField: "teams", // ✅ FIXED
+        foreignField: "teams", 
         as: "projects",
       },
     },
@@ -110,6 +111,8 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  console.log("Teams with project counts:", teams);
 
   await TeamModel.populate(teams, [
     { path: "createdby", select: "name email" },
