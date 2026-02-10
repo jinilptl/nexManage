@@ -124,7 +124,7 @@ export default function MemberModal({
                 placeholder="Enter member email"
                 required
                 disabled={loading}
-                className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
+                className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md focus:ring-2 ring-blue-500 outline-none 
                   ${loading && "opacity-50 cursor-not-allowed"}`}
               />
             </div>
@@ -138,7 +138,7 @@ export default function MemberModal({
               value={inputValue.roleInTeam}
               onChange={handleChange}
               disabled={loading}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
+              className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md outline-none 
                 ${loading && "opacity-50 cursor-not-allowed"}`}
             >
               <option value="team lead">Team Lead</option>
@@ -159,7 +159,7 @@ export default function MemberModal({
               value={inputValue.status}
               onChange={handleChange}
               disabled={loading}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
+              className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md outline-none 
                 ${loading && "opacity-50 cursor-not-allowed"}`}
             >
               <option value="active">Active</option>

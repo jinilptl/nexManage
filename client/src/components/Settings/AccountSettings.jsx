@@ -102,7 +102,7 @@ export default function AccountSettings() {
                 email: user.email,
               });
             }}
-            className="border px-4 py-2 rounded-lg text-sm cursor-pointer"
+            className="px-4 py-2 rounded-lg text-sm cursor-pointer bg-gray-200 hover:bg-gray-300"
           >
             Cancel
           </button>
@@ -136,8 +136,8 @@ function InputField({ label, value, onChange, disabled }) {
         className={`mt-1 w-full border rounded-lg px-3 py-2 text-sm outline-none
           ${
             disabled
-              ? "bg-gray-100 border-gray-300 text-gray-500"
-              : "bg-white border-gray-300 focus:ring-2 focus:ring-blue-500"
+              ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-200 border-gray-300 outline-none"
           }`}
         placeholder={`Enter ${label}`}
       />

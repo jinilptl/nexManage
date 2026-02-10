@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendEmail } from "../utils/emailSender.js";
 import { team_member_added_email_template } from "../templates/team_member_added_email_template.js";
+import { Project } from "../models/project.models.js";
 
 const createNewTeam = asyncHandler(async (req, res) => {
   const { teamName, description } = req.body;
@@ -50,29 +51,74 @@ const createNewTeam = asyncHandler(async (req, res) => {
 });
 
 const getAllTeams = asyncHandler(async (req, res) => {
-  // Fetch all teams
-  const teamList = await TeamModel.find()
-    .populate("createdby", "name email")
-    .populate("members.user", "name email roleInTeam");
+  const teams = await TeamModel.aggregate([
+    {
+      $lookup: {
+        from: "projects",
+        localField: "_id",
+        foreignField: "teams", // ✅ CORRECT FIELD
+        as: "projects",
+      },
+    },
+    {
+      $addFields: {
+        projectsCount: { $size: "$projects" },
+      },
+    },
+    {
+      $project: {
+        projects: 0,
+      },
+    },
+  ]);
+
+  await TeamModel.populate(teams, [
+    { path: "createdby", select: "name email" },
+    { path: "members.user", select: "name email roleInTeam" },
+  ]);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "All teams fetched successfully", teamList));
+    .json(new ApiResponse(200, "All teams fetched successfully", teams));
 });
 
 const getUsersAllTeams = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  if (!userId) {
-    throw new ApiError(400, "User ID is required");
-  }
-  const allTeams = await TeamModel.find({ "members.user": userId })
-    .populate("createdby", "name email")
-    .populate("members.user", "name email");
+  const teams = await TeamModel.aggregate([
+    {
+      $match: {
+        "members.user": userId,
+      },
+    },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "_id",
+        foreignField: "teams", // ✅ FIXED
+        as: "projects",
+      },
+    },
+    {
+      $addFields: {
+        projectsCount: { $size: "$projects" },
+      },
+    },
+    {
+      $project: {
+        projects: 0,
+      },
+    },
+  ]);
+
+  await TeamModel.populate(teams, [
+    { path: "createdby", select: "name email" },
+    { path: "members.user", select: "name email" },
+  ]);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "User's teams fetched successfully", allTeams));
+    .json(new ApiResponse(200, "User's teams fetched successfully", teams));
 });
 
 const getTeamById = asyncHandler(async (req, res) => {
@@ -167,7 +213,6 @@ const deleteTeamById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Team deleted successfully", deletedTeamDoc));
 });
 
-// member add , update , delete , all member
 const addTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const { email, roleInTeam, status } = req.body;

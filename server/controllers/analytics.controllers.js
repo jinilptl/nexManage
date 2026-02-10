@@ -7,6 +7,19 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const userId = new mongoose.Types.ObjectId(req.user._id);
+  const isAdmin = req.user.role === "admin" || req.user.role === "super_admin";
+
+  const userProjectIds = await Project.find({
+    status: "active",
+    "projectMembers.user": userId,
+    "projectMembers.status": "active",
+  }).distinct("_id");
+
+  const baseTaskMatch = {
+    project: { $in: userProjectIds },
+    ...(isAdmin ? {} : { assignees: userId }),
+  };
+
   const now = new Date();
 
   const projectsWithStatuses = await Project.find(
@@ -29,9 +42,10 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     });
   });
 
-  const totalTasks = await Task.countDocuments();
+  const totalTasks = await Task.countDocuments(baseTaskMatch);
 
   const completedAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -58,6 +72,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const completedTasks = completedAgg[0]?.count || 0;
 
   const inProgressAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -84,6 +99,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const inProgressTasks = inProgressAgg[0]?.count || 0;
 
   const overdueAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -114,6 +130,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   const priorityAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $group: {
         _id: "$priority",
@@ -128,6 +145,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   }));
 
   const statusAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -163,6 +181,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   }));
 
   const velocityAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -206,6 +225,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   }));
 
   const contributorsAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",
@@ -249,24 +269,24 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     { $limit: 5 },
   ]);
 
-const contributors = await User.populate(contributorsAgg, {
-  path: "_id",
-  select: "name email",
-});
+  const contributors = await User.populate(contributorsAgg, {
+    path: "_id",
+    select: "name email",
+  });
 
-const formattedContributors = contributors
-  .filter(c => c._id)
-  .map((c) => ({
-    id: c._id._id,
-    name: c._id.name,
-    avatar: null,
-    tasksCompleted: c.tasksCompleted,
-    comments: 0,
-    avgCompletionTime: Math.round(c.avgCompletionTime || 0),
-  }));
-
+  const formattedContributors = contributors
+    .filter((c) => c._id)
+    .map((c) => ({
+      id: c._id._id,
+      name: c._id.name,
+      avatar: null,
+      tasksCompleted: c.tasksCompleted,
+      comments: 0,
+      avgCompletionTime: Math.round(c.avgCompletionTime || 0),
+    }));
 
   const projectStatsAgg = await Task.aggregate([
+    { $match: baseTaskMatch },
     {
       $lookup: {
         from: "projects",

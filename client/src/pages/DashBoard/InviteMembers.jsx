@@ -77,7 +77,7 @@ const InviteMembers = () => {
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-gray-400 "
+                    className="w-full rounded-lg border border-gray-300 bg-gray-200 pl-10 pr-3 py-2.5 text-sm outline-none "
                   />
                 </div>
               </div>
@@ -92,7 +92,7 @@ const InviteMembers = () => {
                     placeholder="user@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-gray-400"
+                    className="w-full bg-gray-200 rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm outline-none"
                   />
                 </div>
               </div>
@@ -108,7 +108,7 @@ const InviteMembers = () => {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 pl-10 pr-10 py-2.5 text-sm"
+                    className="w-full bg-gray-200 rounded-lg border border-gray-300 pl-10 pr-10 py-2.5 text-sm outline-none"
                   />
                   <button
                     type="button"
@@ -132,7 +132,7 @@ const InviteMembers = () => {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 cursor-pointer px-3 py-2.5 text-sm focus:border-gray-400"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-200 cursor-pointer px-3 py-2.5 text-sm outline-none"
                 >
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>

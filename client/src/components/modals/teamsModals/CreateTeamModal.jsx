@@ -13,7 +13,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
 
-  // 🔥 Only modal-specific loaders (perfect for modals)
   const creating = useSelector((state) => state.teams.actions.creatingTeam);
   const updating = useSelector((state) => state.teams.actions.updatingTeam);
 
@@ -50,7 +49,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
     }
   };
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
@@ -98,7 +96,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
               value={inputData.teamName}
               disabled={modalLoading}
               onChange={handleChange}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
+              className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md  outline-none 
               ${modalLoading && "bg-gray-100 cursor-not-allowed"}`}
               placeholder="Enter team name"
             />
@@ -112,7 +110,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
               value={inputData.description}
               disabled={modalLoading}
               onChange={handleChange}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 ring-blue-500 outline-none 
+              className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md outline-none 
               ${modalLoading && "bg-gray-100 cursor-not-allowed"}`}
               placeholder="Short team description"
               rows="3"
@@ -125,7 +123,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
               type="button"
               disabled={modalLoading}
               onClick={() => !modalLoading && setOpen(false)}
-              className={`px-4 py-2 text-sm rounded-md border bg-gray-100 hover:bg-gray-200 cursor-pointer
+              className={`px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 cursor-pointer
               ${modalLoading && "opacity-40 cursor-not-allowed"}`}
             >
               Cancel

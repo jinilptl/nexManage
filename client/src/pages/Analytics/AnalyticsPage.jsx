@@ -7,8 +7,11 @@ import VelocityLineChart from "../../components/Analytics/VelocityLineChart";
 import PriorityBarChart from "../../components/Analytics/PriorityBarChart";
 import TopContributors from "../../components/Analytics/TopContributors";
 import ProjectProgress from "../../components/Analytics/ProjectProgress";
+import { useSelector } from "react-redux";
 
 export default function AnalyticsPage() {
+  const role = useSelector((state) => state.auth.user.role);
+  console.log(role)
   const {
     loading,
     error,
@@ -22,7 +25,7 @@ export default function AnalyticsPage() {
     velocityData,
     contributors,
     activeProjects,
-  } = useAnalyticsData(); 
+  } = useAnalyticsData();
 
   if (loading) {
     return (
@@ -39,8 +42,12 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6 mt-5 ml-2">
       <PageHeader
-        title="Analytics"
-        subtitle="Track your team's performance and project metrics"
+        title={role === "member" ? "My Analytics" : "Analytics"}
+        subtitle={
+          role === "member"
+            ? "Your personal task performance"
+            : "Track your team's performance"
+        }
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

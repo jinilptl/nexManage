@@ -135,7 +135,7 @@ export default function SecuritySettings() {
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Enter current password"
-                className={`w-full border rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full border bg-gray-200 rounded-lg px-3 py-2 pr-10 text-sm outline-none  ${
                   errors.currentPassword ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -178,7 +178,7 @@ export default function SecuritySettings() {
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Enter new password"
-                className={`w-full border rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full bg-gray-200 border rounded-lg px-3 py-2 pr-10 text-sm outline-none ${
                   errors.newPassword ? "border-red-500" : "border-gray-300"
                 }`}
               />

@@ -114,7 +114,7 @@ export default function Members() {
       {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-blue-100 border-b">
             <tr>
               <th className="text-left p-4">Name</th>
               <th className="text-left p-4">Email</th>
@@ -136,16 +136,25 @@ export default function Members() {
                 </td>
               </tr>
             ) : (
-              members.map((member) => (
-                <tr key={member._id}>
+              members.map((member, index) => (
+                <tr
+                  key={member._id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                >
                   <td className="p-4">{member.name}</td>
                   <td className="p-4">{member.email}</td>
                   <td className="p-4 capitalize">{member.role}</td>
                   <td className="p-4 flex justify-end gap-3">
-                    <button onClick={() => handleOpenModal(member)} className="cursor-pointer">
+                    <button
+                      onClick={() => handleOpenModal(member)}
+                      className="cursor-pointer"
+                    >
                       <Edit size={18} color="blue" />
                     </button>
-                    <button onClick={() => openDeleteModal(member._id)} className="cursor-pointer">
+                    <button
+                      onClick={() => openDeleteModal(member._id)}
+                      className="cursor-pointer"
+                    >
                       <Trash2 size={18} color="red" />
                     </button>
                   </td>
@@ -188,7 +197,7 @@ export default function Members() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-200 rounded-lg px-3 py-2 text-sm outline-none"
               />
 
               <input
@@ -199,7 +208,7 @@ export default function Members() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-200 rounded-lg px-3 py-2 text-sm outline-none"
               />
 
               <select
@@ -207,7 +216,7 @@ export default function Members() {
                 onChange={(e) =>
                   setFormData({ ...formData, role: e.target.value })
                 }
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-200 rounded-lg px-3 py-2 text-sm outline-none"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
