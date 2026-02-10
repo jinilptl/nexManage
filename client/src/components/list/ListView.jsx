@@ -3,8 +3,9 @@ import { useSelector } from "react-redux";
 import ListHeader from "./ListHeader";
 import ListRow from "./ListRow";
 
-export default function ListView({ tasks, onTaskClick }) {
+export default function ListView({ tasks, onTaskClick, onMoveTask }) {
     const project = useSelector((state) => state.projects.selectedProject);
+    const token = useSelector((state) => state.auth.token);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
     const [assigneeFilter, setAssigneeFilter] = useState("");
@@ -102,6 +103,11 @@ export default function ListView({ tasks, onTaskClick }) {
                                 isSelected={selectedTaskIds.includes(task._id)}
                                 onToggleSelect={handleToggleSelectRow}
                                 onTaskClick={onTaskClick}
+
+                                statuses={statuses}
+                                onMoveTask={onMoveTask}
+                                projectId={project?.data?._id}
+                                token={token}
                             />
                         ))}
                     </div>

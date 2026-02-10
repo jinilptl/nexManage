@@ -15,7 +15,7 @@ export default function ProjectContent({
   const handleMoveTask = (taskId, newStatus) => {
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === taskId ? { ...t, status: newStatus } : t
+        t._id === taskId ? { ...t, status: newStatus } : t
       )
     );
   };
