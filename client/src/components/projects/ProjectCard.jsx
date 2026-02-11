@@ -122,17 +122,24 @@ export default function ProjectCard({
             </span>
 
             <span
-              className={`px-2 py-1 text-xs rounded-md capitalize ${
-                project.status === "active"
+              className={`px-2 py-1 text-xs rounded-md ${
+                (project.status || "").toUpperCase() === "ACTIVE"
                   ? "bg-green-100 text-green-700"
-                  : project.status === "onhold"
+                  : (project.status || "").toUpperCase() === "ON_HOLD"
                   ? "bg-yellow-100 text-yellow-700"
-                  : project.status === "completed"
+                  : (project.status || "").toUpperCase() === "COMPLETED"
                   ? "bg-blue-100 text-blue-700"
+                  : (project.status || "").toUpperCase() === "ARCHIVED"
+                  ? "bg-gray-200 text-gray-700"
                   : "bg-gray-100 text-gray-700"
               }`}
             >
-              {project.status}
+              {{
+                ACTIVE: "Active",
+                COMPLETED: "Completed",
+                ON_HOLD: "On Hold",
+                ARCHIVED: "Archived",
+              }[(project.status || "ACTIVE").toUpperCase()] || project.status || "Active"}
             </span>
           </div>
 

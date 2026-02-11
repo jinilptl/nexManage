@@ -33,9 +33,8 @@ const {
   UPDATE_PROJECT,
   DELETE_PROJECT,
   UPDATE_PROJECT_STATUS,
+  PATCH_PROJECT_STATUS,
   ADD_TASK_STATUSES,
-
-  // members end points
   ADD_PROJECT_MEMBER,
   UPDATE_PROJECT_MEMBER,
   REMOVE_PROJECT_MEMBER,
@@ -80,9 +79,9 @@ export const createProjectService = (projectData, token, onClose) => {
   };
 };
 
-// fetch project service
+// fetch project service (optional status filter: ACTIVE | COMPLETED | ON_HOLD | ARCHIVED)
 
-export const fetchAllProjectsService = (token, role) => {
+export const fetchAllProjectsService = (token, role, status = "") => {
   return async (dispatch) => {
     dispatch(setProjectsLoading(true));
 
@@ -92,18 +91,20 @@ export const fetchAllProjectsService = (token, role) => {
           ? GET_ALL_PROJECTS
           : GET_USER_PROJECTS;
 
+      const params = {};
+      if (status && status.trim()) params.status = status.trim();
+
       const response = await axiosInstance.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
+        params,
       });
-
-      // console.log("Fetch projects response → ", response.data);
 
       if (response.data.success) {
         if (role === "admin" || role === "super_admin") {
-          dispatch(setProjects(response.data.data)); // all projects
+          dispatch(setProjects(response.data.data));
         } else {
-          dispatch(setMyProjects(response.data.data)); // user-specific projects
+          dispatch(setMyProjects(response.data.data));
         }
       }
     } catch (error) {
@@ -219,28 +220,35 @@ export const deleteProjectService = (projectId, token, onClose) => {
   };
 };
 
-// ARCHIVE / UNARCHIVE PROJECT
-
-export const archiveProjectService = (projectId, status, token) => {
+// ARCHIVE / UNARCHIVE PROJECT (PATCH API, then refetch list)
+// currentStatusFilter: optional; refetches list with this filter so UI updates (e.g. stay on Active)
+export const archiveProjectService = (
+  projectId,
+  status,
+  token,
+  currentStatusFilter = ""
+) => {
   return async (dispatch, getState) => {
     dispatch(setArchiveProjectLoading(true));
 
     try {
-      const response = await axiosInstance.post(
-        `${UPDATE_PROJECT_STATUS}/${projectId}`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const normalized = String(status).toUpperCase();
+      const url = `${PATCH_PROJECT_STATUS}/${projectId}/status`;
 
-      // console.log("response is ---> ", response);
+      const response = await axiosInstance.patch(
+        url,
+        { status: normalized },
+        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+      );
 
       if (response.data.success) {
         toast.success(
-          `Project ${status === "archived" ? "archived" : "restored"}!`
+          normalized === "ARCHIVED" ? "Project archived." : "Project status updated."
         );
 
         dispatch(setSelectedProjectData(response.data.data));
-        dispatch(fetchAllProjectsService(token, getState().auth.user.role));
+        const role = getState().auth.user.role;
+        dispatch(fetchAllProjectsService(token, role, currentStatusFilter));
       }
     } catch (error) {
       toast.error(

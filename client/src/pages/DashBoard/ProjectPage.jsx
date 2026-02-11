@@ -6,6 +6,7 @@ import ProjectModal from "../../components/projects/ProjectModal";
 import { useDispatch, useSelector } from "react-redux";
 import ViewProjectModal from "../../components/projects/ViewProjectModal";
 import {
+  archiveProjectService,
   fetchAllProjectsService,
   fetchSingleProjectService,
 } from "../../services/projectsOperations/projectsServices";
@@ -35,37 +36,38 @@ export default function ProjectsPage() {
   const dispatch = useDispatch();
   // console.log("all project is --> ",projects);
   const [searchInput, setSearchInput] = useState("");
-  const [filterData, setfilterdata] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [filterData, setFilterData] = useState([]);
 
   const handleFilter = (value) => {
     setSearchInput(value);
   };
-  
-  useEffect(()=>{
-    setfilterdata(projects)
-  },[projects])
+
+  const handleStatusChange = (value) => {
+    setStatusFilter(value);
+  };
+
+  useEffect(() => {
+    setFilterData(projects);
+  }, [projects]);
 
   useEffect(() => {
     if (!searchInput.trim()) {
-      setfilterdata(projects);
+      setFilterData(projects);
       return;
     }
-
     const filtered = projects.filter((project) =>
-      project.projectName
-        .toLowerCase()
-        .includes(searchInput.toLowerCase())
+      project.projectName.toLowerCase().includes(searchInput.toLowerCase())
     );
-
-    setfilterdata(filtered);
+    setFilterData(filtered);
   }, [searchInput, projects]);
 
   useEffect(() => {
     if (token && user) {
-      dispatch(fetchAllProjectsService(token, user?.role));
+      dispatch(fetchAllProjectsService(token, user?.role, statusFilter));
       dispatch(fetchTeamsService(token, user?.role));
     }
-  }, [token, user]);
+  }, [token, user, statusFilter]);
 
   const onViewhandler = (project) => {
     // setSelectedProject(project);
@@ -108,7 +110,12 @@ export default function ProjectsPage() {
       </div>
 
       {/* Filters */}
-      <ProjectFilters  searchInput={searchInput} OnFilter={handleFilter} />
+      <ProjectFilters
+        searchInput={searchInput}
+        OnFilter={handleFilter}
+        statusFilter={statusFilter}
+        onStatusChange={handleStatusChange}
+      />
 
       {/* Project Cards */}
       {filterData.length > 0 ? (
@@ -119,6 +126,11 @@ export default function ProjectsPage() {
               project={project}
               loading={false}
               onView={onViewhandler}
+              onArchive={(proj) =>
+                dispatch(
+                  archiveProjectService(proj._id, "ARCHIVED", token, statusFilter)
+                )
+              }
             />
           ))}
         </div>

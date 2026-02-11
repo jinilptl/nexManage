@@ -4,6 +4,7 @@ import {
   getAllTeams,
   getTeamById,
   updateTeamDetails,
+  updateTeamStatus,
   deleteTeamById,
   addTeamMember,
   getTeamMembers,
@@ -13,6 +14,7 @@ import {
 } from "../controllers/team.controllers.js";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
+import { canChangeTeamStatus } from "../middlewares/authMiddlewares/canChangeTeamStatus.middlewares.js";
 
 const teamRouter = express.Router();
 
@@ -30,6 +32,11 @@ teamRouter.route("/get-team/:teamId").get(verifyToken, getTeamById);
 
 // Update team details
 teamRouter.route("/update-team/:teamId").post(verifyToken, updateTeamDetails);
+
+// Update team status (e.g. archive)
+teamRouter
+  .route("/:teamId/status")
+  .patch(verifyToken, canChangeTeamStatus, updateTeamStatus);
 
 // Delete a team
 teamRouter.route("/delete-team/:teamId").post(verifyToken, deleteTeamById);

@@ -50,13 +50,35 @@ const createNewTeam = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, "Team created successfully", populatedTeamDoc));
 });
 
+const TEAM_STATUS_VALUES = ["ACTIVE", "ARCHIVED"];
+
 const getAllTeams = asyncHandler(async (req, res) => {
-  const teams = await TeamModel.aggregate([
+  const { status } = req.query;
+  const matchStage = {};
+
+  if (status) {
+    const normalized = String(status).toUpperCase();
+    if (!TEAM_STATUS_VALUES.includes(normalized)) {
+      throw new ApiError(
+        400,
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+      );
+    }
+    matchStage.$or = [
+      { status: normalized },
+      ...(normalized === "ACTIVE" ? [{ status: { $exists: false } }] : []),
+    ];
+  }
+
+  const pipeline = [];
+  if (Object.keys(matchStage).length) pipeline.push({ $match: matchStage });
+
+  pipeline.push(
     {
       $lookup: {
         from: "projects",
         localField: "_id",
-        foreignField: "teams", 
+        foreignField: "teams",
         as: "projects",
       },
     },
@@ -69,8 +91,10 @@ const getAllTeams = asyncHandler(async (req, res) => {
       $project: {
         projects: 0,
       },
-    },
-  ]);
+    }
+  );
+
+  const teams = await TeamModel.aggregate(pipeline);
 
   await TeamModel.populate(teams, [
     { path: "createdby", select: "name email" },
@@ -84,19 +108,30 @@ const getAllTeams = asyncHandler(async (req, res) => {
 
 const getUsersAllTeams = asyncHandler(async (req, res) => {
   const userId = new mongoose.Types.ObjectId(req.user._id);
-  // const userId = req.user._id;
+  const { status } = req.query;
+
+  const matchStage = { "members.user": userId };
+  if (status) {
+    const normalized = String(status).toUpperCase();
+    if (!TEAM_STATUS_VALUES.includes(normalized)) {
+      throw new ApiError(
+        400,
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+      );
+    }
+    matchStage.$or = [
+      { status: normalized },
+      ...(normalized === "ACTIVE" ? [{ status: { $exists: false } }] : []),
+    ];
+  }
 
   const teams = await TeamModel.aggregate([
-    {
-      $match: {
-        "members.user": userId,
-      },
-    },
+    { $match: matchStage },
     {
       $lookup: {
         from: "projects",
         localField: "_id",
-        foreignField: "teams", 
+        foreignField: "teams",
         as: "projects",
       },
     },
@@ -111,8 +146,6 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
-  console.log("Teams with project counts:", teams);
 
   await TeamModel.populate(teams, [
     { path: "createdby", select: "name email" },
@@ -234,7 +267,10 @@ const addTeamMember = asyncHandler(async (req, res) => {
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
   }
-  if (teamDoc.isActive === "false") {
+  if (
+    teamDoc.status === "ARCHIVED" ||
+    teamDoc.isActive === false
+  ) {
     throw new ApiError(400, "This team is archived");
   }
 
@@ -408,6 +444,44 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   );
 });
 
+const updateTeamStatus = asyncHandler(async (req, res) => {
+  const teamId = req.params.teamId || req.params.id;
+  const { status } = req.body;
+
+  if (!teamId) {
+    throw new ApiError(400, "Team ID is required");
+  }
+
+  if (!status) {
+    throw new ApiError(400, "Status value is required");
+  }
+
+  const normalized = String(status).toUpperCase();
+  if (!TEAM_STATUS_VALUES.includes(normalized)) {
+    throw new ApiError(
+      400,
+      `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+    );
+  }
+
+  const teamDoc = await TeamModel.findById(teamId);
+  if (!teamDoc) {
+    throw new ApiError(404, "Team not found");
+  }
+
+  teamDoc.status = normalized;
+  teamDoc.isActive = normalized === "ACTIVE";
+  await teamDoc.save();
+
+  const updatedTeamDoc = await TeamModel.findById(teamId)
+    .populate("createdby", "name email")
+    .populate("members.user", "name email roleInTeam");
+
+  return res.status(200).json(
+    new ApiResponse(200, `Team status updated to ${normalized}`, updatedTeamDoc)
+  );
+});
+
 const removeTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const memberId = req.params.memberId;
@@ -488,6 +562,7 @@ export {
   getAllTeams,
   getTeamById,
   updateTeamDetails,
+  updateTeamStatus,
   deleteTeamById,
   addTeamMember,
   getTeamMembers,

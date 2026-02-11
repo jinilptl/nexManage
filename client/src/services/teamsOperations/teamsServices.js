@@ -25,7 +25,7 @@ const {
   DELETE_TEAM,
   UPDATE_TEAM,
   GET_USER_TEAMS,
-
+  PATCH_TEAM_STATUS,
   ADD_TEAM_MEMBER,
   REMOVE_TEAM_MEMBER,
   GET_TEAM_MEMBERS,
@@ -62,9 +62,9 @@ export const createTeamService = (teamData, token, onClose) => {
   };
 };
 
-//   FETCH ALL TEAMS
+//   FETCH ALL TEAMS (optional status: ACTIVE | ARCHIVED)
 
-export const fetchTeamsService = (token, role) => {
+export const fetchTeamsService = (token, role, status = "") => {
   return async (dispatch) => {
     dispatch(setTeamsLoading(true));
 
@@ -74,8 +74,12 @@ export const fetchTeamsService = (token, role) => {
           ? GET_ALL_TEAMS
           : GET_USER_TEAMS;
 
+      const params = {};
+      if (status && status.trim()) params.status = status.trim();
+
       const response = await axiosInstance.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
+        params,
       });
 
       if (response.data.success) {
@@ -140,6 +144,36 @@ export const deleteTeamService = (teamId, token) => {
       toast.error(error.response?.data?.message || "Failed to delete team.");
     } finally {
       dispatch(setDeleteTeamLoading(false));
+    }
+  };
+};
+
+//   UPDATE TEAM STATUS (e.g. archive)
+
+export const updateTeamStatusService = (teamId, status, token) => {
+  return async (dispatch, getState) => {
+    try {
+      const normalized = String(status).toUpperCase();
+      const url = `${PATCH_TEAM_STATUS}/${teamId}/status`;
+
+      const response = await axiosInstance.patch(
+        url,
+        { status: normalized },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success(
+          normalized === "ARCHIVED" ? "Team archived." : "Team status updated."
+        );
+        dispatch(setSelectedTeamData(response.data.data));
+        const role = getState().auth.user.role;
+        dispatch(fetchTeamsService(token, role));
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update team status."
+      );
     }
   };
 };

@@ -1,6 +1,7 @@
 import express from "express";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
+import { canChangeProjectStatus } from "../middlewares/authMiddlewares/canChangeProjectStatus.middlewares.js";
 import {
   addProjectTaskStatus,
   createProject,
@@ -42,7 +43,11 @@ projectRouter
 
 projectRouter
   .route("/update-project-status/:projectId")
-  .post(verifyToken, updateProjectStatus);
+  .post(verifyToken, canChangeProjectStatus, updateProjectStatus);
+
+projectRouter
+  .route("/:projectId/status")
+  .patch(verifyToken, canChangeProjectStatus, updateProjectStatus);
 
 projectRouter
   .route("/:projectId/status")

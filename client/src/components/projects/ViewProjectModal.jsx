@@ -78,19 +78,27 @@ export default function ViewProjectModal({ open, onClose, project }) {
   }, [project?._id]);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
+    const s = (status || "").toUpperCase();
+    switch (s) {
+      case "ACTIVE":
         return "bg-green-100 text-green-700";
-      case "onhold":
+      case "ON_HOLD":
         return "bg-yellow-100 text-yellow-700";
-      case "completed":
+      case "COMPLETED":
         return "bg-blue-100 text-blue-700";
-      case "archived":
+      case "ARCHIVED":
         return "bg-gray-200 text-gray-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
+
+  const getStatusLabel = (status) => ({
+    ACTIVE: "Active",
+    COMPLETED: "Completed",
+    ON_HOLD: "On Hold",
+    ARCHIVED: "Archived",
+  }[(status || "ACTIVE").toUpperCase()] || status || "Active");
 
   const handleDeleteProject = () => {
     setConfirmType("deleteProject");
@@ -98,7 +106,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
   };
 
   const handleArchiveProject = () => {
-    if (project.status === "archived") {
+    if ((project.status || "").toUpperCase() === "ARCHIVED") {
       toast.error("Project is already archived");
       return;
     }
@@ -119,7 +127,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
 
     if (confirmType === "archiveProject") {
       dispatch(
-        archiveProjectService(selectedProject.id, "archived", token, onClose),
+        archiveProjectService(selectedProject.id, "ARCHIVED", token, ""),
       );
     }
 
@@ -191,15 +199,44 @@ export default function ViewProjectModal({ open, onClose, project }) {
           {project.description || "No description provided"}
         </p>
 
-        {/* STATUS */}
-        <div className="mt-3">
+        {/* STATUS + CHANGE STATUS */}
+        <div className="mt-3 flex flex-wrap items-center gap-3">
           <span
-            className={`px-3 py-1 text-xs rounded-md capitalize ${getStatusColor(
+            className={`px-3 py-1 text-xs rounded-md ${getStatusColor(
               project.status,
             )}`}
           >
-            {project.status}
+            {getStatusLabel(project.status)}
           </span>
+          {UserRole !== "member" && (
+            <div className="flex items-center gap-2">
+              <label htmlFor="project-status-select" className="text-sm text-gray-600">
+                Change status:
+              </label>
+              <select
+                id="project-status-select"
+                value={(project.status || "ACTIVE").toUpperCase()}
+                onChange={(e) => {
+                  const newStatus = e.target.value;
+                  if (newStatus && newStatus !== (project.status || "").toUpperCase()) {
+                    dispatch(
+                      archiveProjectService(project._id, newStatus, token, ""),
+                    );
+                  }
+                }}
+                disabled={archiving}
+                className="text-sm border border-gray-300 rounded-md px-3 py-1.5 cursor-pointer focus:ring-2 ring-blue-500 outline-none disabled:opacity-50"
+              >
+                <option value="ACTIVE">Active</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="ON_HOLD">On Hold</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
+              {archiving && (
+                <span className="text-xs text-gray-500">Updating...</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ACTIONS */}

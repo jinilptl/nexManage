@@ -48,6 +48,11 @@ const teamSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  status: {
+    type: String,
+    enum: ["ACTIVE", "ARCHIVED"],
+    default: "ACTIVE",
+  },
 },{timestamps:true});
 
 const Team = mongoose.model("Team", teamSchema);

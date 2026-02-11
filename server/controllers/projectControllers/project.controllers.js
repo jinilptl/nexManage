@@ -139,8 +139,24 @@ const createProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, "Project created successfully", newProject));
 });
 
+const PROJECT_STATUS_VALUES = ["ACTIVE", "COMPLETED", "ON_HOLD", "ARCHIVED"];
+
 const getAllProjects = asyncHandler(async (req, res) => {
-  const projects = await ProjectModel.find()
+  const { status } = req.query;
+  const filter = {};
+
+  if (status) {
+    const normalized = String(status).toUpperCase();
+    if (!PROJECT_STATUS_VALUES.includes(normalized)) {
+      throw new ApiError(
+        400,
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
+      );
+    }
+    filter.status = normalized;
+  }
+
+  const projects = await ProjectModel.find(filter)
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
@@ -154,18 +170,32 @@ const getAllProjects = asyncHandler(async (req, res) => {
 
 const getUserProjects = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
+  const { status } = req.query;
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized: User not found");
   }
 
-  const projects = await ProjectModel.find({
+  const filter = {
     $or: [
       { createdBy: userId },
       { projectManager: userId },
       { "projectMembers.user": userId },
     ],
-  })
+  };
+
+  if (status) {
+    const normalized = String(status).toUpperCase();
+    if (!PROJECT_STATUS_VALUES.includes(normalized)) {
+      throw new ApiError(
+        400,
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
+      );
+    }
+    filter.status = normalized;
+  }
+
+  const projects = await ProjectModel.find(filter)
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
@@ -304,7 +334,13 @@ const updateProject = asyncHandler(async (req, res) => {
 
   if (projectName) project.projectName = projectName;
   if (description) project.description = description;
-  if (status) project.status = status;
+  if (status) {
+    const normalized = String(status).toUpperCase();
+    if (!PROJECT_STATUS_VALUES.includes(normalized)) {
+      throw new ApiError(400, `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`);
+    }
+    project.status = normalized;
+  }
 
   await project.save();
 
@@ -341,9 +377,8 @@ const deleteProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Project deleted successfully", null));
 });
 
-// for archive or unarchive the project (//for chnaging the any status we will make other endpoints)
 const updateProjectStatus = asyncHandler(async (req, res) => {
-  const { projectId } = req.params;
+  const projectId = req.params.projectId || req.params.id;
   const { status } = req.body;
 
   if (!projectId) {
@@ -354,22 +389,20 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Status value is required");
   }
 
-  // Only allow archive/unarchive here
-  if (!["active", "onhold", "completed", "archived"].includes(status)) {
+  const normalized = String(status).toUpperCase();
+  if (!PROJECT_STATUS_VALUES.includes(normalized)) {
     throw new ApiError(
       400,
-      "Invalid status. Use this endpoint ONLY for active, onhold, completed, archived "
+      `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
     );
   }
 
-  const project = await ProjectModel.findById(projectId);
-
+  const project = req.project || (await ProjectModel.findById(projectId));
   if (!project) {
     throw new ApiError(404, "Project not found");
   }
 
-  // Update status
-  project.status = status;
+  project.status = normalized;
   await project.save();
 
   const updatedProjectData = await ProjectModel.findById(projectId)
@@ -385,7 +418,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        `Project has been ${status} successfully`,
+        `Project status updated to ${normalized}`,
         updatedProjectData
       )
     );
