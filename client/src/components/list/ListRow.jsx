@@ -183,7 +183,7 @@ export default function ListRow({
               className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden text-left"
               onClick={(e) => e.stopPropagation()} // Prevent row click when clicking inside dropdown
             >
-              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100">
+              <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-200 border-b border-gray-100">
                 Change Status
               </div>
               <div className="py-1 max-h-48 overflow-y-auto">

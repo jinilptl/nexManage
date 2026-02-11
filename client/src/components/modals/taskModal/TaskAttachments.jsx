@@ -37,7 +37,7 @@ function handleDownload(att){
           <Paperclip size={16} /> Attachments
         </h3>
 
-        <label className="text-xs cursor-pointer text-blue-600">
+        <label className="text-2xs cursor-pointer text-blue-600">
           + Add
           <input type="file" hidden onChange={handleFileUpload} />
         </label>
@@ -55,7 +55,7 @@ function handleDownload(att){
         {attachments.map((att) => (
           <li
             key={att._id}
-            className="flex justify-between items-center border rounded-lg px-3 py-2"
+            className="flex justify-between items-center bg-gray-100 rounded-lg px-3 py-2"
           >
             <span className="truncate text-sm">{att.fileName}</span>
 

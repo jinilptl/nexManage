@@ -60,7 +60,7 @@ import { Plus, X } from "lucide-react";
 
       {/* ===== EDIT MODE ===== */}
       {isAssignMode && (
-        <div className="mt-2 rounded-xl border bg-white shadow-lg">
+        <div className="mt-2 rounded-xl border border-gray-300 bg-white shadow-lg">
           {/* HEADER */}
           <div className="flex items-center justify-between border-b px-4 py-2">
             <span className="text-sm font-semibold">Select assignees</span>
@@ -108,7 +108,7 @@ import { Plus, X } from "lucide-react";
           <div className="flex justify-end gap-2 border-t px-4 py-3">
             <button
               onClick={cancelEdit}
-              className="rounded-lg border px-4 py-1.5 text-sm"
+              className="rounded-lg bg-gray-200 cursor-pointer px-4 py-1.5 text-sm"
             >
               Cancel
             </button>
@@ -116,7 +116,7 @@ import { Plus, X } from "lucide-react";
             <button
               onClick={onSave}
               disabled={isSaving}
-              className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-60"
+              className="rounded-lg bg-blue-600 px-4 py-1.5 cursor-pointer text-sm text-white hover:bg-blue-700 disabled:opacity-60"
             >
               {isSaving ? "Saving..." : "Save"}
             </button>

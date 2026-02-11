@@ -51,7 +51,7 @@ export default function TaskSubtasks({ subtasks, task }) {
         {subtasks.map((sub) => (
           <div
             key={sub._id}
-            className="flex items-center justify-between rounded-lg border border-gray-300 p-3"
+            className="flex items-center justify-between rounded-lg bg-gray-100 p-3"
           >
             <div className="flex items-center gap-3">
               <input
@@ -83,7 +83,7 @@ export default function TaskSubtasks({ subtasks, task }) {
           value={newSubtask}
           onChange={(e) => setNewSubtask(e.target.value)}
           placeholder=" Add a subtask..."
-          className="flex-1 rounded-lg border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          className="flex-1 rounded-lg bg-gray-100 p-2 text-sm outline-none"
         />
         <button
           onClick={addSubtask}
