@@ -164,7 +164,7 @@ export const updateTeamStatusService = (teamId, status, token) => {
 
       if (response.data.success) {
         toast.success(
-          normalized === "ARCHIVED" ? "Team archived." : "Team status updated."
+          normalized === "ARCHIVED" ? "Team archived." : "Team activated."
         );
         dispatch(setSelectedTeamData(response.data.data));
         const role = getState().auth.user.role;

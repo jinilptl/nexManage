@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FolderKanban, Eye, EyeOff } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetPasswordService } from "../../services/authOperations/authServices";
 
@@ -9,6 +9,7 @@ export default function ResetPasswordPage() {
   const { loading } = useSelector((state) => state.auth);
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,7 +26,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    dispatch(resetPasswordService(newPassword, token));
+    dispatch(resetPasswordService(newPassword, token, navigate));
   };
 
   return (

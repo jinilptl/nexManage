@@ -18,6 +18,11 @@ export default function MemberModal({
   const dispatch = useDispatch();
 
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
+  if (!selectedTeamId) {
+  alert("Team not selected");
+  return;
+}
+
   const token = useSelector((state) => state.auth.token);
 
   // ⭐ CORRECT loaders

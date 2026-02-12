@@ -118,40 +118,50 @@ export function forgotPasswordService(email) {
     dispatch(setAuthLoading(true));
 
     try {
-      const forgot_password_response = await axiosInstance.post(
+      const response = await axiosInstance.post(
         FORGET_PASSWORD,
         { email },
-        { withCredentials: true },
+        { withCredentials: true }
       );
-      // Logger("forgot password response from service", forgot_password_response);
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Reset link sent to your email");
+      }
     } catch (error) {
-      // Logger("forgot password error from service", error);
-      dispatch(setAuthLoading(false));
+      toast.error(
+        error?.response?.data?.message || "Failed to send reset link"
+      );
     } finally {
       dispatch(setAuthLoading(false));
     }
   };
 }
 
-export function resetPasswordService(newPassword, token) {
+export function resetPasswordService(newPassword, token, navigate) {
   return async (dispatch) => {
     dispatch(setAuthLoading(true));
+
     try {
-      const resetPassword_response = await axiosInstance.post(
+      const response = await axiosInstance.post(
         `${RESET_PASSWORD}/${token}`,
         { newPassword },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      // Logger("reset password response from service", resetPassword_response);
+      if (response.data.success) {
+        toast.success("Password reset successfully");
+        navigate("/"); // go to login page
+      }
     } catch (error) {
-      // Logger("reset password error from service", error);
-      dispatch(setAuthLoading(false));
+      toast.error(
+        error?.response?.data?.message || "Password reset failed"
+      );
     } finally {
       dispatch(setAuthLoading(false));
     }
   };
 }
+
 
 export const logoutService = (token, navigate) => {
   return async (dispatch) => {

@@ -1,8 +1,8 @@
-const team_member_added_email_template = (
-  memberName,
-  teamRole,
-  teamName,
-  teamLink,
+const invite_member_email_template = (
+  name,
+  email,
+  password,
+  loginLink
 ) => {
   return `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; padding: 30px; color: #333;">
@@ -15,26 +15,39 @@ const team_member_added_email_template = (
       
       <!-- Body -->
       <div style="padding: 30px;">
-        <h2 style="color: #007bff; font-size: 20px; margin-bottom: 10px;">Welcome to <span style="color: #00c2ff;">${teamName}</span>!</h2>
+        <h2 style="color: #007bff; font-size: 20px; margin-bottom: 10px;">
+          You’ve Been Invited! 🎉
+        </h2>
+
         <p style="line-height: 1.6; margin: 10px 0; font-size: 15px; color: #555;">
-          Hey <strong>${memberName}</strong><br />
-          You’ve just been added as a <strong>${teamRole}</strong> of the <strong>${teamName}</strong> team on <strong>NexManage</strong>! 🎉
+          Hello <strong>${name}</strong>,<br />
+          You’ve been invited to join <strong>NexManage</strong>.
         </p>
 
         <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">
-          You can now collaborate, manage projects, and stay aligned with your team’s goals directly in NexManage.
+          Below are your login credentials:
         </p>
 
-        <!-- Action Button -->
+        <!-- Credentials Box -->
+        <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 15px 0;">
+          <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+          <p style="margin: 5px 0;"><strong>Password:</strong> ${password}</p>
+        </div>
+
+        <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">
+          For security reasons, we strongly recommend changing your password after your first login.
+        </p>
+
+        <!-- Login Button -->
         <div style="text-align: center; margin: 25px 0;">
-          <a href="${teamLink}" target="_blank"
+          <a href="${loginLink}" target="_blank"
             style="background: linear-gradient(135deg, #007bff, #00c2ff); color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
-            Go to Your Team
+            Login to NexManage
           </a>
         </div>
 
         <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">
-          If you were not expecting this invitation, you can safely ignore this email.
+          If you were not expecting this invitation, please contact support immediately.
         </p>
 
         <p style="margin-top: 20px; font-size: 15px; color: #555;">
@@ -52,4 +65,4 @@ const team_member_added_email_template = (
   `;
 };
 
-export { team_member_added_email_template };
+export { invite_member_email_template };

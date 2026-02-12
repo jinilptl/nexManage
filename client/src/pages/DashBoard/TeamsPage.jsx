@@ -115,9 +115,8 @@ export default function TeamsPage() {
 
   return (
     <div
-      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
-        openTeamModal && "overflow-y-hidden"
-      }`}
+      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
+        }`}
     >
       {/* MAIN PAGE LOADER */}
       {loading && <NexManageLoader />}
@@ -141,11 +140,10 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
-             ${
-               loading
-                 ? "bg-blue-300 cursor-not-allowed"
-                 : "bg-blue-600 hover:bg-blue-700 text-white"
-             }`}
+             ${loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -190,10 +188,9 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-blue-700"
+                    ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
                     }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
@@ -228,11 +225,10 @@ export default function TeamsPage() {
                   >
                     <button
                       disabled={loading}
-                      className={`p-1 rounded-md ${
-                        loading
+                      className={`p-1 rounded-md ${loading
                           ? "opacity-40 cursor-not-allowed"
                           : "hover:bg-gray-100"
-                      }`}
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!loading)
@@ -266,27 +262,46 @@ export default function TeamsPage() {
 
                         <div className="border-t"></div>
 
-                        <button
-                          disabled={loading || (team.status || "").toUpperCase() === "ARCHIVED"}
-                          onClick={() => {
-                            if (!loading) {
-                              dispatch(
-                                updateTeamStatusService(team._id, "ARCHIVED", token)
-                              );
-                              setOpenMenuId(null);
-                            }
-                          }}
-                          className="w-full cursor-pointer text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
-                        >
-                          Archive Team
-                        </button>
+                        {/* Archive Team Button - only show if team is ACTIVE */}
+                        {(team.status || "").toUpperCase() !== "ARCHIVED" && (
+                          <button
+                            disabled={loading}
+                            onClick={() => {
+                              if (!loading) {
+                                dispatch(
+                                  updateTeamStatusService(team._id, "ARCHIVED", token)
+                                );
+                                setOpenMenuId(null);
+                              }
+                            }}
+                            className="w-full cursor-pointer text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
+                          >
+                            Archive Team
+                          </button>
+                        )}
+
+                        {/* Activate Team Button - only show if team is ARCHIVED */}
+                        {(team.status || "").toUpperCase() === "ARCHIVED" && (
+                          <button
+                            disabled={loading}
+                            onClick={() => {
+                              if (!loading) {
+                                dispatch(
+                                  updateTeamStatusService(team._id, "ACTIVE", token)
+                                );
+                                setOpenMenuId(null);
+                              }
+                            }}
+                            className="w-full cursor-pointer text-left px-4 py-2 text-green-600 hover:bg-gray-100 text-sm"
+                          >
+                            Activate Team
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
-in teams page when i click on archive team it archive teams in db and also in frontend but how i again active that team if i want to active that team again then what i do?
 
-To reactivate an archived team, you would need to implement a feature that allows you to change the team's status back to "ACTIVE". This would involve adding a new button in the dropdown menu for archived teams, which when clicked, would trigger a function to update the team's status in the database. and default status is active  
                 {/* TEAM NAME */}
                 <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">
@@ -328,11 +343,10 @@ To reactivate an archived team, you would need to implement a feature that allow
                   {/* FOOTER */}
                   <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
                     <span
-                      className={`px-2 py-1 text-xs rounded-md ${
-                        (team.status || "").toUpperCase() === "ARCHIVED"
+                      className={`px-2 py-1 text-xs rounded-md ${(team.status || "").toUpperCase() === "ARCHIVED"
                           ? "bg-gray-200 text-gray-700"
                           : "bg-green-100 text-green-700"
-                      }`}
+                        }`}
                     >
                       {(team.status || "").toUpperCase() === "ARCHIVED"
                         ? "Archived"

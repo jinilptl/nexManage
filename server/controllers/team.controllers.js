@@ -3,7 +3,7 @@ import { User as UserModel } from "../models/user.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { sendEmail } from "../utils/emailSender.js";
+import sendEmail from "../utils/sendMail.js";
 import { team_member_added_email_template } from "../templates/team_member_added_email_template.js";
 import { Project } from "../models/project.models.js";
 import mongoose from "mongoose";

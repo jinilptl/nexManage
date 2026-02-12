@@ -33,8 +33,8 @@ const forgot_password_email_template = (resetlink) => {
     </div>
 
     <div style="text-align: center; padding: 20px; font-size: 13px; color: #999; background-color: #f9fafb;">
-      Need help? <a href="mailto:chintan@nexmanage.tech" style="color: #007bff; text-decoration: none;">Contact Support</a><br />
-      © 2025 NexForge Tech. All rights reserved.
+      Need help? <a href="mailto:chintan@nexforge.tech" style="color: #007bff; text-decoration: none;">Contact Support</a><br />
+      © ${new Date().getFullYear()} NexForge Tech. All rights reserved.
     </div>
   </div>
 </div>  
