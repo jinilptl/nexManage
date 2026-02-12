@@ -294,6 +294,17 @@ const resetPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Password reset successfully"));
 });
 
+const getMyProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const user = await UserModel.findById(userId).select("-password");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User profile fetched successfully", user));
+});
+
 const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
@@ -311,4 +322,5 @@ export {
   logoutUser,
   updateUser,
   deleteUser,
+  getMyProfile,
 };

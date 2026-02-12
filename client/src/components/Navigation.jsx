@@ -240,7 +240,7 @@ export default function Navigation({
                 <User className="w-4 h-4" />
                 Profile
               </button>
-              <button className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
+              <button  className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
               </button>

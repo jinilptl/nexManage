@@ -8,10 +8,18 @@ import PriorityBarChart from "../../components/Analytics/PriorityBarChart";
 import TopContributors from "../../components/Analytics/TopContributors";
 import ProjectProgress from "../../components/Analytics/ProjectProgress";
 import { useSelector } from "react-redux";
+import { use, useEffect } from "react";
 
 export default function AnalyticsPage() {
-  const role = useSelector((state) => state.auth.user.role);
-  console.log(role)
+  const role = useSelector((state) => state.auth.user?.role);
+
+  useEffect(() => {
+    if (role) {
+      document.title = role === "member" ? "My Analytics" : "Analytics";
+    }
+  }, [role]);
+
+  console.log(role);
   const {
     loading,
     error,

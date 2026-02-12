@@ -284,7 +284,9 @@ export default function TeamsPage() {
                     )}
                   </div>
                 </div>
+in teams page when i click on archive team it archive teams in db and also in frontend but how i again active that team if i want to active that team again then what i do?
 
+To reactivate an archived team, you would need to implement a feature that allows you to change the team's status back to "ACTIVE". This would involve adding a new button in the dropdown menu for archived teams, which when clicked, would trigger a function to update the team's status in the database. and default status is active  
                 {/* TEAM NAME */}
                 <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">

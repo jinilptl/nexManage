@@ -7,6 +7,7 @@ import {
   registerUser,
   resetPassword,
   logoutUser,
+  getMyProfile,
 } from "../controllers/user.controllers.js";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
@@ -15,9 +16,10 @@ const authRouter = express.Router();
 
 //register and login routes
 authRouter
-  .route("/register")
-  .post(verifyToken, roleChecker(["super_admin"]), registerUser);
+.route("/register")
+.post(verifyToken, roleChecker(["super_admin"]), registerUser);
 authRouter.route("/login").post(loginUser);
+authRouter.route("/getmyprofile").get(verifyToken, getMyProfile);
 authRouter.route("/logout").post(verifyToken, logoutUser);
 
 // get all users route - only super admin can access

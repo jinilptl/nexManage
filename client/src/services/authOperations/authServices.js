@@ -15,6 +15,7 @@ let Logger = console.log;
 const {
   LOGIN,
   ADD_MEMBER,
+  GET_MY_PROFILE,
   LOGOUT,
   FORGET_PASSWORD,
   RESET_PASSWORD,
@@ -81,6 +82,30 @@ export function addMemberService(memberData, token) {
         error?.response?.data?.message ||
           error.message ||
           "Failed to add member",
+      );
+    } finally {
+      dispatch(setAuthLoading(false));
+    }
+  };
+}
+
+export function getMyProfileService(token) {
+  return async (dispatch) => {
+    dispatch(setAuthLoading(true));
+    try {
+      const response = await axiosInstance.get(GET_MY_PROFILE, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      if (response.data.success) {
+        const user = response.data.data;
+        dispatch(setUser(user));
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to fetch profile data",
       );
     } finally {
       dispatch(setAuthLoading(false));
