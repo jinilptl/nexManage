@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FolderKanban } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,16 +6,20 @@ import { forgotPasswordService } from "../../services/authOperations/authService
 
 export default function ForgotPasswordPage() {
   const dispatch = useDispatch();
-  const{loading}=useSelector((state)=>state.auth)
+  const { loading } = useSelector((state) => state.auth)
 
-  const [email,setEmail]=useState("")
+  const [email, setEmail] = useState("")
 
-  const handleSubmit=(e)=>{
+  useEffect(() => {
+    document.title = "Forgot Password | NexManage";
+  }, []);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    
-     dispatch(forgotPasswordService(email))
-    
+
+    dispatch(forgotPasswordService(email))
+
   }
 
   return (
@@ -49,7 +53,7 @@ export default function ForgotPasswordPage() {
               type="email"
               placeholder="you@company.com"
               value={email}
-              onChange={(e)=>{setEmail(e.target.value)}}
+              onChange={(e) => { setEmail(e.target.value) }}
               className="w-full border rounded-lg p-3 text-sm focus:ring-blue-500"
             />
           </div>
@@ -57,10 +61,10 @@ export default function ForgotPasswordPage() {
           {/* Button */}
           <button
             type="submit"
-            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading?"cursor-not-allowed opacity-70":"cursor-pointer"}`}
+            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
             disabled={loading}
           >
-           {loading?"Loading...":"Send Reset Link"}
+            {loading ? "Loading..." : "Send Reset Link"}
           </button>
 
           <p className="text-sm text-gray-600 text-center pt-4 border-t">

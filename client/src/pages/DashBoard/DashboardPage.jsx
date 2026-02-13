@@ -9,6 +9,10 @@ export default function DashboardPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const dispatch = useDispatch();
 
+    useEffect(() => {
+      document.title = "Dashboard | NexManage";
+    }, []);
+
   const token =
     useSelector((state) => state.auth.token) ||
     localStorage.getItem("token") ||

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import SettingsLayout from "../../components/Settings/SettingsLayout";
 import SettingsSidebar from "../../components/Settings/SettingsSidebar";
@@ -22,6 +22,10 @@ export default function SettingsPage() {
   ];
 
   const [activeTab, setActiveTab] = useState("account");
+
+  useEffect(() => {
+    document.title = "Settings | NexManage";
+  }, []);
 
   return (
     <SettingsLayout

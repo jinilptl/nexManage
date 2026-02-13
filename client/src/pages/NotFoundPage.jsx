@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function NotFoundPage() {
 
   const navigate = useNavigate();
 
-  const handlenavigate=()=>{
+  useEffect(() => {
+    document.title = "404 - Page Not Found | NexManage";
+  }, []);
+
+  const handlenavigate = () => {
     navigate(-1);
   }
   return (
@@ -22,7 +26,7 @@ export default function NotFoundPage() {
 
       {/* Main Card */}
       <div className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/20 flex flex-col items-center max-w-md text-center animate-slideUp">
-        
+
         <div className="w-24 h-24 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-4 animate-floating">
           <span className="text-4xl">🧭</span>
         </div>
@@ -35,7 +39,7 @@ export default function NotFoundPage() {
 
         {/* Button */}
         <button
-          onClick={()=>{
+          onClick={() => {
             handlenavigate()
           }}
           className="mt-6 inline-block px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-medium shadow-lg"

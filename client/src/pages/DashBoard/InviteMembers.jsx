@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Mail,
@@ -24,6 +24,10 @@ const InviteMembers = () => {
   const [role, setRole] = useState("member");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    document.title = "Invite Members | NexManage";
+  }, []);
 
   const handleInvite = (e) => {
     e.preventDefault();
@@ -99,7 +103,7 @@ const InviteMembers = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                 Password
+                  Password
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />

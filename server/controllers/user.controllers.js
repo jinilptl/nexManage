@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import bcrypt, { hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { forgot_password_email_template } from "../templates/forgotPasswordMail.js";
-import sendEmail  from "../utils/sendMail.js";
+import sendEmail from "../utils/sendMail.js";
 import crypto from "crypto";
 import { invite_member_email_template } from "../templates/inviteMemberMail.js";
 
@@ -32,20 +32,18 @@ const registerUser = asyncHandler(async (req, res) => {
     createdby: req.user?._id,
   });
 
-const message = invite_member_email_template(
-  name,
-  email,
-  password,
-  `${process.env.CLIENT_URL}/`
-);
+  const message = invite_member_email_template(
+    name,
+    email,
+    password,
+    `${process.env.CLIENT_URL}/`,
+  );
 
-await sendEmail({
-  email,
-  subject: "You are invited to NexManage 🚀",
-  message,
-});
-
-
+  await sendEmail({
+    email,
+    subject: "You are invited to NexManage 🚀",
+    message,
+  });
 
   const registeredUser = await UserModel.findById(createdUser._id)
     .select("-password")
@@ -100,9 +98,28 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const allUsers = asyncHandler(async (req, res) => {
-  const users = await UserModel.find().select("-password");
-  return res.status(200).json(new ApiResponse(200, "all users", users));
+  const currentUserId = req.user._id;
+  const currentUserRole = req.user.role;
+
+  let filter = {
+    _id: { $ne: currentUserId },
+  };
+
+  if (currentUserRole === "admin") {
+    filter.role = "member";
+  }
+
+  if (currentUserRole === "super_admin") {
+    filter.role = { $in: ["admin", "member"] };
+  }
+
+  const users = await UserModel.find(filter).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "All users fetched successfully", users));
 });
+
 
 const updateUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
@@ -226,9 +243,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
     .update(resetToken)
     .digest("hex");
 
-    console.log("Generated Reset Token:", resetToken);
-console.log("Stored Hashed Token:", hashToken);
-
+  console.log("Generated Reset Token:", resetToken);
+  console.log("Stored Hashed Token:", hashToken);
 
   user.resetPasswordToken = hashToken;
   user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; //15 minutes expires time

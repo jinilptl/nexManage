@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FolderKanban, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +16,9 @@ export default function ResetPasswordPage() {
 
   const { token } = useParams();
 
-  
+  useEffect(() => {
+    document.title = "Reset Password | NexManage";
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -112,9 +114,8 @@ export default function ResetPasswordPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${
-              loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
-            }`}
+            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+              }`}
             disabled={loading}
           >
             {loading ? "Resetting..." : "Reset Password"}

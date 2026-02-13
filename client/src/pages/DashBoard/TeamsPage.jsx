@@ -45,6 +45,11 @@ export default function TeamsPage() {
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
+  /* ---------------- SET DOCUMENT TITLE ---------------- */
+  useEffect(() => {
+    document.title = "Teams | NexManage";
+  }, []);
+
   /* ---------------- FETCH ALL TEAMS ---------------- */
   useEffect(() => {
     if (token && role) {
@@ -226,8 +231,8 @@ export default function TeamsPage() {
                     <button
                       disabled={loading}
                       className={`p-1 rounded-md ${loading
-                          ? "opacity-40 cursor-not-allowed"
-                          : "hover:bg-gray-100"
+                        ? "opacity-40 cursor-not-allowed"
+                        : "hover:bg-gray-100"
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -344,8 +349,8 @@ export default function TeamsPage() {
                   <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
                     <span
                       className={`px-2 py-1 text-xs rounded-md ${(team.status || "").toUpperCase() === "ARCHIVED"
-                          ? "bg-gray-200 text-gray-700"
-                          : "bg-green-100 text-green-700"
+                        ? "bg-gray-200 text-gray-700"
+                        : "bg-green-100 text-green-700"
                         }`}
                     >
                       {(team.status || "").toUpperCase() === "ARCHIVED"

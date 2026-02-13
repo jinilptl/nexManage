@@ -90,7 +90,7 @@ export default function ProjectDetails() {
 
       const handleTaskMove = ({ taskId, fromStatus, toStatus }) => {
         // console.log("TASK:MOVE RECEIVED ", taskId);
-        dispatch(moveTaskRealtime({taskId, fromStatus, toStatus}));
+        dispatch(moveTaskRealtime({ taskId, fromStatus, toStatus }));
       };
 
       Socket.current.on("TASK:CREATE", handleTaskCreate);
@@ -127,6 +127,14 @@ export default function ProjectDetails() {
   useEffect(() => {
     setTasks(taskList || []);
   }, [taskList]);
+
+  useEffect(() => {
+    if (projectData?.data?.projectName) {
+      document.title = `${projectData.data.projectName} | NexManage`;
+    } else {
+      document.title = "Project Details | NexManage";
+    }
+  }, [projectData?.data?.projectName]);
 
   const onSubmit = (formData) => {
     dispatch(

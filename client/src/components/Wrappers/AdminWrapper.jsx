@@ -9,7 +9,7 @@ const AdminWrapper = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
-  if (user.role !== "super_admin") {
+  if (user.role !== "super_admin" && user.role !== "admin") {
     toast.error("You are not authorized to access this page");
     return <Navigate to="/dashboard" replace />;
   }

@@ -29,8 +29,8 @@ export default function ProjectsPage() {
   const { selectedProject } = useSelector((state) => state.projects);
   const projectsLoading = useSelector((state) => state.projects.loading);
   const loadingProject = useSelector(
-  (state) => state.projects.selectedProject.loading
-);
+    (state) => state.projects.selectedProject.loading
+  );
   const UserRole = user.role;
   const projects = UserRole !== "member" ? allProjects : myProjects;
   const dispatch = useDispatch();
@@ -46,6 +46,10 @@ export default function ProjectsPage() {
   const handleStatusChange = (value) => {
     setStatusFilter(value);
   };
+
+  useEffect(() => {
+    document.title = "Projects | NexManage";
+  }, []);
 
   useEffect(() => {
     setFilterData(projects);
@@ -73,19 +77,19 @@ export default function ProjectsPage() {
     // setSelectedProject(project);
 
     dispatch(setSelectedProjectId(project._id));
-     dispatch(setSelectedProjectLoading(true));
+    dispatch(setSelectedProjectLoading(true));
     dispatch(fetchSingleProjectService(project._id, token));
     setViewModal(true);
   };
   // console.log("selected projjetc ===> ",selectedProject);
 
 
-  if(projectsLoading){
-      return(
-        <div className=" flex justify-center items-center h-[70vh]">
-          <NexManageLoader/>
-        </div>
-      )
+  if (projectsLoading) {
+    return (
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
+      </div>
+    )
   }
 
   return (
@@ -140,7 +144,7 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {showModal&&(<ProjectModal
+      {showModal && (<ProjectModal
         open={showModal}
         onClose={() => setShowModal(false)}
         mode="create"

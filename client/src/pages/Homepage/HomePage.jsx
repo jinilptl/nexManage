@@ -17,10 +17,14 @@ const HomePage = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-  if (isLogin) {
-    navigate("/dashboard");
-  }
-}, [isLogin, navigate]);
+    document.title = "Login | NexManage";
+  }, []);
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/dashboard");
+    }
+  }, [isLogin, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();

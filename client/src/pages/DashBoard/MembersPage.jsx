@@ -26,6 +26,10 @@ export default function Members() {
   });
 
   useEffect(() => {
+    document.title = "Members | NexManage";
+  }, []);
+
+  useEffect(() => {
     dispatch(fetchAllUsers());
   }, [dispatch]);
 
@@ -74,15 +78,15 @@ export default function Members() {
     setFormData(
       member
         ? {
-            name: member.name,
-            email: member.email,
-            role: member.role,
-          }
+          name: member.name,
+          email: member.email,
+          role: member.role,
+        }
         : {
-            name: "",
-            email: "",
-            role: "member",
-          },
+          name: "",
+          email: "",
+          role: "member",
+        },
     );
     setIsModalOpen(true);
   };
@@ -114,7 +118,7 @@ export default function Members() {
       {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-blue-100 border-b">
+          <thead className="bg-blue-200 border-b">
             <tr>
               <th className="text-left p-4">Name</th>
               <th className="text-left p-4">Email</th>

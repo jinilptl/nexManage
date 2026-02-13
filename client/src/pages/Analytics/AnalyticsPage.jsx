@@ -14,10 +14,8 @@ export default function AnalyticsPage() {
   const role = useSelector((state) => state.auth.user?.role);
 
   useEffect(() => {
-    if (role) {
-      document.title = role === "member" ? "My Analytics" : "Analytics";
-    }
-  }, [role]);
+    document.title = "Analytics | NexManage";
+  }, []);
 
   console.log(role);
   const {
