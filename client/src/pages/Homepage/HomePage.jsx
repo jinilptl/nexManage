@@ -133,7 +133,7 @@ const HomePage = () => {
         </div>
 
         <p className="text-blue-100 text-sm">
-          © 2025 NexManage. All rights reserved.
+          © ${new Date().getFullYear()} NexManage. All rights reserved.
         </p>
       </div>
 
@@ -149,7 +149,7 @@ const HomePage = () => {
 
           <div className="text-center">
             <h2 className="text-2xl font-semibold">Welcome back</h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-600 text-sm">
               Sign in to your NexManage account
             </p>
           </div>
@@ -193,6 +193,7 @@ const HomePage = () => {
 
                 <button
                   type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -217,12 +218,13 @@ const HomePage = () => {
             {/* Remember me */}
             <div className="flex items-center gap-2 text-sm">
               <input
+                id="remember-me"
                 type="checkbox"
                 className="h-4 w-4 cursor-pointer"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <span>Remember me</span>
+              <label htmlFor="remember-me" className="cursor-pointer">Remember me</label>
             </div>
 
             {/* Button */}

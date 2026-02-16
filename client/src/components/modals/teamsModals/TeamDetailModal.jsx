@@ -113,6 +113,7 @@ export default function TeamDetailModal({ open, onClose }) {
           {/* Close Button */}
           <button
             disabled={updating || deleting}
+            aria-label="Close team details dialog"
             onClick={() => {
               onClose();
               dispatch(setSelectedTeamData(null));

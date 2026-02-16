@@ -26,7 +26,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen w-full flex bg-gray-50 overflow-x-hidden">
-      {/* Sidebar */}
+      {/* Skip to main content link */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-blue-600 focus:text-white">Skip to main content</a>
+      
+      {/* Sidebar Navigation */}
       <Navigation
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -35,13 +38,14 @@ export default function DashboardPage() {
       />
 
       {/* Main Content */}
-      <div
+      <main
+        id="main-content"
         className={`flex-1 min-w-0 ${mobileOpen ? "ml-0" : collapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-300`}
       >
         <div className="pt-16 md:pt-0 px-4 md:px-8 py-6 ">
           <Outlet />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -61,7 +61,7 @@ const InviteMembers = () => {
                   <h2 className="text-xl font-semibold text-gray-900">
                     Invite Member
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600">
                     Add a new user to your workspace
                   </p>
                 </div>
@@ -75,7 +75,7 @@ const InviteMembers = () => {
                   Name
                 </label>
                 <div className="relative">
-                  <UserPlus className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <UserPlus className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     placeholder="John Doe"
@@ -90,7 +90,7 @@ const InviteMembers = () => {
                   Email address
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="email"
                     placeholder="user@example.com"
@@ -106,7 +106,7 @@ const InviteMembers = () => {
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
@@ -117,7 +117,8 @@ const InviteMembers = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />

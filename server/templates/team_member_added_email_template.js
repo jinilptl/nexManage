@@ -18,7 +18,7 @@ const team_member_added_email_template = (
         <h2 style="color: #007bff; font-size: 20px; margin-bottom: 10px;">Welcome to <span style="color: #00c2ff;">${teamName}</span>!</h2>
         <p style="line-height: 1.6; margin: 10px 0; font-size: 15px; color: #555;">
           Hey <strong>${memberName}</strong><br />
-          You’ve just been added as a <strong>${teamRole}</strong> of the <strong>${teamName}</strong> team on <strong>NexManage</strong>! 🎉
+          You’ve just been added as a <strong>${teamRole}</strong> of the <strong>${teamName}</strong> team on <strong>NexManage</strong>!
         </p>
 
         <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">

@@ -115,10 +115,10 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-xl shadow-sm  ">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             {isAdmin ? "All Tasks Overview" : "My Tasks Overview"}
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
             Quick overview of your assigned tasks
           </p>
 
@@ -139,10 +139,10 @@ export default function Dashboard() {
 
         {/* Recent Activity */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Recent Activity
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
             Latest updates across your projects
           </p>
 
@@ -157,7 +157,7 @@ export default function Dashboard() {
                 <div className="flex-1">
                   <p className="text-sm text-gray-900">
                     <span className="font-medium">{a.updatedBy?.name}</span>{" "}
-                    <span className="text-gray-500">
+                    <span className="text-gray-600">
                       {new Date(a.createdAt).getTime() ===
                       new Date(a.updatedAt).getTime()
                         ? "created task"
@@ -166,7 +166,7 @@ export default function Dashboard() {
                     <span className="text-gray-800">{a.title}</span>
                   </p>
 
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-600">
                     {new Date(a.updatedAt).toLocaleString()}
                   </p>
                 </div>
@@ -180,13 +180,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* -------- Upcoming Deadlines -------- */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">Tasks due within 7 days</p>
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">Tasks due within 7 days</p>
 
           {visibleDeadlines.length === 0 && (
-            <p className="text-sm text-gray-400">No upcoming deadlines</p>
+            <p className="text-sm text-gray-500">No upcoming deadlines</p>
           )}
 
           {visibleDeadlines.map((d, i) => {
@@ -228,22 +228,22 @@ export default function Dashboard() {
 
         {/* -------- Project Progress -------- */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Project Progress
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
             Completion status of active projects
           </p>
 
           {visibleProjects.length === 0 && (
-            <p className="text-sm text-gray-400">No active projects yet</p>
+            <p className="text-sm text-gray-500">No active projects yet</p>
           )}
 
           {visibleProjects.map((p) => (
             <div key={p.id} className="space-y-2 mb-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-800">{p.name}</span>
-                <span className="text-sm text-gray-500">{p.progress}%</span>
+                <span className="text-sm text-gray-700">{p.progress}%</span>
               </div>
 
               <div className="w-full bg-gray-200 rounded-full h-2">

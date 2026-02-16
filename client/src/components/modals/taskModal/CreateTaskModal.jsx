@@ -84,6 +84,7 @@ export default function CreateTaskModal({
           </h2>
           <button
             onClick={() => onClose(false)}
+            aria-label="Close create task dialog"
             className="p-1 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors "
           >
             <X className="w-5 h-5 text-gray-600" />

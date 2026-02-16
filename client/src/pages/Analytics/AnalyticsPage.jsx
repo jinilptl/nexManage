@@ -71,7 +71,7 @@ export default function AnalyticsPage() {
           value={
             <>
               {completedTasks}{" "}
-              <span className="text-base text-gray-500">
+              <span className="text-base text-gray-600">
                 ({completionRate}%)
               </span>
             </>

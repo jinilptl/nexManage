@@ -49,7 +49,7 @@ export default function NotFoundPage() {
       </div>
 
       {/* Small Note */}
-      <p className="absolute bottom-8 text-gray-400 text-sm">
+      <p className="absolute bottom-8 text-gray-500 text-sm">
         Made with ❤️ by NexManage
       </p>
 

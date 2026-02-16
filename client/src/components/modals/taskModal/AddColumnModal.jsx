@@ -44,6 +44,7 @@ export default function AddColumnModal({ onClose,projectId,token }) {
           <h2 className="text-lg font-semibold text-gray-900">Add Column</h2>
           <button
             onClick={onClose}
+            aria-label="Close add column dialog"
             className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5 text-gray-600" />

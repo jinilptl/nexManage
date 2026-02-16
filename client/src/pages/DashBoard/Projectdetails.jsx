@@ -144,7 +144,7 @@ export default function ProjectDetails() {
 
   if (!projectData?.data) {
     return (
-      <div className="flex h-screen items-center justify-center text-gray-500">
+      <div className="flex h-screen items-center justify-center text-gray-600">
         Loading project details...
       </div>
     );
@@ -153,7 +153,7 @@ export default function ProjectDetails() {
   return (
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
-      <div className="text-sm text-gray-500 mb-4">
+      <div className="text-sm text-gray-600 mb-4">
         <Link to="/dashboard/projects" className="hover:text-blue-600">Projects</Link> <span className="mx-1">›</span>
         <span className="text-gray-700">{projectData?.data?.projectName}</span>
       </div>

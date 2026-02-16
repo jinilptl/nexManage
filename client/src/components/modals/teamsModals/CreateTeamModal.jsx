@@ -71,6 +71,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
         <button
           disabled={modalLoading}
           onClick={() => !modalLoading && setOpen(false)}
+          aria-label="Close create team dialog"
           className={`absolute top-4 right-4 p-2 rounded-md hover:bg-gray-100 cursor-pointer
           ${modalLoading && "opacity-40 cursor-not-allowed"}`}
         >

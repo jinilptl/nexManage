@@ -103,7 +103,7 @@ export default function Members() {
         <div>
           {" "}
           <h2 className="text-2xl font-semibold text-gray-800">Members</h2>
-          <p className="text-sm text-gray-500">Manage your account members</p>
+          <p className="text-sm text-gray-600">Manage your account members</p>
         </div>
 
         <button
@@ -129,13 +129,13 @@ export default function Members() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" className="p-6 text-center text-gray-500">
+                <td colSpan="4" className="p-6 text-center text-gray-600">
                   Loading...
                 </td>
               </tr>
             ) : members.length === 0 ? (
               <tr>
-                <td colSpan="4" className="p-6 text-center text-gray-500">
+                <td colSpan="4" className="p-6 text-center text-gray-600">
                   No members found
                 </td>
               </tr>
@@ -151,12 +151,14 @@ export default function Members() {
                   <td className="p-4 flex justify-end gap-3">
                     <button
                       onClick={() => handleOpenModal(member)}
+                      aria-label={`Edit ${member.name}`}
                       className="cursor-pointer"
                     >
                       <Edit size={18} color="blue" />
                     </button>
                     <button
                       onClick={() => openDeleteModal(member._id)}
+                      aria-label={`Delete ${member.name}`}
                       className="cursor-pointer"
                     >
                       <Trash2 size={18} color="red" />

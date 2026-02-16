@@ -16,7 +16,7 @@ const invite_member_email_template = (
       <!-- Body -->
       <div style="padding: 30px;">
         <h2 style="color: #007bff; font-size: 20px; margin-bottom: 10px;">
-          You’ve Been Invited! 🎉
+          You’ve Been Invited!
         </h2>
 
         <p style="line-height: 1.6; margin: 10px 0; font-size: 15px; color: #555;">

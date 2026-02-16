@@ -4,7 +4,7 @@ const DashboardHearderCard = ({ heading, mainIcon, data, text, textColor }) => {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm  ">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-600">{heading}</h4>
+        <h3 className="text-sm font-medium text-gray-700">{heading}</h3>
         {mainIcon}
       </div>
       <div className="mt-3 text-2xl font-semibold text-gray-900">

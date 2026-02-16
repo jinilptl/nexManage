@@ -23,7 +23,7 @@ const App = () => {
   const { user, token } = useSelector((state) => state.auth);
 
   return (
-    <div>
+    <>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -73,7 +73,7 @@ const App = () => {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </div>
+    </>
   );
 };
 

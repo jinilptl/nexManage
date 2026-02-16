@@ -10,7 +10,7 @@ const forgot_password_email_template = (resetlink) => {
     <div style="padding: 30px;">
       <h2 style="color: #007bff; font-size: 20px; margin-bottom: 10px;">Forgot Your Password?</h2>
       <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">
-        Hey there 👋,<br />
+        Hey there,<br />
         We received a request to reset your password for your <strong>NexManage</strong> account.
       </p>
       <p style="line-height: 1.6; margin: 8px 0; font-size: 15px; color: #555;">
