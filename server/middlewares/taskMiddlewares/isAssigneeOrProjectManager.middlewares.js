@@ -7,28 +7,33 @@ const isAssigneeOrProjectManager = asyncHandler(async (req, res, next) => {
   const userId = req.user?._id;
   const projectId = req.params.projectId || req.project?._id;
   const taskId = req.params.taskId || req.task?._id;
+
   const task = req.task || (await TaskModel.findById(taskId));
   const project = req.project || (await ProjectModel.findById(projectId));
-  
-  
 
   if (!task || !project) {
     throw new ApiError(400, "Task or project context missing");
   }
 
-  const isManager =
+  if (req.user.role === "super_admin") {
+    return next();
+  }
+
+  const isMainManager =
     project.projectManager &&
     project.projectManager.toString() === userId.toString();
+
+  const member = project.projectMembers.find(
+    (m) => m.user.toString() === userId.toString() && m.status === "active"
+  );
+
+  const isRoleManager = member?.roleInProject === "project-manager";
 
   const isAssignee = task.assignees.some(
     (id) => id.toString() === userId.toString()
   );
 
-  if(req.user.role==='super_admin'){
-    return next();
-  } 
-
-  if (!isManager && !isAssignee) {
+  if (!isMainManager && !isRoleManager && !isAssignee) {
     throw new ApiError(
       403,
       "Only task assignee or project manager can perform this action"

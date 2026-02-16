@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -24,22 +24,12 @@ import {
 } from "../../../Redux_Config/Slices/tasksSlice";
 
 import ConfirmModal from "../teamsModals/ConfirmModal";
-import toast from "react-hot-toast";
 
 export default function TaskDetailModal({ task, onClose }) {
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    document.body.classList.add("modal-open");
-    return () => {
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
-
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const project = useSelector((state) => state.projects.selectedProject);
 
-  const projectMembers = project?.data?.projectMembers || [];
   const allTaskActivity = useSelector((state) => state.tasks.activityLogs);
 
   const {
@@ -51,54 +41,82 @@ export default function TaskDetailModal({ task, onClose }) {
     (state) => state.tasks.selectedTask?.data?.assignees || []
   );
 
-  const [attachments] = useState(task.attachments || []);
+  /* ---------------- SAFE PROJECT ID ---------------- */
+
+  const projectId = useMemo(() => {
+    if (project?.data?._id) return project.data._id;
+
+    if (typeof task?.project === "object") {
+      return task?.project?._id;
+    }
+
+    return task?.project;
+  }, [project, task]);
+
+  /* ---------------- BODY SCROLL LOCK ---------------- */
+
+  useEffect(() => {
+    document.body.classList.add("modal-open");
+    return () => {
+      document.body.classList.remove("modal-open");
+    };
+  }, []);
+
+  /* ---------------- LOCAL STATE ---------------- */
+
   const [assignees, setAssignees] = useState(task.assignees || []);
   const [isAssignMode, setIsAssignMode] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = useState(false);
   const [updateTaskModalOpen, setUpdateTaskModalOpen] = useState(false);
 
-  /* -------- CONFIRM MODAL STATES -------- */
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState(null);
 
-  /* -------- FETCH SUBTASKS -------- */
+  /* ---------------- FETCH SUBTASKS ---------------- */
+
   useEffect(() => {
-    if (task?._id && token) {
-      dispatch(fetchAllSubTaskService(task.project, task._id, token));
-    }
+    if (!projectId || !task?._id || !token) return;
+
+    dispatch(fetchAllSubTaskService(projectId, task._id, token));
+
     return () => {
       dispatch(clearSelectedTaskSubtasks());
     };
-  }, [task._id, task.project, token, dispatch]);
+  }, [projectId, task?._id, token, dispatch]);
 
-  /* -------- FETCH ATTACHMENTS -------- */
+  /* ---------------- FETCH ATTACHMENTS ---------------- */
+
   useEffect(() => {
-    if (task?._id && token) {
-      dispatch(fetchTaskAttachmentsService(task.project, task._id, token));
-    }
+    if (!projectId || !task?._id || !token) return;
+
+    dispatch(fetchTaskAttachmentsService(projectId, task._id, token));
+
     return () => {
       dispatch(clearSelectedTaskAttachments());
     };
-  }, [task._id, token, dispatch]);
+  }, [projectId, task?._id, token, dispatch]);
 
-  /* -------- FETCH ACTIVITY -------- */
+  /* ---------------- FETCH ACTIVITY ---------------- */
+
   useEffect(() => {
-    if (token) {
-      dispatch(fetchTaskActivityService(task._id, task.project, token));
-    }
-  }, [task._id, task.project, token, dispatch]);
+    if (!projectId || !task?._id || !token) return;
 
-  /* -------- DELETE TASK (OPEN CONFIRM) -------- */
+    dispatch(fetchTaskActivityService(task._id, projectId, token));
+  }, [projectId, task?._id, token, dispatch]);
+
+  /* ---------------- DELETE TASK ---------------- */
+
   const handleDeleteTask = () => {
     setConfirmType("deleteTask");
     setConfirmOpen(true);
   };
 
-  /* -------- CONFIRM ACTION -------- */
   const handleConfirmAction = () => {
     if (confirmType === "deleteTask") {
-      dispatch(deleteTaskService(task.project, task._id, token));
+      if (!projectId) return;
+
+      dispatch(deleteTaskService(projectId, task._id, token));
       onClose();
     }
 
@@ -106,11 +124,15 @@ export default function TaskDetailModal({ task, onClose }) {
     setConfirmType(null);
   };
 
+  /* ---------------- UPDATE TASK ---------------- */
+
   const handleUpdateTask = (formData) => {
+    if (!projectId) return;
+
     dispatch(
       updateTaskService(
         formData,
-        task.project,
+        projectId,
         task._id,
         token,
         setUpdateTaskModalOpen
@@ -118,13 +140,17 @@ export default function TaskDetailModal({ task, onClose }) {
     );
   };
 
+  /* ---------------- UPDATE ASSIGNEES ---------------- */
+
   const handleSaveAssignees = async () => {
+    if (!projectId) return;
+
     setIsSavingAssignees(true);
 
-    dispatch(
+    await dispatch(
       updateAssigneesTaskService(
         selectedAssignees,
-        task.project,
+        projectId,
         task._id,
         token
       )
@@ -135,27 +161,32 @@ export default function TaskDetailModal({ task, onClose }) {
     setIsSavingAssignees(false);
   };
 
+  /* ---------------- LOADING ---------------- */
+
   if (subtaskLoading) {
     return (
       <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter" />
-        <div className="relative text-sm text-gray-400 modal-content-enter">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="relative text-sm text-gray-400">
           Loading subtasks...
         </div>
       </div>
     );
   }
 
+  /* ---------------- UI ---------------- */
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* MODAL */}
-      <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden modal-content-enter">
+      <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
+        
         {/* LEFT */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <TaskHeader
@@ -174,7 +205,7 @@ export default function TaskDetailModal({ task, onClose }) {
         <div className="w-full md:w-80 border-t md:border-t-0 md:border-l bg-gray-50 p-4 sm:p-6">
           <TaskAssignees
             assignees={assignees}
-            projectMembers={projectMembers}
+            projectMembers={project?.data?.projectMembers || []}
             isAssignMode={isAssignMode}
             setIsAssignMode={setIsAssignMode}
             selectedAssignees={selectedAssignees}
@@ -185,12 +216,13 @@ export default function TaskDetailModal({ task, onClose }) {
 
           <TaskActivity
             activities={
-              allTaskActivity.list || ["Task created", "Assignees updated"]
+              allTaskActivity?.list || []
             }
           />
         </div>
       </div>
 
+      {/* EDIT TASK MODAL */}
       <CreateTaskModal
         isOpen={updateTaskModalOpen}
         onClose={setUpdateTaskModalOpen}
