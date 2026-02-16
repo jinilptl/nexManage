@@ -181,7 +181,7 @@ const InviteMembers = () => {
           </div>
 
           <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-700">
-            💡 Tip: You can update member roles anytime from the Teams page.
+           Tip : You can update member span roles anytime from the Members Page.
           </div>
         </div>
       </div>
