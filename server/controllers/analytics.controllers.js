@@ -9,122 +9,57 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const userId = new mongoose.Types.ObjectId(req.user._id);
   const isAdmin = req.user.role === "admin" || req.user.role === "super_admin";
 
-  const userProjectIds = await Project.find({
-    status: "active",
+  const userProjects = await Project.find({
     "projectMembers.user": userId,
     "projectMembers.status": "active",
-  }).distinct("_id");
+  }).select("_id status projectName taskStatuses");
+
+  const allProjectIds = userProjects.map(p => p._id);
+  const activeProjectIds = userProjects
+    .filter(p => ["ACTIVE", "active"].includes(p.status))
+    .map(p => p._id);
 
   const baseTaskMatch = {
-    project: { $in: userProjectIds },
+    project: { $in: allProjectIds },
     ...(isAdmin ? {} : { assignees: userId }),
   };
 
   const now = new Date();
 
-  const projectsWithStatuses = await Project.find(
-    { taskStatuses: { $exists: true, $ne: [] } },
-    { taskStatuses: 1 },
-  ).lean();
-
-  let doneStatusIds = [];
-  let inProgressStatusIds = [];
-
-  projectsWithStatuses.forEach((project) => {
-    project.taskStatuses.forEach((status) => {
-      if (status.key === "done") {
-        doneStatusIds.push(status._id);
-      }
-
-      if (status.key === "in_progress") {
-        inProgressStatusIds.push(status._id);
-      }
+  // Helper function to get status IDs for specific keys across projects
+  const getStatusIdsByKey = (projects, keys) => {
+    let ids = [];
+    projects.forEach(p => {
+      p.taskStatuses?.forEach(s => {
+        if (keys.includes(s.key?.toLowerCase())) {
+          ids.push(s._id);
+        }
+      });
     });
-  });
+    return ids;
+  };
+
+  const doneStatusIds = getStatusIdsByKey(userProjects, ["done"]);
+  const inProgressStatusIds = getStatusIdsByKey(userProjects, ["in_progress"]);
 
   const totalTasks = await Task.countDocuments(baseTaskMatch);
 
-  const completedAgg = await Task.aggregate([
-    { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
-      },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
-    {
-      $match: {
-        $expr: {
-          $and: [
-            { $eq: ["$status", "$project.taskStatuses._id"] },
-            { $eq: ["$project.taskStatuses.label", "Done"] },
-          ],
-        },
-      },
-    },
-    { $count: "count" },
-  ]);
+  // Optimized completed tasks count
+  const completedTasks = doneStatusIds.length > 0
+    ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: doneStatusIds } })
+    : 0;
 
-  const completedTasks = completedAgg[0]?.count || 0;
+  // Optimized in progress tasks count
+  const inProgressTasks = inProgressStatusIds.length > 0
+    ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: inProgressStatusIds } })
+    : 0;
 
-  const inProgressAgg = await Task.aggregate([
-    { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
-      },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
-    {
-      $match: {
-        $expr: {
-          $and: [
-            { $eq: ["$status", "$project.taskStatuses._id"] },
-            { $eq: ["$project.taskStatuses.label", "In Progress"] },
-          ],
-        },
-      },
-    },
-    { $count: "count" },
-  ]);
-
-  const inProgressTasks = inProgressAgg[0]?.count || 0;
-
-  const overdueAgg = await Task.aggregate([
-    { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
-      },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
-    {
-      $match: {
-        $expr: {
-          $and: [
-            { $eq: ["$status", "$project.taskStatuses._id"] },
-            { $ne: ["$project.taskStatuses.label", "Done"] },
-          ],
-        },
-        dueDate: { $lt: now },
-      },
-    },
-    { $count: "count" },
-  ]);
-
-  const overdueTasks = overdueAgg[0]?.count || 0;
+  // Optimized overdue tasks count (not Done and due date passed)
+  const overdueTasks = await Task.countDocuments({
+    ...baseTaskMatch,
+    status: { $nin: doneStatusIds },
+    dueDate: { $lt: now }
+  });
 
   const completionRate =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
@@ -141,7 +76,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
 
   const priorityData = ["critical", "high", "medium", "low"].map((p) => ({
     name: p.charAt(0).toUpperCase() + p.slice(1),
-    count: priorityAgg.find((x) => x._id === p)?.count || 0,
+    count: priorityAgg.find((x) => x._id?.toLowerCase() === p)?.count || 0,
   }));
 
   const statusAgg = await Task.aggregate([
@@ -151,23 +86,23 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
         from: "projects",
         localField: "project",
         foreignField: "_id",
-        as: "project",
+        as: "projInfo",
       },
     },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
+    { $unwind: "$projInfo" },
+    { $unwind: "$projInfo.taskStatuses" },
     {
       $match: {
         $expr: {
-          $eq: ["$status", "$project.taskStatuses._id"],
+          $eq: ["$status", "$projInfo.taskStatuses._id"],
         },
       },
     },
     {
       $group: {
         _id: {
-          label: "$project.taskStatuses.label",
-          color: "$project.taskStatuses.color",
+          label: "$projInfo.taskStatuses.label",
+          color: "$projInfo.taskStatuses.color",
         },
         count: { $sum: 1 },
       },
@@ -177,29 +112,14 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const statusData = statusAgg.map((s) => ({
     name: s._id.label,
     value: s.count,
-    color: s._id.color || null,
+    color: s._id.color || "#3b82f6",
   }));
 
   const velocityAgg = await Task.aggregate([
     { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
-      },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
+    { $match: { status: { $in: doneStatusIds } } },
     {
       $match: {
-        $expr: {
-          $and: [
-            { $eq: ["$status", "$project.taskStatuses._id"] },
-            { $eq: ["$project.taskStatuses.label", "Done"] },
-          ],
-        },
         updatedAt: {
           $gte: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 7 * 12),
         },
@@ -220,36 +140,14 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   ]);
 
   const velocityData = velocityAgg.map((v) => ({
-    week: `Week ${v._id.week}`,
+    week: `W${v._id.week}`,
     completed: v.completed,
   }));
 
   const contributorsAgg = await Task.aggregate([
     { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
-      },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
-
-    {
-      $match: {
-        $expr: {
-          $and: [
-            { $eq: ["$status", "$project.taskStatuses._id"] },
-            { $eq: ["$project.taskStatuses.key", "done"] },
-          ],
-        },
-      },
-    },
-
+    { $match: { status: { $in: doneStatusIds } } },
     { $unwind: "$assignees" },
-
     {
       $group: {
         _id: "$assignees",
@@ -264,14 +162,13 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
         },
       },
     },
-
     { $sort: { tasksCompleted: -1 } },
     { $limit: 5 },
   ]);
 
   const contributors = await User.populate(contributorsAgg, {
     path: "_id",
-    select: "name email",
+    select: "name email avatar",
   });
 
   const formattedContributors = contributors
@@ -279,70 +176,35 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     .map((c) => ({
       id: c._id._id,
       name: c._id.name,
-      avatar: null,
+      avatar: c._id.avatar || null,
       tasksCompleted: c.tasksCompleted,
       comments: 0,
-      avgCompletionTime: Math.round(c.avgCompletionTime || 0),
+      avgCompletionTime: Math.max(0, Math.round(c.avgCompletionTime || 0)),
     }));
 
-  const projectStatsAgg = await Task.aggregate([
-    { $match: baseTaskMatch },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project",
-        foreignField: "_id",
-        as: "project",
+  const activeProjectsData = [];
+  for (const p of userProjects) {
+    if (p.status === "ARCHIVED") continue;
+
+    const doneStatusId = p.taskStatuses?.find(s => s.key === "done")?._id;
+    const projectTotalTasks = await Task.countDocuments({ project: p._id });
+    const projectDoneTasks = doneStatusId
+      ? await Task.countDocuments({ project: p._id, status: doneStatusId })
+      : 0;
+
+    const progress = projectTotalTasks === 0 ? 0 : Math.round((projectDoneTasks / projectTotalTasks) * 100);
+
+    activeProjectsData.push({
+      id: p._id,
+      name: p.projectName,
+      icon: "📁",
+      progress: progress,
+      stats: {
+        totalTasks: projectTotalTasks,
+        completedTasks: projectDoneTasks,
       },
-    },
-    { $unwind: "$project" },
-    { $unwind: "$project.taskStatuses" },
-
-    {
-      $match: {
-        $expr: {
-          $eq: ["$status", "$project.taskStatuses._id"],
-        },
-      },
-    },
-
-    {
-      $group: {
-        _id: {
-          projectId: "$project._id",
-          projectName: "$project.projectName",
-          statusKey: "$project.taskStatuses.key",
-        },
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-
-  const projectsMap = {};
-
-  projectStatsAgg.forEach((p) => {
-    const { projectId, projectName, statusKey } = p._id;
-
-    if (!projectsMap[projectId]) {
-      projectsMap[projectId] = {
-        id: projectId,
-        name: projectName,
-        icon: "📁",
-        stats: {
-          totalTasks: 0,
-          completedTasks: 0,
-        },
-      };
-    }
-
-    projectsMap[projectId].stats.totalTasks += p.count;
-
-    if (statusKey === "done") {
-      projectsMap[projectId].stats.completedTasks += p.count;
-    }
-  });
-
-  const activeProjects = Object.values(projectsMap);
+    });
+  }
 
   res.status(200).json(
     new ApiResponse(200, "Analytics fetched successfully", {
@@ -355,7 +217,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
       priorityData,
       velocityData,
       contributors: formattedContributors,
-      activeProjects,
+      activeProjects: activeProjectsData,
     }),
   );
 });

@@ -47,8 +47,44 @@ const {
   DELETE_SUBTASK,
 } = SUB_TASK_END_POINTS;
 
-const { ADD_TASK_ATTACHMENT, GET_TASK_ATTACHMENTS } = ATTACHMENT_END_POINTS;
+const {
+  ADD_TASK_ATTACHMENT,
+  GET_TASK_ATTACHMENTS,
+  DELETE_TASK_ATTACHMENT,
+} = ATTACHMENT_END_POINTS;
 const { GET_TASK_ACTIVITY } = ACTIVITY_END_POINTS;
+
+
+export const deleteTaskAttachmentService = (
+  projectId,
+  taskId,
+  attachmentId,
+  token
+) => {
+  return async (dispatch) => {
+    dispatch(setAttachmentLoading(true));
+    try {
+      const endpoint = DELETE_TASK_ATTACHMENT.replace(":projectId", projectId)
+        .replace(":taskId", taskId)
+        .replace(":attachmentId", attachmentId);
+
+      const response = await axiosInstance.delete(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        toast.success("Attachment deleted");
+        // We could also filter locally but refetching is safer for simple apps
+        dispatch(fetchTaskAttachmentsService(projectId, taskId, token));
+      }
+    } catch (error) {
+      toast.error(GenerateErrorMessage(error));
+    } finally {
+      dispatch(setAttachmentLoading(false));
+    }
+  };
+};
 
 function GenerateErrorMessage(error) {
   const message =
@@ -124,11 +160,11 @@ export const getAllTasksService = (projectId, token) => {
 
 
 
-export const getSingleTasksService = (projectId,taskId, token) => {
+export const getSingleTasksService = (projectId, taskId, token) => {
   return async (dispatch, getstate) => {
     dispatch(setLoading(true));
     try {
-      const endPoints = GET_TASK_DETAILS.replace(":projectId", projectId).replace(":taskId",taskId);
+      const endPoints = GET_TASK_DETAILS.replace(":projectId", projectId).replace(":taskId", taskId);
 
       const response = await axiosInstance.get(endPoints, {
         headers: {
@@ -513,12 +549,11 @@ export const addTaskAttachmentService = (
         projectId
       ).replace(":taskId", taskId);
 
-      console.log("form data---> ", formData);
 
       const response = await axiosInstance.post(endpoint, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          // Let Axios handle the Content-Type for FormData
         },
         withCredentials: true,
       });
@@ -574,30 +609,30 @@ export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
 
 // activity services
 
-export const fetchTaskActivityService = (taskId,projectId, token) => {
-  return async(dispatch)=>{
+export const fetchTaskActivityService = (taskId, projectId, token) => {
+  return async (dispatch) => {
 
     try {
-       const endPoints= GET_TASK_ACTIVITY.replace(":taskId",taskId).replace(":projectId",projectId)
+      const endPoints = GET_TASK_ACTIVITY.replace(":taskId", taskId).replace(":projectId", projectId)
 
-       const response= await axiosInstance.get(endPoints,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const response = await axiosInstance.get(endPoints, {
+        headers: {
+          Authorization: `Bearer ${token}`
         },
-        withCredentials:true
-       })
+        withCredentials: true
+      })
 
       //  console.log("response of get activity taask---> ",response);
 
-       if (response.data.success) {
+      if (response.data.success) {
         dispatch(setActivityLogs(response.data.data.logs))
-       }
-       
-      
+      }
+
+
     } catch (error) {
       console.log("error in fetch task activity --> ", GenerateErrorMessage(error));
 
-      toast.error(GenerateErrorMessage(error)||"Failed to fetch task activity");
+      toast.error(GenerateErrorMessage(error) || "Failed to fetch task activity");
     }
   }
 }

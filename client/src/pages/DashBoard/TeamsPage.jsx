@@ -42,7 +42,7 @@ export default function TeamsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [openTeamModal, setOpenTeamModal] = useState(false);
-
+  const [statusFilter, setStatusFilter] = useState("ACTIVE");
   const [openMenuId, setOpenMenuId] = useState(null);
 
   /* ---------------- SET DOCUMENT TITLE ---------------- */
@@ -53,9 +53,9 @@ export default function TeamsPage() {
   /* ---------------- FETCH ALL TEAMS ---------------- */
   useEffect(() => {
     if (token && role) {
-      dispatch(fetchTeamsService(token, role));
+      dispatch(fetchTeamsService(token, role, statusFilter));
     }
-  }, [token, role]);
+  }, [token, role, statusFilter]);
 
   useEffect(() => {
     setFilterTeams(list);
@@ -156,18 +156,31 @@ export default function TeamsPage() {
         )}
       </div>
 
-      {/* SEARCH BAR */}
+      {/* FILTERS */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-          <input
-            placeholder="Search teams..."
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+            <input
+              placeholder="Search teams..."
+              disabled={loading}
+              className={`w-full pl-10 pr-4 py-2 shadow-sm border border-gray-100 rounded-md 
+                focus:ring-2 ring-blue-500 outline-none
+                ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
             disabled={loading}
-            className={`w-full pl-10 pr-4 py-2 shadow-md rounded-md 
-              focus:ring-2 ring-blue-500 outline-none
-              ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
+            className="shadow-sm rounded-md px-3 py-2 text-sm w-full sm:w-48 cursor-pointer border border-gray-200 outline-none focus:ring-2 ring-blue-500"
+          >
+            <option value="ACTIVE">Active Teams</option>
+            <option value="ARCHIVED">Archived Teams</option>
+            <option value="ALL">All Teams</option>
+          </select>
         </div>
       </div>
 
@@ -274,7 +287,7 @@ export default function TeamsPage() {
                             onClick={() => {
                               if (!loading) {
                                 dispatch(
-                                  updateTeamStatusService(team._id, "ARCHIVED", token)
+                                  updateTeamStatusService(team._id, "ARCHIVED", token, statusFilter)
                                 );
                                 setOpenMenuId(null);
                               }
@@ -292,7 +305,7 @@ export default function TeamsPage() {
                             onClick={() => {
                               if (!loading) {
                                 dispatch(
-                                  updateTeamStatusService(team._id, "ACTIVE", token)
+                                  updateTeamStatusService(team._id, "ACTIVE", token, statusFilter)
                                 );
                                 setOpenMenuId(null);
                               }

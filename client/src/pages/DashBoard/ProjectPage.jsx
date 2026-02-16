@@ -36,7 +36,7 @@ export default function ProjectsPage() {
   const dispatch = useDispatch();
   // console.log("all project is --> ",projects);
   const [searchInput, setSearchInput] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ACTIVE");
   const [filterData, setFilterData] = useState([]);
 
   const handleFilter = (value) => {
@@ -132,7 +132,12 @@ export default function ProjectsPage() {
               onView={onViewhandler}
               onArchive={(proj) =>
                 dispatch(
-                  archiveProjectService(proj._id, "ARCHIVED", token, statusFilter)
+                  archiveProjectService(
+                    proj._id,
+                    proj.status,
+                    token,
+                    statusFilter
+                  )
                 )
               }
             />

@@ -29,37 +29,6 @@ export default function Dashboard() {
     dispatch(getDashboardData());
   }, [dispatch]);
 
-  const DashBoardCardData = [
-    {
-      heading: "Active Projects",
-      mainIcon: <FolderKanban className="h-4 w-4 text-blue-600" />,
-      data: data?.activeProjects || 0,
-      text: "+2 this month",
-      textColor: "text-green-600",
-    },
-
-    {
-      heading: isAdmin ? "Total Tasks Assigned" : "Tasks Assigned to Me",
-      mainIcon: <CheckCircle2 className="h-4 w-4 text-green-600" />,
-      data: data?.myTasksCount || 0,
-      text: "5 active tasks",
-      textColor: "text-gray-500",
-    },
-    {
-      heading: "Completed This Week",
-      mainIcon: <Clock className="h-4 w-4 text-purple-600" />,
-      data: data?.completedThisWeek || 0,
-      text: "Great progress!",
-      textColor: "text-gray-500",
-    },
-    {
-      heading: "Pending Reviews",
-      mainIcon: <AlertCircle className="h-4 w-4 text-orange-600" />,
-      data: data?.pendingReviews || 0,
-      text: "Needs attention",
-      textColor: "text-gray-500",
-    },
-  ];
 
   const tasks = [
     { label: "To Do", color: "bg-slate-500", count: data?.todoCount || 0 },
@@ -100,17 +69,61 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {DashBoardCardData.map((card, index) => (
-          <DashboardHearderCard
-            heading={card.heading}
-            mainIcon={card.mainIcon}
-            data={card.data}
-            text={card.text}
-            textColor={card.textColor}
-            key={index}
-          />
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <DashboardHearderCard
+          heading="Total Projects"
+          mainIcon={<FolderKanban className="h-4 w-4 text-blue-600" />}
+          data={data?.totalProjects || 0}
+          text={`${data?.activeProjectsCount || 0} Active, ${data?.completedProjectsCount || 0} Done`}
+          textColor="text-blue-600"
+        />
+        <DashboardHearderCard
+          heading="Total Teams"
+          mainIcon={<Users className="h-4 w-4 text-purple-600" />}
+          data={data?.totalTeams || 0}
+          text="Active collaborations"
+          textColor="text-purple-600"
+        />
+        <DashboardHearderCard
+          heading={isAdmin ? "Total Tasks" : "My Tasks"}
+          mainIcon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          data={data?.totalTasksCount || 0}
+          text={`${data?.completedThisWeek || 0} completed this week`}
+          textColor="text-green-600"
+        />
+        <DashboardHearderCard
+          heading="Action Required"
+          mainIcon={<AlertCircle className="h-4 w-4 text-orange-600" />}
+          data={(data?.pendingReviews || 0) + (data?.upcomingDeadlines?.length || 0)}
+          text={`${data?.pendingReviews || 0} reviews pending`}
+          textColor="text-orange-600"
+        />
+      </div>
+
+      {/* Project Status Breakdown */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-blue-600" />
+          Project Status Breakdown
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-1">
+            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">Active</p>
+            <p className="text-2xl font-bold text-blue-600">{data?.activeProjectsCount || 0}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">Completed</p>
+            <p className="text-2xl font-bold text-green-600">{data?.completedProjectsCount || 0}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">On Hold</p>
+            <p className="text-2xl font-bold text-yellow-600">{data?.onHoldProjectsCount || 0}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">Archived</p>
+            <p className="text-2xl font-bold text-gray-400">{data?.archivedProjectsCount || 0}</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -159,7 +172,7 @@ export default function Dashboard() {
                     <span className="font-medium">{a.updatedBy?.name}</span>{" "}
                     <span className="text-gray-600">
                       {new Date(a.createdAt).getTime() ===
-                      new Date(a.updatedAt).getTime()
+                        new Date(a.updatedAt).getTime()
                         ? "created task"
                         : "updated task"}
                     </span>{" "}
@@ -199,9 +212,8 @@ export default function Dashboard() {
             return (
               <div
                 key={i}
-                className={`p-3 rounded-lg mb-2 ${
-                  isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
-                }`}
+                className={`p-3 rounded-lg mb-2 ${isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                  }`}
               >
                 <div className="flex justify-between items-start">
                   <div>

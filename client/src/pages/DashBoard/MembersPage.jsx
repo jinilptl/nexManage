@@ -118,7 +118,7 @@ export default function Members() {
       {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-blue-200 border-b">
+          <thead className="bg-blue-600 border-b text-white">
             <tr>
               <th className="text-left p-4">Name</th>
               <th className="text-left p-4">Email</th>

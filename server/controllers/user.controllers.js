@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   await sendEmail({
     email,
-    subject: "You are invited to NexManage 🚀",
+    subject: "You are invited to NexManage",
     message,
   });
 

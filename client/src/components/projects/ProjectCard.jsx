@@ -15,10 +15,10 @@ export default function ProjectCard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
-  
+
   const UserRole = user.role;
-  const navigate=useNavigate()
-  const dispatch=useDispatch()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const handler = () => setMenuOpen(false);
@@ -26,16 +26,16 @@ export default function ProjectCard({
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  function ProjectDetails(){
+  function ProjectDetails() {
     dispatch(setSelectedProjectId(project._id))
     dispatch(setSelectedProjectData(project))
     navigate(`/dashboard/projects/task/${project._id}`)
-    
+
   }
 
   const membersCount = project.projectMembers?.length || 0;
 
- 
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-6 animate-pulse">
@@ -51,7 +51,7 @@ export default function ProjectCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer" onClick={()=>{
+    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer" onClick={() => {
       ProjectDetails()
     }}>
       <div className="p-6">
@@ -87,13 +87,21 @@ export default function ProjectCard({
 
                 {UserRole !== "member" && (
                   <button
-                    className="w-full flex items-center cursor-pointer justify-between px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
+                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${(project.status || "").toUpperCase() === "ARCHIVED"
+                        ? "text-green-600"
+                        : "text-yellow-600"
+                      } hover:bg-gray-100`}
                     onClick={() => {
-                      onArchive?.(project);
+                      const newStatus = (project.status || "").toUpperCase() === "ARCHIVED" ? "ACTIVE" : "ARCHIVED";
+                      onArchive?.({ ...project, status: newStatus });
                       setMenuOpen(false);
                     }}
                   >
-                    <span>Archive Project</span>
+                    <span>
+                      {(project.status || "").toUpperCase() === "ARCHIVED"
+                        ? "Activate Project"
+                        : "Archive Project"}
+                    </span>
                     {loading && <ButtonLoader />}
                   </button>
                 )}
@@ -122,17 +130,16 @@ export default function ProjectCard({
             </span>
 
             <span
-              className={`px-2 py-1 text-xs rounded-md ${
-                (project.status || "").toUpperCase() === "ACTIVE"
+              className={`px-2 py-1 text-xs rounded-md ${(project.status || "").toUpperCase() === "ACTIVE"
                   ? "bg-green-100 text-green-700"
                   : (project.status || "").toUpperCase() === "ON_HOLD"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : (project.status || "").toUpperCase() === "COMPLETED"
-                  ? "bg-blue-100 text-blue-700"
-                  : (project.status || "").toUpperCase() === "ARCHIVED"
-                  ? "bg-gray-200 text-gray-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
+                    ? "bg-yellow-100 text-yellow-700"
+                    : (project.status || "").toUpperCase() === "COMPLETED"
+                      ? "bg-blue-100 text-blue-700"
+                      : (project.status || "").toUpperCase() === "ARCHIVED"
+                        ? "bg-gray-200 text-gray-700"
+                        : "bg-gray-100 text-gray-700"
+                }`}
             >
               {{
                 ACTIVE: "Active",
@@ -149,7 +156,7 @@ export default function ProjectCard({
               <span className="font-semibold whitespace-nowrap">
                 {project.createdBy?.name
                   ? project.createdBy.name[0].toUpperCase() +
-                    project.createdBy.name.slice(1)
+                  project.createdBy.name.slice(1)
                   : "Unknown"}
               </span>
             </span>

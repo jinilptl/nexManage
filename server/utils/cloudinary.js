@@ -1,5 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config(); 
 
 // Cloudinary config
 cloudinary.config({
@@ -7,6 +10,12 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+console.log("ENV:", {
+  cloud: process.env.CLOUDINARY_CLOUD_NAME,
+  key: process.env.CLOUDINARY_API_KEY ? "exists" : "missing",
+  secret: process.env.CLOUDINARY_API_SECRET ? "exists" : "missing"
+});
+
 
 const uploadOnCloudinary = async (localFilePath, folder = "nexmanage") => {
   try {

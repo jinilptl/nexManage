@@ -61,22 +61,22 @@ const createProject = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized: User not found in request");
   }
 
-  // AUTO IMPORT TEAM MEMBERS
-
   let autoMembers = [];
 
   selectedTeams.forEach((team) => {
     team.members.forEach((member) => {
+
+      if (!member.user) return;
+
       autoMembers.push({
         user: member.user._id,
-        roleInProject: "contributor", // team roles do NOT map to project roles
+        roleInProject: "contributor",
         addedFromTeam: team._id,
         status: "active",
       });
     });
   });
 
-  // REMOVE DUPLICATE USERS
 
   const uniqueMembersMap = new Map();
 
@@ -145,12 +145,13 @@ const getAllProjects = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const filter = {};
 
-  if (status) {
-    const normalized = String(status).toUpperCase();
+  const normalized = status ? String(status).toUpperCase() : "ACTIVE";
+
+  if (normalized !== "ALL") {
     if (!PROJECT_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`
       );
     }
     filter.status = normalized;
@@ -184,12 +185,13 @@ const getUserProjects = asyncHandler(async (req, res) => {
     ],
   };
 
-  if (status) {
-    const normalized = String(status).toUpperCase();
+  const normalized = status ? String(status).toUpperCase() : "ACTIVE";
+
+  if (normalized !== "ALL") {
     if (!PROJECT_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`
       );
     }
     filter.status = normalized;
@@ -212,7 +214,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
   // console.log("route hit");
-  
+
 
   if (!projectId) {
     throw new ApiError(400, "Project ID is required");
@@ -426,7 +428,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
 
 const addProjectTaskStatus = async (req, res) => {
   console.log("req is hit this add status column route--->");
-  
+
   try {
     const { projectId } = req.params;
     const { key, label } = req.body;
@@ -455,7 +457,7 @@ const addProjectTaskStatus = async (req, res) => {
       key,
       label,
       order: nextOrder,
-      color:generateRandomHexColor(),
+      color: generateRandomHexColor(),
     };
 
     project.taskStatuses.push(newStatus);

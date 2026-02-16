@@ -1,11 +1,14 @@
 import { Paperclip, Trash2, Download } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTaskAttachmentService } from "../../../services/taskOperations/taskServices";
+import {
+  addTaskAttachmentService,
+  deleteTaskAttachmentService,
+} from "../../../services/taskOperations/taskServices";
 
 export default function TaskAttachments({ task }) {
   const dispatch = useDispatch();
   const token = useSelector((s) => s.auth.token);
-  
+
 
   const { data: attachments = [], loading } = useSelector(
     (s) => s.tasks.selectedTaskAttachments
@@ -19,16 +22,28 @@ export default function TaskAttachments({ task }) {
     formData.append("attachmentType", "file");
     formData.append("file", file);
 
-    dispatch(addTaskAttachmentService(task.project, task._id, formData, token));
+    // Get project ID safely
+    const projId = typeof task.project === "object" ? task.project._id : task.project;
+
+    dispatch(addTaskAttachmentService(projId, task._id, formData, token));
     e.target.value = null;
   };
-  
-  
-function handleDownload(att){
-  console.log(att);
-  
-  window.open(att.fileUrl,"_blank")
-}
+
+  const handleDelete = (attachmentId) => {
+    if (window.confirm("Are you sure you want to delete this attachment?")) {
+      const projId =
+        typeof task.project === "object"
+          ? task.project._id
+          : task.project;
+      dispatch(
+        deleteTaskAttachmentService(projId, task._id, attachmentId, token)
+      );
+    }
+  };
+
+  function handleDownload(att) {
+    window.open(att.fileUrl, "_blank");
+  }
 
   return (
     <section className="mt-6">
@@ -60,10 +75,16 @@ function handleDownload(att){
             <span className="truncate text-sm">{att.fileName}</span>
 
             <div className="flex gap-3">
-              <button className="cursor-pointer" onClick={() => handleDownload(att) }>
+              <button
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => handleDownload(att)}
+              >
                 <Download size={16} />
               </button>
-              <button className="cursor-pointer" onClick={() => console.log("delete ", att._id)}>
+              <button
+                className="cursor-pointer hover:text-red-600 transition-colors"
+                onClick={() => handleDelete(att._id)}
+              >
                 <Trash2 size={16} />
               </button>
             </div>

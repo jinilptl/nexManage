@@ -7,6 +7,7 @@ import sendEmail from "../utils/sendMail.js";
 import { team_member_added_email_template } from "../templates/team_member_added_email_template.js";
 import { Project } from "../models/project.models.js";
 import mongoose from "mongoose";
+
 const createNewTeam = asyncHandler(async (req, res) => {
   const { teamName, description } = req.body;
 
@@ -56,12 +57,13 @@ const getAllTeams = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const matchStage = {};
 
-  if (status) {
-    const normalized = String(status).toUpperCase();
+  const normalized = status ? String(status).toUpperCase() : "ACTIVE";
+
+  if (normalized !== "ALL") {
     if (!TEAM_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`
       );
     }
     matchStage.$or = [
@@ -111,12 +113,13 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
   const { status } = req.query;
 
   const matchStage = { "members.user": userId };
-  if (status) {
-    const normalized = String(status).toUpperCase();
+  const normalized = status ? String(status).toUpperCase() : "ACTIVE";
+
+  if (normalized !== "ALL") {
     if (!TEAM_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`
       );
     }
     matchStage.$or = [

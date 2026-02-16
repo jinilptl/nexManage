@@ -150,7 +150,7 @@ export const deleteTeamService = (teamId, token) => {
 
 //   UPDATE TEAM STATUS (e.g. archive)
 
-export const updateTeamStatusService = (teamId, status, token) => {
+export const updateTeamStatusService = (teamId, status, token, currentStatusFilter = "ACTIVE") => {
   return async (dispatch, getState) => {
     try {
       const normalized = String(status).toUpperCase();
@@ -168,7 +168,7 @@ export const updateTeamStatusService = (teamId, status, token) => {
         );
         dispatch(setSelectedTeamData(response.data.data));
         const role = getState().auth.user.role;
-        dispatch(fetchTeamsService(token, role));
+        dispatch(fetchTeamsService(token, role, currentStatusFilter));
       }
     } catch (error) {
       toast.error(

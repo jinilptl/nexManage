@@ -5,7 +5,7 @@ export const getDashboardData = createAsyncThunk(
   "dashboard/dashboard",
   async () => {
     const res = await fetchMainDashboard();
-    return res.message; 
+    return res.data;
   }
 );
 

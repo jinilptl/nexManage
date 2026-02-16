@@ -2,11 +2,11 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 
 const STATUS_OPTIONS = [
-  { value: "", label: "All statuses" },
   { value: "ACTIVE", label: "Active" },
   { value: "COMPLETED", label: "Completed" },
   { value: "ON_HOLD", label: "On Hold" },
   { value: "ARCHIVED", label: "Archived" },
+  { value: "ALL", label: "All Projects" },
 ];
 
 export default function ProjectFilters({ OnFilter, statusFilter, onStatusChange }) {

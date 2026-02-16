@@ -17,12 +17,23 @@ const fileUploadRouter = express.Router();
 
 fileUploadRouter.route("/attachments/:projectId/:taskId").post(
   verifyToken,
+  (req, res, next) => {
+    upload.single("file")(req, res, function (err) {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next();
+    });
+  },
   attachTaskToRequest,
   isProjectMember,
   isAssigneeOrProjectManager,
-  upload.single("file"), // only for uploading file
-  addTaskAttachment,
+  addTaskAttachment
 );
+
 
 fileUploadRouter
   .route("/attachments/:projectId/:taskId")

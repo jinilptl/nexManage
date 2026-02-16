@@ -12,7 +12,7 @@ import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 
 const addTaskAttachment = asyncHandler(async (req, res) => {
-  const { taskId } = req.params;
+  const { taskId, projectId } = req.params;
   const userId = req.user._id;
 
   const { attachmentType, fileUrl, fileName } = req.body;
@@ -26,6 +26,7 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
       req.file.path,
       `nexmanage/tasks/${taskId}/attachments`
     );
+    console.log("File path:", req.file.path);
 
     if (!uploadResult) {
       throw new ApiError(500, "File upload failed");
@@ -156,5 +157,5 @@ export {
   addTaskAttachment,
   getTaskAttachments,
   deleteTaskAttachment,
-  
+
 };
