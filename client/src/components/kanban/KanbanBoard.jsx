@@ -19,6 +19,7 @@ export default function KanbanBoard({
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
 
   const [tasks, setTasks] = useState([]);
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
@@ -36,19 +37,70 @@ export default function KanbanBoard({
     );
   }, [project]);
 
+  const canViewAllTasks = useMemo(() => {
+    if (!user) return false;
+    if (user.role === "super_admin" || user.role === "admin") return true;
+
+    const projectMembers = project?.data?.projectMembers || [];
+    const currentMember = projectMembers.find(
+      (m) => (m.user?._id || m.user) === user?._id,
+    );
+
+    return currentMember?.roleInProject === "project-manager";
+  }, [user, project]);
+
   const reorderTask = (columnId, taskId, fromIndex, toIndex) => {
+    let realToIndex = toIndex;
+
+    // If restricted view, map the visible index to the global index
+    if (!canViewAllTasks) {
+      const columnTasks = tasks.filter((t) => t.status === columnId);
+      const isVisible = (t) =>
+        t.assignees?.some((a) => (a._id || a) === user?._id);
+
+      const movedTaskIndex = columnTasks.findIndex((t) => t._id === taskId);
+      if (movedTaskIndex !== -1) {
+        const tempColumnTasks = [...columnTasks];
+        tempColumnTasks.splice(movedTaskIndex, 1); // Remove moving task
+        const currentVisibleTasks = tempColumnTasks.filter(isVisible);
+
+        if (toIndex >= currentVisibleTasks.length) {
+          if (currentVisibleTasks.length === 0) {
+            realToIndex = tempColumnTasks.length;
+          } else {
+            const lastVisibleTask =
+              currentVisibleTasks[currentVisibleTasks.length - 1];
+            const lastVisibleIndex = tempColumnTasks.findIndex(
+              (t) => t._id === lastVisibleTask._id,
+            );
+            realToIndex = lastVisibleIndex + 1;
+          }
+        } else {
+          const targetVisibleTask = currentVisibleTasks[toIndex];
+          realToIndex = tempColumnTasks.findIndex(
+            (t) => t._id === targetVisibleTask._id,
+          );
+        }
+      }
+    }
+
     setTasks((prev) => {
       const columnTasks = prev.filter((t) => t.status === columnId);
       const otherTasks = prev.filter((t) => t.status !== columnId);
 
+      const movedTaskIndex = columnTasks.findIndex((t) => t._id === taskId);
+      if (movedTaskIndex === -1) return prev;
+
       const updated = [...columnTasks];
-      const [moved] = updated.splice(fromIndex, 1);
-      updated.splice(toIndex, 0, moved);
+      const [moved] = updated.splice(movedTaskIndex, 1);
+      updated.splice(realToIndex, 0, moved);
 
       return [...otherTasks, ...updated];
     });
 
-    dispatch(updateTaskOrderService(project.data._id, taskId, toIndex, token));
+    dispatch(
+      updateTaskOrderService(project.data._id, taskId, realToIndex, token),
+    );
   };
 
   const moveTaskToColumn = (taskId, targetColumnId) => {
@@ -76,7 +128,14 @@ export default function KanbanBoard({
               <KanbanColumn
                 key={column._id}
                 column={column}
-                tasks={tasks.filter((t) => t.status === column._id)}
+                tasks={tasks.filter((t) => {
+                  const isStatus = t.status === column._id;
+                  if (!isStatus) return false;
+                  if (canViewAllTasks) return true;
+                  return t.assignees?.some(
+                    (a) => (a._id || a) === user?._id,
+                  );
+                })}
                 onMoveTaskToColumn={moveTaskToColumn}
                 onReorderTask={reorderTask}
                 onAddTask={onAddTask}

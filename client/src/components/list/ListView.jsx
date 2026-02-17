@@ -6,6 +6,7 @@ import ListRow from "./ListRow";
 export default function ListView({ tasks, onTaskClick, onMoveTask }) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [assigneeFilter, setAssigneeFilter] = useState("");
@@ -24,9 +25,29 @@ export default function ListView({ tasks, onTaskClick, onMoveTask }) {
     }, {});
   }, [statuses]);
 
+  const canViewAllTasks = useMemo(() => {
+    if (!user) return false;
+    if (user.role === "super_admin" || user.role === "admin") return true;
+
+    const projectMembers = project?.data?.projectMembers || [];
+    const currentMember = projectMembers.find(
+      (m) => (m.user?._id || m.user) === user?._id,
+    );
+
+    return currentMember?.roleInProject === "project-manager";
+  }, [user, project]);
+
   // Handle Filtering
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
+      // 0. Permission Check
+      if (!canViewAllTasks) {
+        const isAssigned = task.assignees?.some(
+          (a) => (a._id || a) === user?._id,
+        );
+        if (!isAssigned) return false;
+      }
+
       // 1. Status Filter
       if (statusFilter && task.status !== statusFilter) return false;
 
@@ -51,7 +72,15 @@ export default function ListView({ tasks, onTaskClick, onMoveTask }) {
 
       return true;
     });
-  }, [tasks, statusFilter, priorityFilter, assigneeFilter, searchQuery]);
+  }, [
+    tasks,
+    statusFilter,
+    priorityFilter,
+    assigneeFilter,
+    searchQuery,
+    canViewAllTasks,
+    user,
+  ]);
 
   const handleToggleSelectAll = () => {
     if (
