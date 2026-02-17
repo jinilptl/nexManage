@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ProjectModal from "./ProjectModal";
 import ProjectMemberModal from "./ProjectMemberModal";
+import AddTeamToProjectModal from "./AddTeamToProjectModal";
 
 import {
   activeProjectMemberService,
@@ -62,6 +63,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
   const [activatingFor, setActivatingFor] = useState(null);
 
   const [editModal, setEditModal] = useState(false);
+  const [addTeamModal, setAddTeamModal] = useState(false);
   const [addMemberModal, setAddMemberModal] = useState(false);
   const [memberModalMode, setMemberModalMode] = useState("add");
   const [editMemberModal, setEditMemberModal] = useState(false);
@@ -279,12 +281,12 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </button>
 
             <button
-              onClick={handleArchiveProject}
-              disabled={archiving}
-              className="px-3 py-1 text-sm bg-yellow-500 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-yellow-600 disabled:opacity-50"
+              onClick={() => setAddTeamModal(true)}
+              disabled={updatingProject}
+              className="px-3 py-1 text-sm bg-purple-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-purple-700 disabled:opacity-50"
             >
-              {archiving ? <ButtonLoader /> : <Archive className="w-4 h-4" />}
-              Archive
+              <Users className="w-4 h-4" />
+              Add Team
             </button>
 
             <button
@@ -343,7 +345,8 @@ export default function ViewProjectModal({ open, onClose, project }) {
             <div>
               <p className="text-xs text-gray-500 uppercase">Teams</p>
               <p className="text-sm text-gray-900">
-                {project.teams?.length || 0} Teams
+                {project.teams?.length || 0}{" "}
+                {project.teams?.length === 1 ? "Team" : "Teams"}
               </p>
             </div>
           </div>
@@ -423,11 +426,10 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       )}
 
                       <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          member.status === "active"
+                        className={`text-xs px-2 py-1 rounded ${member.status === "active"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {member.status}
                       </span>
@@ -451,6 +453,14 @@ export default function ViewProjectModal({ open, onClose, project }) {
       </div>
 
       {/* CHILD MODALS */}
+      {addTeamModal && (
+        <AddTeamToProjectModal
+          open={addTeamModal}
+          onClose={() => setAddTeamModal(false)}
+          project={project}
+        />
+      )}
+
       {editModal && (
         <ProjectModal
           open={editModal}
@@ -477,6 +487,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
           member={editMemberData}
         />
       )}
+
       <ConfirmModal
         open={confirmOpen}
         title={

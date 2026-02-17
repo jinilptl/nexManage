@@ -140,11 +140,10 @@ export default function TeamDetailModal({ open, onClose }) {
         {/* STATUS */}
         <div className="mt-3">
           <span
-            className={`px-3 py-1 text-xs rounded-md ${
-              team?.isActive
+            className={`px-3 py-1 text-xs rounded-md ${team?.isActive
                 ? "bg-green-100 text-green-700"
                 : "bg-gray-200 text-gray-700"
-            }`}
+              }`}
           >
             {team?.isActive ? "Active" : "Inactive"}
           </span>
@@ -165,11 +164,6 @@ export default function TeamDetailModal({ open, onClose }) {
             >
               {updating ? <ButtonLoader /> : <Edit className="w-4 h-4" />}
               {updating ? "Updating..." : "Edit"}
-            </button>
-
-            {/* Archive */}
-            <button className="px-3 py-1 text-sm bg-yellow-500 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-yellow-600">
-              <Archive className="w-4 h-4" /> Archive
             </button>
 
             {/* Delete */}

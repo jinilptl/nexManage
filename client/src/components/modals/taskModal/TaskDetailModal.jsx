@@ -181,7 +181,7 @@ export default function TaskDetailModal({ task, onClose }) {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end items-stretch overflow-hidden">
+    <div className="fixed inset-0 z-100 flex justify-end items-stretch overflow-hidden">
       {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"

@@ -4,6 +4,7 @@ import {
   addTeamMemberService,
   updateTeamMemberService,
 } from "../../../services/teamsOperations/teamsServices";
+import { fetchAllUsers } from "../../../services/usersOperations/usersServices";
 import ButtonLoader from "../../Lodders/ButtonLoader";
 
 export default function MemberModal({
@@ -13,22 +14,24 @@ export default function MemberModal({
   member,
   setMember,
 }) {
-  if (!open) return null;
-
   const dispatch = useDispatch();
 
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
-  if (!selectedTeamId) {
-    alert("Team not selected");
-    return;
-  }
-
   const token = useSelector((state) => state.auth.token);
 
   const adding = useSelector((state) => state.teams.actions.addingMember);
   const updating = useSelector((state) => state.teams.actions.updatingMember);
 
+  const allUsers = useSelector((state) => state.users.list);
+  const teamMembers = useSelector((state) => state.teams.teamMembers.list);
+
   const loading = mode === "add" ? adding : updating;
+
+  useEffect(() => {
+    if (mode === "add" && (!allUsers || allUsers.length === 0) && open) {
+      dispatch(fetchAllUsers(token));
+    }
+  }, [mode, allUsers, dispatch, token, open]);
 
   const [inputValue, setInputValue] = useState({
     email: "",
@@ -39,6 +42,7 @@ export default function MemberModal({
   useEffect(() => {
     if (mode === "update" && member) {
       setInputValue({
+        email: member.user?.email || "",
         roleInTeam: member.roleInTeam,
         status: member.status,
       });
@@ -81,6 +85,17 @@ export default function MemberModal({
     }
   }, [open]);
 
+  if (!open) return null;
+
+  if (!selectedTeamId) {
+    // Should generally be checked before opening modal, but safegaurd here
+    return null;
+  }
+
+  const availableUsers = allUsers?.filter((u) =>
+    !teamMembers.some((tm) => tm.user?._id === u._id)
+  ) || [];
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
@@ -100,9 +115,8 @@ export default function MemberModal({
           <button
             disabled={loading}
             onClick={() => !loading && onClose(false)}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${
-              loading && "opacity-40 cursor-not-allowed"
-            }`}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${loading && "opacity-40 cursor-not-allowed"
+              }`}
           >
             <svg
               className="w-5 h-5 text-gray-600"
@@ -124,18 +138,22 @@ export default function MemberModal({
         <form className="space-y-4" onSubmit={handleSubmit}>
           {mode === "add" && (
             <div>
-              <label className="text-sm text-gray-600">Member Email</label>
-              <input
-                type="email"
+              <label className="text-sm text-gray-600">Select Member</label>
+              <select
+                name="email"
                 value={inputValue.email}
                 onChange={handleChange}
-                name="email"
-                placeholder="Enter member email"
-                required
                 disabled={loading}
-                className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md focus:ring-2 ring-blue-500 outline-none 
+                className={`w-full mt-1 px-3 py-2 bg-gray-200 rounded-md outline-none cursor-pointer
                   ${loading && "opacity-50 cursor-not-allowed"}`}
-              />
+              >
+                <option value="">Select a user...</option>
+                {availableUsers.map((user) => (
+                  <option key={user._id} value={user.email}>
+                    {user.name} ({user.email})
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -192,7 +210,10 @@ export default function MemberModal({
               type="submit"
               disabled={loading}
               className={`px-4 py-2 text-sm font-medium cursor-pointer rounded-lg text-white flex items-center gap-2 transition-colors
-                ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                ${loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+                }`}
             >
               {loading ? (
                 <>

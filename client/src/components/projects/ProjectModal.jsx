@@ -95,9 +95,8 @@ export default function ProjectModal({
         <button
           onClick={onClose}
           disabled={isBusy}
-          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${
-            isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
-          }`}
+          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
+            }`}
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
@@ -107,77 +106,97 @@ export default function ProjectModal({
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            disabled={isBusy}
-            type="text"
-            name="projectName"
-            required
-            value={formData.projectName}
-            onChange={(e) =>
-              setFormData({ ...formData, projectName: e.target.value })
-            }
-            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
-            placeholder="Project Name"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Project Name
+            </label>
+            <input
+              disabled={isBusy}
+              type="text"
+              name="projectName"
+              required
+              value={formData.projectName}
+              onChange={(e) =>
+                setFormData({ ...formData, projectName: e.target.value })
+              }
+              className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
+              placeholder="Enter project name"
+            />
+          </div>
 
-          <textarea
-            disabled={isBusy}
-            name="description"
-            rows={3}
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
-            placeholder="Short description..."
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              disabled={isBusy}
+              name="description"
+              rows={3}
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
+              placeholder="Short description..."
+            />
+          </div>
 
-          <select
-            disabled={isBusy}
-            value={formData.projectType}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                projectType: e.target.value,
-                teams: e.target.value === "personal" ? [] : formData.teams,
-              })
-            }
-            className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
-          >
-            <option value="team">Team Project</option>
-            <option value="personal">Personal Project</option>
-            <option value="mixed">Mixed Project</option>
-          </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Project Type
+            </label>
+            <select
+              disabled={isBusy}
+              value={formData.projectType}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  projectType: e.target.value,
+                  teams: e.target.value === "personal" ? [] : formData.teams,
+                })
+              }
+              className="w-full bg-gray-200 focus:outline-none rounded-md px-3 py-2"
+            >
+              <option value="team">Team Project</option>
+              <option value="personal">Personal Project</option>
+              <option value="mixed">Mixed Project</option>
+            </select>
+          </div>
 
           {/* TEAM CHECKBOXES */}
           {formData.projectType !== "personal" && (
-            <div className="bg-gray-200 focus:outline-none rounded-md p-3 max-h-32 overflow-y-auto">
-              {teamsList.length === 0 && (
-                <p className="text-sm text-gray-500">No teams found</p>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Teams
+              </label>
+              <div className="bg-gray-200 focus:outline-none rounded-md p-3 max-h-32 overflow-y-auto">
+                {teamsList.length === 0 && (
+                  <p className="text-sm text-gray-500">No teams found</p>
+                )}
 
-              {teamsList.map((team) => (
-                <label key={team._id} className="flex items-center gap-2">
-                  <input
-                    disabled={isBusy}
-                    type="checkbox"
-                    checked={formData.teams.includes(team._id)}
-                    onChange={() => {
-                      setFormData((prev) => {
-                        const exists = prev.teams.includes(team._id);
-                        return {
-                          ...prev,
-                          teams: exists
-                            ? prev.teams.filter((id) => id !== team._id)
-                            : [...prev.teams, team._id],
-                        };
-                      });
-                    }}
-                  />
+                {teamsList.map((team) => (
+                  <label key={team._id} className="flex items-center gap-2 mb-1">
+                    <input
+                      disabled={isBusy}
+                      type="checkbox"
+                      checked={formData.teams.includes(team._id)}
+                      onChange={() => {
+                        setFormData((prev) => {
+                          const exists = prev.teams.includes(team._id);
+                          return {
+                            ...prev,
+                            teams: exists
+                              ? prev.teams.filter((id) => id !== team._id)
+                              : [...prev.teams, team._id],
+                          };
+                        });
+                      }}
+                    />
 
-                  {team.teamName}
-                </label>
-              ))}
+                    {team.teamName}
+                  </label>
+                ))}
+              </div>
             </div>
           )}
 

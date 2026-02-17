@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { X, Mail, UserCog } from "lucide-react";
+import { X, UserCog } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import ButtonLoader from "../Lodders/ButtonLoader";
+import { fetchAllUsers } from "../../services/usersOperations/usersServices";
 
 import {
   addProjectMemberService,
@@ -24,6 +25,11 @@ export default function ProjectMemberModal({
     (state) => state.projects.actions.updatingMember,
   );
 
+  const allUsers = useSelector((state) => state.users.list);
+  const projectMembers = useSelector(
+    (state) => state.projects.projectMembers.list,
+  );
+
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("contributor");
 
@@ -36,6 +42,17 @@ export default function ProjectMemberModal({
       setRole("contributor");
     }
   }, [mode, member]);
+
+  useEffect(() => {
+    if (mode === "add" && (!allUsers || allUsers.length === 0)) {
+      dispatch(fetchAllUsers(token));
+    }
+  }, [mode, allUsers, dispatch, token]);
+
+  const availableUsers =
+    allUsers?.filter(
+      (u) => !projectMembers.some((pm) => pm.user?._id === u._id)
+    ) || [];
 
   if (!open) return null;
 
@@ -51,7 +68,7 @@ export default function ProjectMemberModal({
 
   const handleSubmit = () => {
     if (mode === "add") {
-      if (!email.trim()) return toast.error("Please enter email");
+      if (!email.trim()) return toast.error("Please select a user");
 
       dispatch(
         addProjectMemberService(
@@ -75,14 +92,6 @@ export default function ProjectMemberModal({
   };
 
   const isBusy = adding || updating;
-
-  // Prevent body scroll when modal is open
-  React.useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
@@ -111,17 +120,21 @@ export default function ProjectMemberModal({
         <div className="space-y-5">
           {mode === "add" && (
             <div>
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">Select Member</label>
               <div className="relative mt-1">
-                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
+                <select
                   disabled={isBusy}
-                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email"
-                  className="w-full pl-10 pr-3 py-2 bg-gray-200 rounded-md text-sm outline-none"
-                />
+                  className="w-full px-3 py-2 bg-gray-200 rounded-md text-sm outline-none cursor-pointer"
+                >
+                  <option value="">Select a user...</option>
+                  {availableUsers.map((user) => (
+                    <option key={user._id} value={user.email}>
+                      {user.name} ({user.email})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           )}
@@ -133,7 +146,7 @@ export default function ProjectMemberModal({
               <input
                 disabled
                 value={email}
-                className="w-full pl-3 pr-3 py-2 bg-gray-200 rounded-md text-sm cursor-not-allowed outline-none"
+                className="w-full px-3 py-2 bg-gray-200 rounded-md text-sm cursor-not-allowed outline-none"
               />
             </div>
           )}
