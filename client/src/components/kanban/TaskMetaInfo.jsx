@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const TaskMetaInfo = ({ attachments, comments }) => (
   <div className="flex items-center gap-3">
@@ -17,5 +17,4 @@ const TaskMetaInfo = ({ attachments, comments }) => (
   </div>
 );
 
-
-export default TaskMetaInfo
+export default TaskMetaInfo;

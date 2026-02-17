@@ -140,7 +140,6 @@ const HomePage = () => {
       {/* Right Side Login */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md shadow-xl bg-white rounded-xl p-6 space-y-6">
-          {/* Logo on mobile */}
           <div className="flex justify-center mb-4 lg:hidden">
             <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
               <FolderKanban className="w-7 h-7 text-white" />
@@ -224,7 +223,9 @@ const HomePage = () => {
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <label htmlFor="remember-me" className="cursor-pointer">Remember me</label>
+              <label htmlFor="remember-me" className="cursor-pointer">
+                Remember me
+              </label>
             </div>
 
             {/* Button */}

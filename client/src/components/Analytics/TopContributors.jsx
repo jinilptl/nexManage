@@ -28,7 +28,9 @@ export default function TopContributors({ contributors }) {
               </div>
 
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {c.name}
+                </p>
                 <p className="text-xs text-gray-500">
                   {c.tasksCompleted} tasks
                 </p>
@@ -36,7 +38,9 @@ export default function TopContributors({ contributors }) {
             </div>
 
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{c.avgCompletionTime} days</p>
+              <p className="text-sm font-medium text-gray-900">
+                {c.avgCompletionTime} days
+              </p>
               <p className="text-xs text-gray-500">avg. time</p>
             </div>
           </div>

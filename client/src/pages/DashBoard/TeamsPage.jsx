@@ -19,7 +19,6 @@ import {
 } from "../../services/teamsOperations/teamsServices";
 import { setSelectedTeamId } from "../../Redux_Config/Slices/teamsSlice";
 
-// Loaders
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
 import ButtonLoader from "../../components/Lodders/ButtonLoader";
 import ModalSmallLoader from "../../components/Lodders/ModalSmallLoader";
@@ -120,13 +119,13 @@ export default function TeamsPage() {
 
   return (
     <div
-      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
-        }`}
+      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
+        openTeamModal && "overflow-y-hidden"
+      }`}
     >
       {/* MAIN PAGE LOADER */}
       {loading && <NexManageLoader />}
 
-      {/* VIEW TEAM LOADER */}
       {(teamLoading || membersLoading) && (
         <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
           <ModalSmallLoader />
@@ -145,10 +144,11 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
-             ${loading
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
+             ${
+               loading
+                 ? "bg-blue-300 cursor-not-allowed"
+                 : "bg-blue-600 hover:bg-blue-700 text-white"
+             }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -184,7 +184,6 @@ export default function TeamsPage() {
         </div>
       </div>
 
-      {/* EMPTY STATE */}
       {filterTeams.length === 0 && (
         <div className="bg-white rounded-lg shadow-md py-16 text-center">
           <div className="max-w-md mx-auto">
@@ -206,9 +205,10 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-700"
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-blue-700"
                     }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
@@ -220,7 +220,6 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {/* TEAMS GRID */}
       {filterTeams.length > 0 && (
         <div className="grid md:mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filterTeams.map((team) => (
@@ -230,23 +229,22 @@ export default function TeamsPage() {
                 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               <div className="p-6">
-                {/* TOP ROW */}
                 <div className="flex items-start justify-between">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <UsersIcon className="w-6 h-6 text-blue-600" />
                   </div>
 
-                  {/* MENU BUTTON */}
                   <div
                     className="relative"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
                       disabled={loading}
-                      className={`p-1 rounded-md ${loading
-                        ? "opacity-40 cursor-not-allowed"
-                        : "hover:bg-gray-100"
-                        }`}
+                      className={`p-1 rounded-md ${
+                        loading
+                          ? "opacity-40 cursor-not-allowed"
+                          : "hover:bg-gray-100"
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!loading)
@@ -258,7 +256,6 @@ export default function TeamsPage() {
                       <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
                     </button>
 
-                    {/* DROPDOWN */}
                     {openMenuId === team._id && !loading && (
                       <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg z-50 animate-fadeIn">
                         <button
@@ -280,14 +277,18 @@ export default function TeamsPage() {
 
                         <div className="border-t"></div>
 
-                        {/* Archive Team Button - only show if team is ACTIVE */}
                         {(team.status || "").toUpperCase() !== "ARCHIVED" && (
                           <button
                             disabled={loading}
                             onClick={() => {
                               if (!loading) {
                                 dispatch(
-                                  updateTeamStatusService(team._id, "ARCHIVED", token, statusFilter)
+                                  updateTeamStatusService(
+                                    team._id,
+                                    "ARCHIVED",
+                                    token,
+                                    statusFilter,
+                                  ),
                                 );
                                 setOpenMenuId(null);
                               }
@@ -298,14 +299,18 @@ export default function TeamsPage() {
                           </button>
                         )}
 
-                        {/* Activate Team Button - only show if team is ARCHIVED */}
                         {(team.status || "").toUpperCase() === "ARCHIVED" && (
                           <button
                             disabled={loading}
                             onClick={() => {
                               if (!loading) {
                                 dispatch(
-                                  updateTeamStatusService(team._id, "ACTIVE", token, statusFilter)
+                                  updateTeamStatusService(
+                                    team._id,
+                                    "ACTIVE",
+                                    token,
+                                    statusFilter,
+                                  ),
                                 );
                                 setOpenMenuId(null);
                               }
@@ -320,13 +325,11 @@ export default function TeamsPage() {
                   </div>
                 </div>
 
-                {/* TEAM NAME */}
                 <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                   {team.description}
                 </p>
 
-                {/* STATS */}
                 <div className="mt-6 space-y-4">
                   <div>
                     <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">
@@ -334,7 +337,9 @@ export default function TeamsPage() {
                     </p>
                     {findTeamLeadName(team) ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-200 rounded-full text-blue-500 text-center">{findTeamLeadName(team)?.charAt(0)}</div>
+                        <div className="w-6 h-6 bg-gray-200 rounded-full text-blue-500 text-center">
+                          {findTeamLeadName(team)?.charAt(0)}
+                        </div>
                         <span className="text-sm text-gray-900">
                           {findTeamLeadName(team)}
                         </span>
@@ -361,10 +366,11 @@ export default function TeamsPage() {
                   {/* FOOTER */}
                   <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
                     <span
-                      className={`px-2 py-1 text-xs rounded-md ${(team.status || "").toUpperCase() === "ARCHIVED"
-                        ? "bg-gray-200 text-gray-700"
-                        : "bg-green-100 text-green-700"
-                        }`}
+                      className={`px-2 py-1 text-xs rounded-md ${
+                        (team.status || "").toUpperCase() === "ARCHIVED"
+                          ? "bg-gray-200 text-gray-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
                     >
                       {(team.status || "").toUpperCase() === "ARCHIVED"
                         ? "Archived"

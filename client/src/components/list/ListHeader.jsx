@@ -12,8 +12,8 @@ export default function ListHeader({
   setSearchQuery,
   allSelected,
   onToggleSelectAll,
-  projectMembers = [], // Add projectMembers for assignee filter dropdown
-  statuses = [], // Add statuses prop
+  projectMembers = [],
+  statuses = [],
 }) {
   return (
     <div className="bg-white sticky top-0 z-10 border-b border-gray-200 shadow-sm">

@@ -21,7 +21,6 @@ import NexManageLoader from "../../components/Lodders/NexManageLoader";
 export default function ProjectsPage() {
   const [showModal, setShowModal] = useState(false);
   const [viewModal, setViewModal] = useState(false);
-  // const [selectedProject, setSelectedProject] = useState(null);
 
   const { list } = useSelector((state) => state.teams);
   const { token, user } = useSelector((state) => state.auth);
@@ -29,12 +28,11 @@ export default function ProjectsPage() {
   const { selectedProject } = useSelector((state) => state.projects);
   const projectsLoading = useSelector((state) => state.projects.loading);
   const loadingProject = useSelector(
-    (state) => state.projects.selectedProject.loading
+    (state) => state.projects.selectedProject.loading,
   );
   const UserRole = user.role;
   const projects = UserRole !== "member" ? allProjects : myProjects;
   const dispatch = useDispatch();
-  // console.log("all project is --> ",projects);
   const [searchInput, setSearchInput] = useState("");
   const [statusFilter, setStatusFilter] = useState("ACTIVE");
   const [filterData, setFilterData] = useState([]);
@@ -61,7 +59,7 @@ export default function ProjectsPage() {
       return;
     }
     const filtered = projects.filter((project) =>
-      project.projectName.toLowerCase().includes(searchInput.toLowerCase())
+      project.projectName.toLowerCase().includes(searchInput.toLowerCase()),
     );
     setFilterData(filtered);
   }, [searchInput, projects]);
@@ -74,27 +72,22 @@ export default function ProjectsPage() {
   }, [token, user, statusFilter]);
 
   const onViewhandler = (project) => {
-    // setSelectedProject(project);
-
     dispatch(setSelectedProjectId(project._id));
     dispatch(setSelectedProjectLoading(true));
     dispatch(fetchSingleProjectService(project._id, token));
     setViewModal(true);
   };
-  // console.log("selected projjetc ===> ",selectedProject);
-
 
   if (projectsLoading) {
     return (
       <div className=" flex justify-center items-center h-[70vh]">
         <NexManageLoader />
       </div>
-    )
+    );
   }
 
   return (
     <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-gray-900 text-2xl font-bold">Projects</h1>
@@ -113,7 +106,6 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      {/* Filters */}
       <ProjectFilters
         searchInput={searchInput}
         OnFilter={handleFilter}
@@ -121,7 +113,6 @@ export default function ProjectsPage() {
         onStatusChange={handleStatusChange}
       />
 
-      {/* Project Cards */}
       {filterData.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filterData.map((project) => (
@@ -136,8 +127,8 @@ export default function ProjectsPage() {
                     proj._id,
                     proj.status,
                     token,
-                    statusFilter
-                  )
+                    statusFilter,
+                  ),
                 )
               }
             />
@@ -149,12 +140,14 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {showModal && (<ProjectModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        mode="create"
-        teamsList={list}
-      />)}
+      {showModal && (
+        <ProjectModal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          mode="create"
+          teamsList={list}
+        />
+      )}
 
       <ViewProjectModal
         open={viewModal}

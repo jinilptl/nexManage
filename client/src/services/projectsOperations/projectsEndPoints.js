@@ -6,7 +6,7 @@ const PROJECTS_END_POINTS = {
   UPDATE_PROJECT: "/v1/project/update-project",
   DELETE_PROJECT: "/v1/project/delete-project",
   UPDATE_PROJECT_STATUS: "/v1/project/update-project-status",
-  PATCH_PROJECT_STATUS: "/v1/project", // PATCH /v1/project/:projectId/status
+  PATCH_PROJECT_STATUS: "/v1/project",
   ADD_TASK_STATUSES: "/v1/project/:projectId/status",
 
   ADD_PROJECT_MEMBER: "/v1/project/add-members",

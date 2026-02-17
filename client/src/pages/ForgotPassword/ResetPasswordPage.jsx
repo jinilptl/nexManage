@@ -51,7 +51,6 @@ export default function ResetPasswordPage() {
 
         {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* New Password */}
           <div>
             <label className="text-sm font-medium block mb-1">
               New Password
@@ -114,8 +113,9 @@ export default function ResetPasswordPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
-              }`}
+            className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${
+              loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+            }`}
             disabled={loading}
           >
             {loading ? "Resetting..." : "Reset Password"}

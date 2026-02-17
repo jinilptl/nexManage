@@ -28,9 +28,7 @@ export default function StatusPieChart({ statusData }) {
               dataKey="value"
             >
               {statusData.map((entry, index) => {
-                const fillColor =
-                  STATUS_COLORS[entry.name] || 
-                  entry.color  
+                const fillColor = STATUS_COLORS[entry.name] || entry.color;
 
                 return <Cell key={index} fill={fillColor} />;
               })}

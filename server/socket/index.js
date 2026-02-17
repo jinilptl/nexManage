@@ -21,15 +21,12 @@ const initSocket = (httpServer) => {
 
     socket.emit("server-message", "Hello from server 👋");
 
-    // Receive message from client
     socket.on("client-message", (data) => {
-      console.log("client message-->", data);
     });
 
     registerRoomHandlers(io, socket);
 
     socket.on("disconnect", () => {
-      console.log("Socket disconnected:", socket.id);
     });
   });
 

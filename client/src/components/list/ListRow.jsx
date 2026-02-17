@@ -1,9 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  MoreHorizontal,
-  Calendar, Check
-} from "lucide-react";
+import { MoreHorizontal, Calendar, Check } from "lucide-react";
 import TaskPriorityBadge from "../kanban/TaskPriorityBadge";
 import TaskDetailModal from "../modals/taskModal/TaskDetailModal";
 import { formatDueDate } from "../../utils/formatDueDate";
@@ -35,9 +32,6 @@ export default function ListRow({
   );
   const isOverdue = task.isOverdue;
 
-  // Debug logs (check console)
-  // console.log("ListRow props:", { task, statuses, projectId, token });
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (actionsRef.current && !actionsRef.current.contains(event.target)) {
@@ -49,10 +43,9 @@ export default function ListRow({
   }, []);
 
   const handleRowClick = (e) => {
-    // Prevent opening modal if clicking checkbox or action menu or dropdown items
     if (
       e.target.closest("input[type='checkbox']") ||
-      e.target.closest(".actions-container") || // Use a common class for the whole actions area
+      e.target.closest(".actions-container") ||
       e.target.closest("button")
     ) {
       return;
@@ -61,7 +54,6 @@ export default function ListRow({
     dispatch(setSelectedTaskId(task._id));
     dispatch(setSelectedTask(task));
   };
-
 
   const handleStatusChange = async (newStatusId) => {
     setShowActions(false); // Close immediately
@@ -91,14 +83,14 @@ export default function ListRow({
 
     if (projectId && token) {
       try {
-        await dispatch(updateTaskStatusService(projectId, task._id, newStatusId, token));
+        await dispatch(
+          updateTaskStatusService(projectId, task._id, newStatusId, token),
+        );
       } catch (error) {
         console.error("Failed to update status from list view", error);
-        // Revert local state if needed? For now, assume success or error toast handles it.
       }
     }
   };
-
 
   return (
     <>
@@ -181,7 +173,7 @@ export default function ListRow({
           {showActions && (
             <div
               className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden text-left"
-              onClick={(e) => e.stopPropagation()} // Prevent row click when clicking inside dropdown
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-200 border-b border-gray-100">
                 Change Status
@@ -195,13 +187,16 @@ export default function ListRow({
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-between group/item transition-colors"
                     >
                       <span>{status.label}</span>
-                      {task.status === status._id && <Check size={14} className="text-blue-600" />}
+                      {task.status === status._id && (
+                        <Check size={14} className="text-blue-600" />
+                      )}
                     </button>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-sm text-gray-400 italic">No statuses available</div>
+                  <div className="px-4 py-2 text-sm text-gray-400 italic">
+                    No statuses available
+                  </div>
                 )}
-
               </div>
             </div>
           )}

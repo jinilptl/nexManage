@@ -5,7 +5,7 @@ const TABS = ["board", "list"];
 
 export default function ProjectTabs({ activeTab, setActiveTab }) {
   return (
-    <div className="flex gap-6 bg-gray-200 rounded-full px-4 py-2 w-fit mb-8" >
+    <div className="flex gap-6 bg-gray-200 rounded-full px-4 py-2 w-fit mb-8">
       {TABS.map((tab) => (
         <button
           key={tab}

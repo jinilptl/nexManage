@@ -1,9 +1,14 @@
 import { X, Pencil, Trash2 } from "lucide-react";
 
-export default function TaskHeader({ task, canManage, onEdit, onDelete, onClose }) {
+export default function TaskHeader({
+  task,
+  canManage,
+  onEdit,
+  onDelete,
+  onClose,
+}) {
   return (
     <div className="mb-6 flex items-start justify-between gap-4">
-
       {/* LEFT SIDE */}
       <div className="flex-1 min-w-0">
         <h2 className="text-xl sm:text-3xl font-extrabold text-gray-900 truncate tracking-tight">

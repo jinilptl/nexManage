@@ -9,9 +9,9 @@ export default function DashboardPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const dispatch = useDispatch();
 
-    useEffect(() => {
-      document.title = "Dashboard | NexManage";
-    }, []);
+  useEffect(() => {
+    document.title = "Dashboard | NexManage";
+  }, []);
 
   const token =
     useSelector((state) => state.auth.token) ||
@@ -26,10 +26,13 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen w-full flex bg-gray-50 overflow-x-hidden">
-      {/* Skip to main content link */}
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-blue-600 focus:text-white">Skip to main content</a>
-      
-      {/* Sidebar Navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-blue-600 focus:text-white"
+      >
+        Skip to main content
+      </a>
+
       <Navigation
         collapsed={collapsed}
         setCollapsed={setCollapsed}

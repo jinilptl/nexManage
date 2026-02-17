@@ -61,8 +61,6 @@ export const createProjectService = (projectData, token, onClose) => {
         withCredentials: true,
       });
 
-      console.log("create project response ---> ", response.data);
-
       if (response.data.success) {
         toast.success("Project created successfully!");
 
@@ -126,9 +124,6 @@ export const fetchSingleProjectService = (projectId, token) => {
       const response = await axiosInstance.get(`${GET_PROJECT}/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // console.log("response is --> ",response);
-
-      // console.log("response in projecvt data---> ",response.data.data);
 
       if (response.data.success) {
         dispatch(setSelectedProjectData(response.data.data));
@@ -147,7 +142,7 @@ export const updateProjectService = (
   projectId,
   updatedData,
   token,
-  onClose
+  onClose,
 ) => {
   return async (dispatch, getState) => {
     dispatch(setUpdateProjectLoading(true));
@@ -156,20 +151,16 @@ export const updateProjectService = (
       const response = await axiosInstance.post(
         `${UPDATE_PROJECT}/${projectId}`,
         updatedData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-
-      // console.log("update responcse==> ", response);
 
       if (response.data.success) {
         toast.success("Project updated successfully!");
 
-        // Update selected project
         dispatch(setSelectedProjectData(response.data.data));
 
-        // Update myProjects list
         const updatedList = getState().projects.myProjects.map((p) =>
-          p._id === projectId ? response.data.data : p
+          p._id === projectId ? response.data.data : p,
         );
         dispatch(setMyProjects(updatedList));
         dispatch(setProjects(updatedList));
@@ -195,18 +186,21 @@ export const deleteProjectService = (projectId, token, onClose) => {
     try {
       const response = await axiosInstance.delete(
         `${DELETE_PROJECT}/${projectId}`,
-        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        },
       );
 
       if (response.data.success) {
         toast.success("Project deleted successfully!");
 
         const updated = getState().projects.myProjects.filter(
-          (p) => p._id !== projectId
+          (p) => p._id !== projectId,
         );
 
         const allupdated = getState().projects.allProjects.filter(
-          (p) => p._id !== projectId
+          (p) => p._id !== projectId,
         );
         dispatch(setMyProjects(updated));
         dispatch(setProjects(allupdated));
@@ -221,12 +215,11 @@ export const deleteProjectService = (projectId, token, onClose) => {
 };
 
 // ARCHIVE / UNARCHIVE PROJECT (PATCH API, then refetch list)
-// currentStatusFilter: optional; refetches list with this filter so UI updates (e.g. stay on Active)
 export const archiveProjectService = (
   projectId,
   status,
   token,
-  currentStatusFilter = ""
+  currentStatusFilter = "",
 ) => {
   return async (dispatch, getState) => {
     dispatch(setArchiveProjectLoading(true));
@@ -238,12 +231,17 @@ export const archiveProjectService = (
       const response = await axiosInstance.patch(
         url,
         { status: normalized },
-        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        },
       );
 
       if (response.data.success) {
         toast.success(
-          normalized === "ARCHIVED" ? "Project archived." : "Project status updated."
+          normalized === "ARCHIVED"
+            ? "Project archived."
+            : "Project status updated.",
         );
 
         dispatch(setSelectedProjectData(response.data.data));
@@ -252,7 +250,7 @@ export const archiveProjectService = (
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to update project status."
+        error.response?.data?.message || "Failed to update project status.",
       );
     } finally {
       dispatch(setArchiveProjectLoading(false));
@@ -265,38 +263,34 @@ export const archiveProjectService = (
 export const addTaskStatusesIntoProjectService = (
   formData,
   projectId,
-  token
+  token,
 ) => {
   return async (dispatch, getstate) => {
     try {
-      const endpoint=ADD_TASK_STATUSES.replace(":projectId",projectId)
-      const response= await axiosInstance.post(endpoint,formData,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const endpoint = ADD_TASK_STATUSES.replace(":projectId", projectId);
+      const response = await axiosInstance.post(endpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        withCredentials:true
-      })
+        withCredentials: true,
+      });
 
-      console.log("response of the add task statuses --> ",response);
-      if(response.data.success){
-        dispatch(addTaskStatusIntoProject(response.data.data))
-        toast("Status Column added succesfully")
-
+      if (response.data.success) {
+        dispatch(addTaskStatusIntoProject(response.data.data));
+        toast("Status Column added succesfully");
       }
-      
     } catch (error) {
       console.log(
         "error in the add taskStatuses into the project-->",
-        GenerateErrorMessage(error)
+        GenerateErrorMessage(error),
       );
 
-      toast.error(GenerateErrorMessage(error)||"error in adding task Status")
+      toast.error(GenerateErrorMessage(error) || "error in adding task Status");
     }
   };
 };
 
 // SYNC PROJECT MEMBERS
-// (in the last use this )
 
 export const syncProjectMembersService = (projectId, token) => {
   return async (dispatch) => {
@@ -306,7 +300,7 @@ export const syncProjectMembersService = (projectId, token) => {
       const response = await axiosInstance.patch(
         `${SYNC_PROJECT_MEMBERS}/${projectId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -320,8 +314,6 @@ export const syncProjectMembersService = (projectId, token) => {
   };
 };
 
-// ---------------------------Members in Projects ----------------------------
-
 //get all member
 
 export const fetchProjectMembersService = (projectId, token) => {
@@ -334,18 +326,14 @@ export const fetchProjectMembersService = (projectId, token) => {
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
-
-      // console.log("response --> ",response.data);
 
       if (response.data.success) {
         const members = response.data.data;
 
-        // 1️⃣ Update Redux Members List
         dispatch(setProjectMembers(members));
 
-        // 2️⃣ Sync selectedProject.data with members
         const currentProject = getState().projects.selectedProject.data;
 
         if (currentProject) {
@@ -353,13 +341,12 @@ export const fetchProjectMembersService = (projectId, token) => {
             setSelectedProjectData({
               ...currentProject,
               projectMembers: members,
-            })
+            }),
           );
         }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch members.");
-      // console.log("fetchProjectMembersService error →", error);
     } finally {
       dispatch(setProjectMembersLoading(false));
     }
@@ -371,7 +358,7 @@ export const addProjectMemberService = (
   projectId,
   memberData,
   token,
-  onClose
+  onClose,
 ) => {
   return async (dispatch, getState) => {
     dispatch(setAddMemberLoading(true));
@@ -383,22 +370,16 @@ export const addProjectMemberService = (
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
-
-      // console.log("response is---> ", response.data);
 
       if (response.data.success) {
         toast.success("Member added successfully!");
 
         const newMember = response.data.data;
 
-        // projectMembers.list
-
         const oldMembers = getState().projects.projectMembers.list;
         dispatch(setProjectMembers([...oldMembers, newMember]));
-
-        // for the selectedProject.data.projectMembers
 
         const prevProject = getState().projects.selectedProject.data;
 
@@ -407,16 +388,13 @@ export const addProjectMemberService = (
             setSelectedProjectData({
               ...prevProject,
               projectMembers: [...prevProject.projectMembers, newMember],
-            })
+            }),
           );
         }
-
-        // Close modal
         onClose(false);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add member.");
-      // console.log("Add member error →", error);
     } finally {
       dispatch(setAddMemberLoading(false));
     }
@@ -430,7 +408,7 @@ export const updateProjectMemberService = (
   memberId,
   updatedData,
   token,
-  onClose
+  onClose,
 ) => {
   return async (dispatch) => {
     dispatch(setUpdateMemberLoading(true));
@@ -442,23 +420,15 @@ export const updateProjectMemberService = (
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
-
-      // console.log("response is --> ", response.data);
 
       if (response.data.success) {
         toast.success("Member updated successfully!");
-
-        // 1️⃣ UPDATE MEMBERS LIST
         dispatch(setProjectMembers(response.data.data.allMembers));
-
-        // 2️⃣ UPDATE SELECTED PROJECT DATA
         if (response.data.data.project) {
           dispatch(setSelectedProjectData(response.data.data.project));
         }
-
-        // Close modal
         onClose(false);
       }
     } catch (error) {
@@ -482,7 +452,7 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
 
       if (response.data.success) {
@@ -490,31 +460,28 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
 
         const prevMembers = getState().projects.projectMembers.list;
 
-        // for the Update projectMembers.list
         const updatedMembersList = prevMembers.map((m) =>
-          m.user._id === memberId ? { ...m, status: "removed" } : m
+          m.user._id === memberId ? { ...m, status: "removed" } : m,
         );
         dispatch(setProjectMembers(updatedMembersList));
 
-        // for the selectedProjectData
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
           const updatedMembers = prevProject.projectMembers.map((m) =>
-            m.user._id === memberId ? { ...m, status: "removed" } : m
+            m.user._id === memberId ? { ...m, status: "removed" } : m,
           );
 
           dispatch(
             setSelectedProjectData({
               ...prevProject,
               projectMembers: updatedMembers,
-            })
+            }),
           );
         }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to remove member.");
-      // console.log("error is --> ",error);
     } finally {
       dispatch(setRemoveMemberLoading(false));
     }
@@ -532,7 +499,7 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
 
       if (response.data.success) {
@@ -540,31 +507,28 @@ export const activeProjectMemberService = (projectId, memberId, token) => {
 
         const prevMembers = getState().projects.projectMembers.list;
 
-        // for the Update projectMembers.list
         const updatedMembersList = prevMembers.map((m) =>
-          m.user._id === memberId ? { ...m, status: "active" } : m
+          m.user._id === memberId ? { ...m, status: "active" } : m,
         );
         dispatch(setProjectMembers(updatedMembersList));
 
-        //for the SelectedProjectData
         const prevProject = getState().projects.selectedProject.data;
 
         if (prevProject) {
           const updatedMembers = prevProject.projectMembers.map((m) =>
-            m.user._id === memberId ? { ...m, status: "active" } : m
+            m.user._id === memberId ? { ...m, status: "active" } : m,
           );
 
           dispatch(
             setSelectedProjectData({
               ...prevProject,
               projectMembers: updatedMembers,
-            })
+            }),
           );
         }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to active member.");
-      // console.log("error is --> ",error);
     } finally {
       dispatch(setActiveMemberLoading(false));
     }

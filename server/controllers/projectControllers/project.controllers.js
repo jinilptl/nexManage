@@ -87,13 +87,8 @@ const createProject = asyncHandler(async (req, res) => {
     }
   });
 
-  // console.log("map result for uniquememeber---> ", uniqueMembersMap);
-
   autoMembers = Array.from(uniqueMembersMap.values());
 
-  // console.log("converted in to array result in map ---> ", autoMembers);
-
-  // existing creator then make project manager
   const existingCreator = autoMembers.find(
     (m) => m.user.toString() === createdBy.toString()
   );
@@ -102,7 +97,6 @@ const createProject = asyncHandler(async (req, res) => {
     existingCreator.roleInProject = "project-manager";
     existingCreator.addedFromTeam = existingCreator.addedFromTeam || null;
   } else {
-    // Add creator manually
     autoMembers.push({
       user: createdBy,
       roleInProject: "project-manager",
@@ -212,9 +206,6 @@ const getUserProjects = asyncHandler(async (req, res) => {
 
 const getSingleProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-
-  // console.log("route hit");
-
 
   if (!projectId) {
     throw new ApiError(400, "Project ID is required");
@@ -427,8 +418,6 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
 });
 
 const addProjectTaskStatus = async (req, res) => {
-  console.log("req is hit this add status column route--->");
-
   try {
     const { projectId } = req.params;
     const { key, label } = req.body;

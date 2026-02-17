@@ -8,15 +8,11 @@ const socket = io("http://localhost:5000", {
 });
 
 socket.on("connect", () => {
-  console.log("Connected:", socket.id);
 
   socket.emit("join-project", {
     projectId: "6944efefbaf665ac4b3debef",
   });
 
-  //   socket.emit("leave-project",{
-  //   projectId:"6944efefbaf665ac4b3debef"
-  // })
 });
 
 socket.on("connect_error", (err) => {

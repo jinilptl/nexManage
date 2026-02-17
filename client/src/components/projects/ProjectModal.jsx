@@ -19,14 +19,10 @@ export default function ProjectModal({
   const isEdit = mode === "edit";
 
   const dispatch = useDispatch();
-  console.log("team list --> ", teamsList);
 
   const token = useSelector((state) => state.auth.token);
   const projectId = useSelector((state) => state.projects.selectedProject.id);
   const teams = useSelector((state) => state.teams.list);
-  // console.log("team is -> ",teams);
-
-  // Loaders
   const creating = useSelector((state) => state.projects.actions.creating);
   const updating = useSelector((state) => state.projects.actions.updating);
 
@@ -73,7 +69,6 @@ export default function ProjectModal({
     }
   };
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");

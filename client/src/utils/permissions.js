@@ -6,23 +6,23 @@
  * @returns {Boolean}
  */
 export const canManageTask = (user, projectMembers) => {
-    if (!user) return false;
+  if (!user) return false;
 
-    // 1. Check global roles
-    if (user.role === "super_admin" || user.role === "admin") {
-        return true;
+  // 1. Check global roles
+  if (user.role === "super_admin" || user.role === "admin") {
+    return true;
+  }
+
+  // 2. Check project-specific role
+  if (projectMembers && Array.isArray(projectMembers)) {
+    const currentMember = projectMembers.find(
+      (m) => (m.user?._id || m.user) === user._id,
+    );
+
+    if (currentMember?.roleInProject === "project-manager") {
+      return true;
     }
+  }
 
-    // 2. Check project-specific role
-    if (projectMembers && Array.isArray(projectMembers)) {
-        const currentMember = projectMembers.find(
-            (m) => (m.user?._id || m.user) === user._id
-        );
-
-        if (currentMember?.roleInProject === "project-manager") {
-            return true;
-        }
-    }
-
-    return false;
+  return false;
 };

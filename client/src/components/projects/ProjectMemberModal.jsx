@@ -19,9 +19,10 @@ export default function ProjectMemberModal({
   const projectId = useSelector((state) => state.projects.selectedProject.id);
   const token = useSelector((state) => state.auth.token);
 
-  // Loaders from slice
   const adding = useSelector((state) => state.projects.actions.addingMember);
-  const updating = useSelector((state) => state.projects.actions.updatingMember);
+  const updating = useSelector(
+    (state) => state.projects.actions.updatingMember,
+  );
 
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("contributor");
@@ -57,8 +58,8 @@ export default function ProjectMemberModal({
           projectId,
           { email, roleInProject: role },
           token,
-          onClose
-        )
+          onClose,
+        ),
       );
     } else {
       dispatch(
@@ -67,8 +68,8 @@ export default function ProjectMemberModal({
           member.user._id,
           { roleInProject: role },
           token,
-          onClose
-        )
+          onClose,
+        ),
       );
     }
   };
@@ -93,7 +94,6 @@ export default function ProjectMemberModal({
 
       {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
-        
         {/* Close */}
         <button
           className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -109,7 +109,6 @@ export default function ProjectMemberModal({
         </h2>
 
         <div className="space-y-5">
-          
           {mode === "add" && (
             <div>
               <label className="text-sm font-medium">Email</label>
@@ -174,7 +173,13 @@ export default function ProjectMemberModal({
             onClick={handleSubmit}
             className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isBusy ? <ButtonLoader /> : mode === "add" ? "Add Member" : "Update"}
+            {isBusy ? (
+              <ButtonLoader />
+            ) : mode === "add" ? (
+              "Add Member"
+            ) : (
+              "Update"
+            )}
           </button>
         </div>
       </div>

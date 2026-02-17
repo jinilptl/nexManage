@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import { useNavigate } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
-import { setSelectedProjectData, setSelectedProjectId } from "../../Redux_Config/Slices/projectsSlice";
+import {
+  setSelectedProjectData,
+  setSelectedProjectId,
+} from "../../Redux_Config/Slices/projectsSlice";
 
 export default function ProjectCard({
   project,
@@ -17,8 +20,8 @@ export default function ProjectCard({
   const user = useSelector((state) => state.auth.user);
 
   const UserRole = user.role;
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handler = () => setMenuOpen(false);
@@ -27,14 +30,12 @@ export default function ProjectCard({
   }, []);
 
   function ProjectDetails() {
-    dispatch(setSelectedProjectId(project._id))
-    dispatch(setSelectedProjectData(project))
-    navigate(`/dashboard/projects/task/${project._id}`)
-
+    dispatch(setSelectedProjectId(project._id));
+    dispatch(setSelectedProjectData(project));
+    navigate(`/dashboard/projects/task/${project._id}`);
   }
 
   const membersCount = project.projectMembers?.length || 0;
-
 
   if (loading) {
     return (
@@ -51,9 +52,12 @@ export default function ProjectCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer" onClick={() => {
-      ProjectDetails()
-    }}>
+    <div
+      className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer"
+      onClick={() => {
+        ProjectDetails();
+      }}
+    >
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -87,12 +91,16 @@ export default function ProjectCard({
 
                 {UserRole !== "member" && (
                   <button
-                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${(project.status || "").toUpperCase() === "ARCHIVED"
+                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${
+                      (project.status || "").toUpperCase() === "ARCHIVED"
                         ? "text-green-600"
                         : "text-yellow-600"
-                      } hover:bg-gray-100`}
+                    } hover:bg-gray-100`}
                     onClick={() => {
-                      const newStatus = (project.status || "").toUpperCase() === "ARCHIVED" ? "ACTIVE" : "ARCHIVED";
+                      const newStatus =
+                        (project.status || "").toUpperCase() === "ARCHIVED"
+                          ? "ACTIVE"
+                          : "ARCHIVED";
                       onArchive?.({ ...project, status: newStatus });
                       setMenuOpen(false);
                     }}
@@ -130,7 +138,8 @@ export default function ProjectCard({
             </span>
 
             <span
-              className={`px-2 py-1 text-xs rounded-md ${(project.status || "").toUpperCase() === "ACTIVE"
+              className={`px-2 py-1 text-xs rounded-md ${
+                (project.status || "").toUpperCase() === "ACTIVE"
                   ? "bg-green-100 text-green-700"
                   : (project.status || "").toUpperCase() === "ON_HOLD"
                     ? "bg-yellow-100 text-yellow-700"
@@ -139,14 +148,16 @@ export default function ProjectCard({
                       : (project.status || "").toUpperCase() === "ARCHIVED"
                         ? "bg-gray-200 text-gray-700"
                         : "bg-gray-100 text-gray-700"
-                }`}
+              }`}
             >
               {{
                 ACTIVE: "Active",
                 COMPLETED: "Completed",
                 ON_HOLD: "On Hold",
                 ARCHIVED: "Archived",
-              }[(project.status || "ACTIVE").toUpperCase()] || project.status || "Active"}
+              }[(project.status || "ACTIVE").toUpperCase()] ||
+                project.status ||
+                "Active"}
             </span>
           </div>
 
@@ -156,7 +167,7 @@ export default function ProjectCard({
               <span className="font-semibold whitespace-nowrap">
                 {project.createdBy?.name
                   ? project.createdBy.name[0].toUpperCase() +
-                  project.createdBy.name.slice(1)
+                    project.createdBy.name.slice(1)
                   : "Unknown"}
               </span>
             </span>

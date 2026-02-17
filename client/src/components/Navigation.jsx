@@ -44,7 +44,12 @@ export default function Navigation({
     },
     { label: "Analytics", icon: BarChart3, to: "/dashboard/analytics" },
     // { label: "Notifications", icon: Bell, to: "/dashboard/notifications" },
-    { label: "Invite Members", icon: UserPlus, to: "/dashboard/invite-members", adminOnly: true },
+    {
+      label: "Invite Members",
+      icon: UserPlus,
+      to: "/dashboard/invite-members",
+      adminOnly: true,
+    },
     { label: "Settings", icon: Settings, to: "/dashboard/settings" },
   ];
 
@@ -152,8 +157,6 @@ export default function Navigation({
               <div className="border-t border-slate-700" />
               <button
                 onClick={() => {
-                  // console.log("true");
-
                   setLogoutModalOpen(true);
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
@@ -243,7 +246,7 @@ export default function Navigation({
                 <User className="w-4 h-4" />
                 Profile
               </button>
-              <button  className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
+              <button className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
               </button>

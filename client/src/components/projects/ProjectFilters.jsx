@@ -9,7 +9,11 @@ const STATUS_OPTIONS = [
   { value: "ALL", label: "All Projects" },
 ];
 
-export default function ProjectFilters({ OnFilter, statusFilter, onStatusChange }) {
+export default function ProjectFilters({
+  OnFilter,
+  statusFilter,
+  onStatusChange,
+}) {
   const [inputvalue, setInputValue] = useState("");
 
   const handleOnChange = (e) => {

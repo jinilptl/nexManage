@@ -93,7 +93,6 @@ const createTask = asyncHandler(async (req, res) => {
       createdBy: userId, // optional but useful
     });
 
-    console.log("TASK:CREATE emitted for task:", newTask._id);
   } catch (error) {
     console.error("Socket emit failed (TASK:CREATE):", error.message);
   }
@@ -326,7 +325,6 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   const project = req.project;
 
   const { assignees } = req.body;
-  console.log("assignees   ", assignees);
 
   if (!Array.isArray(assignees) || assignees.length === 0) {
     throw new ApiError(400, "Assignees must be a non-empty array");
@@ -425,8 +423,6 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   }
 
   if (!statusId) throw new ApiError(400, "statusId is required");
-
-  // console.log(project);
 
   const targetStatus = await project.taskStatuses.find(
     (s) => s._id.toString() === statusId,

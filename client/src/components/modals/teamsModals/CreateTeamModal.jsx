@@ -5,7 +5,7 @@ import {
   updateTeamService,
 } from "../../../services/teamsOperations/teamsServices";
 import { useDispatch, useSelector } from "react-redux";
-import ModalSmallLoader from "../../Lodders/ModalSmallLoader"; 
+import ModalSmallLoader from "../../Lodders/ModalSmallLoader";
 
 export default function CreateTeamModal({ open, setOpen, mode }) {
   if (!open) return null;
@@ -16,7 +16,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
   const creating = useSelector((state) => state.teams.actions.creatingTeam);
   const updating = useSelector((state) => state.teams.actions.updatingTeam);
 
-  const modalLoading = creating || updating; // merged modal loading state
+  const modalLoading = creating || updating;
 
   const teamdata = useSelector((state) => state.teams.selectedTeam.data);
 
@@ -25,7 +25,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
     description: "",
   });
 
-  // PREFILL IN UPDATE MODE
   useEffect(() => {
     if (mode === "update" && teamdata) {
       setInputData({
@@ -66,7 +65,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
 
       {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
-
         {/* CLOSE BUTTON */}
         <button
           disabled={modalLoading}

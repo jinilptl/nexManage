@@ -19,17 +19,15 @@ export default function MemberModal({
 
   const selectedTeamId = useSelector((state) => state.teams.selectedTeam.id);
   if (!selectedTeamId) {
-  alert("Team not selected");
-  return;
-}
+    alert("Team not selected");
+    return;
+  }
 
   const token = useSelector((state) => state.auth.token);
 
-  // ⭐ CORRECT loaders
   const adding = useSelector((state) => state.teams.actions.addingMember);
   const updating = useSelector((state) => state.teams.actions.updatingMember);
 
-  // current loader based on mode
   const loading = mode === "add" ? adding : updating;
 
   const [inputValue, setInputValue] = useState({
@@ -63,8 +61,8 @@ export default function MemberModal({
         { roleInTeam: formData.roleInTeam, status: formData.status },
         token,
         onClose,
-        setMember
-      )
+        setMember,
+      ),
     );
   };
 
@@ -76,7 +74,6 @@ export default function MemberModal({
     if (mode === "update") handleUpdateMember(inputValue);
   };
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
@@ -94,7 +91,6 @@ export default function MemberModal({
 
       {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 modal-content-enter">
-
         {/* HEADER */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-800">
@@ -108,16 +104,24 @@ export default function MemberModal({
               loading && "opacity-40 cursor-not-allowed"
             }`}
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-
-          {/* EMAIL FIELD (Add only) */}
           {mode === "add" && (
             <div>
               <label className="text-sm text-gray-600">Member Email</label>
@@ -201,7 +205,6 @@ export default function MemberModal({
                 "Update Member"
               )}
             </button>
-
           </div>
         </form>
       </div>

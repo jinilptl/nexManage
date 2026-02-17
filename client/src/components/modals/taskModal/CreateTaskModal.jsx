@@ -15,8 +15,6 @@ export default function CreateTaskModal({
 
   const isEditMode = mode === "edit";
 
-  // console.log("editable data=> ", editableData);
-
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -58,8 +56,6 @@ export default function CreateTaskModal({
   const handleSubmit = () => {
     onSubmit(form);
   };
-
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (isOpen) {
       document.body.classList.add("modal-open");

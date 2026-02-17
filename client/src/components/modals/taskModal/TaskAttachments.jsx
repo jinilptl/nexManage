@@ -54,7 +54,6 @@ export default function TaskAttachments({ task, canManage }) {
       URL.revokeObjectURL(link.href);
     } catch (error) {
       console.error("Download failed:", error);
-      // Fallback
       window.open(att.fileUrl, "_blank");
     }
   };

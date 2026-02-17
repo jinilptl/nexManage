@@ -51,9 +51,6 @@ const registerRoomHandlers = (io, socket) => {
 
       if (!memberMatch) {
         console.log(`⛔ Access Denied: User ${userId} is NOT an active member of Project ${projectId}`);
-        // Log details for debugging
-        // const memberIds = project.projectMembers.map(m => (m.user?._id || m.user)?.toString());
-        // console.log("   Active Members in Project:", memberIds);
 
         socket.emit("error", { message: "Access denied to project room" });
         return;

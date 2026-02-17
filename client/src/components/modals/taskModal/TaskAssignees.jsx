@@ -10,18 +10,16 @@ function TaskAssignees({
   isSaving,
   canManage,
 }) {
-  // open edit mode
   const openEditor = () => {
     setSelectedAssignees(assignees.map((a) => a._id));
     setIsAssignMode(true);
   };
 
-  // toggle checkbox
   const toggleAssignee = (userId) => {
     setSelectedAssignees((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
@@ -130,5 +128,4 @@ function TaskAssignees({
   );
 }
 
-
-export default TaskAssignees
+export default TaskAssignees;

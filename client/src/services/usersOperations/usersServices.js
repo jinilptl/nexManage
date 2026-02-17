@@ -6,17 +6,15 @@ export const fetchAllUsers = createAsyncThunk(
   "users/fetchAllUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        usersEndpoints.GET_ALL_USERS
-      );
+      const response = await axiosInstance.get(usersEndpoints.GET_ALL_USERS);
 
-      return response.data.data; 
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch users"
+        error.response?.data?.message || "Failed to fetch users",
       );
     }
-  }
+  },
 );
 
 export const updateUser = createAsyncThunk(
@@ -25,13 +23,13 @@ export const updateUser = createAsyncThunk(
     try {
       const res = await axiosInstance.put(
         usersEndpoints.UPDATE_USER(userId),
-        data
+        data,
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const deleteUser = createAsyncThunk(
@@ -43,26 +41,23 @@ export const deleteUser = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const updatePassword = createAsyncThunk(
   "users/updatePassword",
   async ({ currentPassword, newPassword }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(
-        usersEndpoints.CHANGE_PASSWORD,
-        {
-          oldPassword: currentPassword,
-          newPassword,
-        }
-      );
+      const res = await axiosInstance.post(usersEndpoints.CHANGE_PASSWORD, {
+        oldPassword: currentPassword,
+        newPassword,
+      });
 
       return res.data.message;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update password"
+        err.response?.data?.message || "Failed to update password",
       );
     }
-  }
+  },
 );

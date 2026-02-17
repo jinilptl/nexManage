@@ -12,7 +12,6 @@ export default function ConfirmModal({
 }) {
   if (!open) return null;
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
@@ -30,13 +29,9 @@ export default function ConfirmModal({
 
       {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-4 sm:p-6 modal-content-enter">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {title}
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
 
-        <p className="text-sm text-gray-600 mb-6">
-          {message}
-        </p>
+        <p className="text-sm text-gray-600 mb-6">{message}</p>
 
         <div className="flex justify-end gap-3">
           <button

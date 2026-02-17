@@ -9,14 +9,9 @@ export default function ProjectContent({
   reorderTaskInColumn,
   onModalOpen,
 }) {
-
-
-
   const handleMoveTask = (taskId, newStatus) => {
     setTasks((prev) =>
-      prev.map((t) =>
-        t._id === taskId ? { ...t, status: newStatus } : t
-      )
+      prev.map((t) => (t._id === taskId ? { ...t, status: newStatus } : t)),
     );
   };
 
@@ -47,10 +42,7 @@ export default function ProjectContent({
     );
   }
 
-
   return (
-    <div className="text-sm text-gray-500">
-      {activeTab} view coming soon…
-    </div>
+    <div className="text-sm text-gray-500">{activeTab} view coming soon…</div>
   );
 }

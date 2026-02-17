@@ -54,7 +54,7 @@ const taskSlice = createSlice({
     updateTask(state, action) {
       const updatedTask = action.payload;
       state.list = state.list.map((task) =>
-        task._id === updatedTask._id ? updatedTask : task
+        task._id === updatedTask._id ? updatedTask : task,
       );
 
       if (state.selectedTaskId === updatedTask._id) {
@@ -62,10 +62,9 @@ const taskSlice = createSlice({
       }
     },
 
-    // it is for realtime add or update
     upsertTask(state, action) {
       const index = state.list.findIndex(
-        (task) => task._id === action.payload._id
+        (task) => task._id === action.payload._id,
       );
 
       if (index === -1) {
@@ -106,12 +105,11 @@ const taskSlice = createSlice({
     setReorderTasksInColumn(state, action) {
       const { columnId, reorderedTasks } = action.payload;
 
-      // Map for quick lookup
       const reorderedMap = new Map(
         reorderedTasks.map((task, index) => [
           task._id,
           { ...task, order: index },
-        ])
+        ]),
       );
 
       state.list = state.list.map((task) => {
@@ -137,7 +135,7 @@ const taskSlice = createSlice({
       const { taskId, toStatus } = action.payload;
 
       const movedTaskIndex = state.list.findIndex(
-        (taskItem) => taskItem._id.toString() === taskId.toString()
+        (taskItem) => taskItem._id.toString() === taskId.toString(),
       );
 
       if (movedTaskIndex === -1) return;
@@ -151,7 +149,7 @@ const taskSlice = createSlice({
       movedTask.status = toStatus;
 
       const tasksInTargetColumn = state.list.filter(
-        (taskItem) => taskItem.status === toStatus
+        (taskItem) => taskItem.status === toStatus,
       );
 
       if (tasksInTargetColumn.length === 0) {
@@ -161,12 +159,13 @@ const taskSlice = createSlice({
           tasksInTargetColumn[tasksInTargetColumn.length - 1];
 
         const lastTaskGlobalIndex = state.list.findIndex(
-          (taskItem) => taskItem._id === lastTaskInTargetColumn._id
+          (taskItem) => taskItem._id === lastTaskInTargetColumn._id,
         );
 
         state.list.splice(lastTaskGlobalIndex + 1, 0, movedTask);
       }
     },
+
     // SUBTASKS
 
     setSubtasks(state, action) {

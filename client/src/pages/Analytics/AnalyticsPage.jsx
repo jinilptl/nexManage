@@ -17,7 +17,6 @@ export default function AnalyticsPage() {
     document.title = "Analytics | NexManage";
   }, []);
 
-  console.log(role);
   const {
     loading,
     error,

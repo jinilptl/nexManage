@@ -6,14 +6,12 @@ import { Navigate } from "react-router-dom";
 const ProtectedWrapper = ({ children }) => {
   const token = useSelector((state) => state.auth.token);
 
-  // console.log("token is ", token);
   if (!token) {
     toast.error("Please login to access this page");
 
     return <Navigate to="/" replace />;
   }
 
-  // we decode the token and check for expiry
   try {
     const decodedToken = jwtDecode(token);
 

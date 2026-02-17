@@ -1,17 +1,16 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import authReducer from "../Slices/authSlice"
-import teamsReducer from "../Slices/teamsSlice"
-import projectReducer from "../Slices/projectsSlice"
-import taskreducer from "../Slices/tasksSlice"
-import dashboardReducer from "../Slices/dashboardSlice"
+import authReducer from "../Slices/authSlice";
+import teamsReducer from "../Slices/teamsSlice";
+import projectReducer from "../Slices/projectsSlice";
+import taskreducer from "../Slices/tasksSlice";
+import dashboardReducer from "../Slices/dashboardSlice";
 import usersReducer from "../Slices/usersSlice";
 
-export const rootReducer=combineReducers({
-    // your reducers here
-    auth:authReducer,
-    teams:teamsReducer,
-    projects:projectReducer,
-    tasks:taskreducer,
-    dashboard:dashboardReducer,
-    users: usersReducer,
+export const rootReducer = combineReducers({
+  auth: authReducer,
+  teams: teamsReducer,
+  projects: projectReducer,
+  tasks: taskreducer,
+  dashboard: dashboardReducer,
+  users: usersReducer,
 });

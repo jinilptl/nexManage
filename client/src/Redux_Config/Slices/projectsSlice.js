@@ -17,14 +17,12 @@ const projectsSlice = createSlice({
       error: null,
     },
 
-    // ⭐ PROJECT MEMBERS SECTION
     projectMembers: {
-      list: [], // All members of selected project
-      loading: false, // Loader for fetching members
+      list: [],
+      loading: false,
       error: null,
     },
 
-    // ⭐ ACTION LOADERS
     actions: {
       creating: false,
       updating: false,
@@ -64,12 +62,8 @@ const projectsSlice = createSlice({
     },
     addTaskStatusIntoProject(state, action) {
       const payload = action.payload;
-      console.log("payload is ---> ",payload);
 
-      const data=state.selectedProject.data
-      console.log("data is on reducer---> ",data);
-      
-      
+      const data = state.selectedProject.data;
     },
     setSelectedProjectLoading(state, action) {
       state.selectedProject.loading = action.payload;
@@ -81,7 +75,6 @@ const projectsSlice = createSlice({
     setProjectMembersLoading(state, action) {
       state.projectMembers.loading = action.payload;
     },
-    
 
     /* ---------------------- ACTION LOADERS ---------------------- */
     setCreateProjectLoading(state, action) {

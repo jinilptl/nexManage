@@ -58,7 +58,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
     activingMember,
   } = useSelector((state) => state.projects.actions);
 
-  // LOCAL STATES FOR PER-MEMBER LOADER
   const [removingFor, setRemovingFor] = useState(null);
   const [activatingFor, setActivatingFor] = useState(null);
 
@@ -93,12 +92,15 @@ export default function ViewProjectModal({ open, onClose, project }) {
     }
   };
 
-  const getStatusLabel = (status) => ({
-    ACTIVE: "Active",
-    COMPLETED: "Completed",
-    ON_HOLD: "On Hold",
-    ARCHIVED: "Archived",
-  }[(status || "ACTIVE").toUpperCase()] || status || "Active");
+  const getStatusLabel = (status) =>
+    ({
+      ACTIVE: "Active",
+      COMPLETED: "Completed",
+      ON_HOLD: "On Hold",
+      ARCHIVED: "Archived",
+    })[(status || "ACTIVE").toUpperCase()] ||
+    status ||
+    "Active";
 
   const handleDeleteProject = () => {
     setConfirmType("deleteProject");
@@ -115,7 +117,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
   };
 
   const handleMemberAction = (memberId, type) => {
-    setConfirmType(type); // removeMember | activateMember
+    setConfirmType(type);
     setSelectedMemberId(memberId);
     setConfirmOpen(true);
   };
@@ -152,7 +154,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
     setSelectedMemberId(null);
   };
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
@@ -210,7 +211,10 @@ export default function ViewProjectModal({ open, onClose, project }) {
           </span>
           {UserRole !== "member" && (
             <div className="flex items-center gap-2">
-              <label htmlFor="project-status-select" className="text-sm text-gray-600">
+              <label
+                htmlFor="project-status-select"
+                className="text-sm text-gray-600"
+              >
                 Change status:
               </label>
               <select
@@ -218,7 +222,10 @@ export default function ViewProjectModal({ open, onClose, project }) {
                 value={(project.status || "ACTIVE").toUpperCase()}
                 onChange={(e) => {
                   const newStatus = e.target.value;
-                  if (newStatus && newStatus !== (project.status || "").toUpperCase()) {
+                  if (
+                    newStatus &&
+                    newStatus !== (project.status || "").toUpperCase()
+                  ) {
                     dispatch(
                       archiveProjectService(project._id, newStatus, token, ""),
                     );

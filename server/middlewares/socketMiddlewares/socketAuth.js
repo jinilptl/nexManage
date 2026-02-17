@@ -22,7 +22,6 @@ const socketAuth = (io) => {
       socket.user = user;
       next();
     } catch (error) {
-      console.log(" Socket auth error:", error.message);
       next(new Error("Authentication failed"));
     }
   });

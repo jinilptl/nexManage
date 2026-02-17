@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 
 export default function NexManageLoader() {
-
-  
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => (document.body.style.overflow = "auto");
@@ -23,14 +21,15 @@ export default function NexManageLoader() {
         
       "
     >
-
       {/* Animated Circle */}
-      <div className="
+      <div
+        className="
         w-20 h-20 mb-6 
         rounded-full 
         border-4 border-slate-600 border-t-blue-500 
         animate-spin-slow shadow-lg
-      "></div>
+      "
+      ></div>
 
       {/* Logo Text */}
       <h1 className="text-2xl font-semibold tracking-wide flex items-center gap-2">

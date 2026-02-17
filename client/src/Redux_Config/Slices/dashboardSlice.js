@@ -6,7 +6,7 @@ export const getDashboardData = createAsyncThunk(
   async () => {
     const res = await fetchMainDashboard();
     return res.data;
-  }
+  },
 );
 
 const dashboardSlice = createSlice({

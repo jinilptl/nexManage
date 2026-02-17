@@ -8,7 +8,7 @@ import {
   updateTaskStatusService,
 } from "../../services/taskOperations/taskServices";
 import { Plus } from "lucide-react";
-import AddColumnModal from "../modals/taskModal/AddColumnModal"
+import AddColumnModal from "../modals/taskModal/AddColumnModal";
 
 export default function KanbanBoard({
   tasks: initialTasks,
@@ -31,9 +31,8 @@ export default function KanbanBoard({
 
   const columns = useMemo(() => {
     return (
-      project?.data?.taskStatuses
-        ?.slice()
-        .sort((a, b) => a.order - b.order) || []
+      project?.data?.taskStatuses?.slice().sort((a, b) => a.order - b.order) ||
+      []
     );
   }, [project]);
 
@@ -49,20 +48,18 @@ export default function KanbanBoard({
       return [...otherTasks, ...updated];
     });
 
-    dispatch(
-      updateTaskOrderService(project.data._id, taskId, toIndex, token)
-    );
+    dispatch(updateTaskOrderService(project.data._id, taskId, toIndex, token));
   };
 
   const moveTaskToColumn = (taskId, targetColumnId) => {
     setTasks((prev) =>
       prev.map((task) =>
-        task._id === taskId ? { ...task, status: targetColumnId } : task
-      )
+        task._id === taskId ? { ...task, status: targetColumnId } : task,
+      ),
     );
 
     dispatch(
-      updateTaskStatusService(project.data._id, taskId, targetColumnId, token)
+      updateTaskStatusService(project.data._id, taskId, targetColumnId, token),
     );
 
     if (onMoveTask) {
@@ -100,7 +97,11 @@ export default function KanbanBoard({
 
       {/* Add Column Modal */}
       {isAddColumnOpen && (
-        <AddColumnModal onClose={() => setIsAddColumnOpen(false)} projectId={project.data._id} token={token} />
+        <AddColumnModal
+          onClose={() => setIsAddColumnOpen(false)}
+          projectId={project.data._id}
+          token={token}
+        />
       )}
     </DndProvider>
   );

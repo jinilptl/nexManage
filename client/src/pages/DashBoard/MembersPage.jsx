@@ -78,15 +78,15 @@ export default function Members() {
     setFormData(
       member
         ? {
-          name: member.name,
-          email: member.email,
-          role: member.role,
-        }
+            name: member.name,
+            email: member.email,
+            role: member.role,
+          }
         : {
-          name: "",
-          email: "",
-          role: "member",
-        },
+            name: "",
+            email: "",
+            role: "member",
+          },
     );
     setIsModalOpen(true);
   };

@@ -51,37 +51,30 @@ export default function ProjectDetails() {
 
     // 1. Connection Event (Re-join room on reconnect)
     const onConnect = () => {
-      console.log("🔌 Socket connected, joining project room:", projectId);
       socket.emit("join-project", { projectId });
     };
 
     // 2. Task Move Event
     const handleTaskMove = ({ taskId, toStatus, updatedBy }) => {
-      if (updatedBy === user._id) return; // Ignore self-initiated events
-      console.log("Socket: Task Moved", taskId, "to", toStatus);
+      if (updatedBy === user._id) return;
       dispatch(moveTaskRealtime({ taskId, toStatus }));
     };
 
     // 3. Task Create Event
     const handleTaskCreate = ({ taskId, createdBy }) => {
       if (createdBy === user._id) return;
-      console.log("Socket: Task Created", taskId);
-      // Fetch the full task details to add to Redux
       dispatch(getSingleTasksService(projectId, taskId, token));
     };
 
     // 4. Task Update Event (General updates)
     const handleTaskUpdate = ({ taskId, updatedBy }) => {
       if (updatedBy === user._id) return;
-      console.log("Socket: Task Updated", taskId);
-      // Fetch fresh data to ensure consistency
       dispatch(getSingleTasksService(projectId, taskId, token));
     };
 
     // 5. Task Delete Event
     const handleTaskDelete = ({ taskId, deletedBy }) => {
       if (deletedBy === user._id) return;
-      console.log("Socket: Task Deleted", taskId);
       dispatch(deleteTask(taskId));
     };
 
@@ -94,7 +87,6 @@ export default function ProjectDetails() {
 
     // Cleanup
     return () => {
-      console.log("Cleaning up socket listeners...");
       socket.off("connect", onConnect);
       socket.off("TASK:MOVE", handleTaskMove);
       socket.off("TASK:CREATE", handleTaskCreate);
@@ -130,7 +122,7 @@ export default function ProjectDetails() {
 
   const onSubmit = (formData) => {
     dispatch(
-      createTaskService(formData, projectId, token, setCreateTaskModalOpen)
+      createTaskService(formData, projectId, token, setCreateTaskModalOpen),
     );
   };
 
@@ -146,7 +138,10 @@ export default function ProjectDetails() {
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-600 mb-4">
-        <Link to="/dashboard/projects" className="hover:text-blue-600">Projects</Link> <span className="mx-1">›</span>
+        <Link to="/dashboard/projects" className="hover:text-blue-600">
+          Projects
+        </Link>{" "}
+        <span className="mx-1">›</span>
         <span className="text-gray-700">{projectData?.data?.projectName}</span>
       </div>
 

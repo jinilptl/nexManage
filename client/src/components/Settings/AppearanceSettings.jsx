@@ -7,10 +7,7 @@ export default function AppearanceSettings() {
   const [compactMode, setCompactMode] = useState(false);
 
   return (
-    <SettingsCard
-      title="Appearance"
-      subtitle="Customize theme and layout"
-    >
+    <SettingsCard title="Appearance" subtitle="Customize theme and layout">
       <div>
         <label className="text-sm font-medium text-gray-700">Theme</label>
         <select

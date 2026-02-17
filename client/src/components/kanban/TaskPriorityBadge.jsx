@@ -1,6 +1,5 @@
-import React from 'react'
-import { priorityConfig } from '../../config/priorityConfig';
-
+import React from "react";
+import { priorityConfig } from "../../config/priorityConfig";
 
 const TaskPriorityBadge = ({ priority }) => {
   const config = priorityConfig[priority] || priorityConfig.low;
@@ -14,5 +13,4 @@ const TaskPriorityBadge = ({ priority }) => {
   );
 };
 
-
-export default TaskPriorityBadge
+export default TaskPriorityBadge;

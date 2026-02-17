@@ -255,7 +255,6 @@ const deleteTeamById = asyncHandler(async (req, res) => {
 const addTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const { email, roleInTeam, status } = req.body;
-  console.log(email, roleInTeam, status);
 
   // Validate inputs
   if (!email || !roleInTeam) {
@@ -529,8 +528,6 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     { _id: teamId },
     { $pull: { members: { user: memberId } } },
   );
-
-  console.log("Member removal acknowledged:", removeResult.acknowledged);
 
   if (!removeResult.acknowledged) {
     throw new ApiError(500, "Internal server error while removing member");

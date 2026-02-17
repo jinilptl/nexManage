@@ -25,7 +25,6 @@ export default function useAnalyticsData() {
 
         if (res?.success) {
           setData(res.data);
-          console.log("----->", res.data)
         } else {
           setError("Failed to fetch analytics");
         }

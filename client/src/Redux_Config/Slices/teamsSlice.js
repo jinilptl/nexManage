@@ -5,19 +5,19 @@ const teamsSlice = createSlice({
 
   initialState: {
     list: [],
-    loading: false, // only for GET ALL TEAMS page loader
+    loading: false,
     error: null,
 
     selectedTeam: {
       id: null,
       data: null,
-      loading: false, // loader for view modal fetch
+      loading: false,
       error: null,
     },
 
     teamMembers: {
       list: [],
-      loading: false, // loader for get members
+      loading: false,
       error: null,
     },
 

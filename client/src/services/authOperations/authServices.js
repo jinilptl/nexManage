@@ -30,7 +30,7 @@ export function loginUserService(email, password, navigate, rememberMe) {
       const Login_response = await axiosInstance.post(
         LOGIN,
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (Login_response.data.success) {
@@ -121,7 +121,7 @@ export function forgotPasswordService(email) {
       const response = await axiosInstance.post(
         FORGET_PASSWORD,
         { email },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (response.data.success) {
@@ -129,7 +129,7 @@ export function forgotPasswordService(email) {
       }
     } catch (error) {
       toast.error(
-        error?.response?.data?.message || "Failed to send reset link"
+        error?.response?.data?.message || "Failed to send reset link",
       );
     } finally {
       dispatch(setAuthLoading(false));
@@ -145,23 +145,20 @@ export function resetPasswordService(newPassword, token, navigate) {
       const response = await axiosInstance.post(
         `${RESET_PASSWORD}/${token}`,
         { newPassword },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (response.data.success) {
         toast.success("Password reset successfully");
-        navigate("/"); // go to login page
+        navigate("/");
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Password reset failed"
-      );
+      toast.error(error?.response?.data?.message || "Password reset failed");
     } finally {
       dispatch(setAuthLoading(false));
     }
   };
 }
-
 
 export const logoutService = (token, navigate) => {
   return async (dispatch) => {

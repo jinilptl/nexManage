@@ -3,28 +3,24 @@ import { X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addTaskStatusesIntoProjectService } from "../../../services/projectsOperations/projectsServices";
 
-export default function AddColumnModal({ onClose,projectId,token }) {
+export default function AddColumnModal({ onClose, projectId, token }) {
   const [key, setKey] = useState("");
   const [label, setLabel] = useState("");
-  const dispatch=useDispatch()
-
-  
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const payload = {
-      key:key.trim().toLowerCase(),
+      key: key.trim().toLowerCase(),
       label,
     };
-       
-    dispatch(addTaskStatusesIntoProjectService(payload,projectId,token))
-    
+
+    dispatch(addTaskStatusesIntoProjectService(payload, projectId, token));
 
     onClose();
   };
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     document.body.classList.add("modal-open");
     return () => document.body.classList.remove("modal-open");

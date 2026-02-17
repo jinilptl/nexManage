@@ -8,7 +8,6 @@ export default function LogoutModal({ open, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
@@ -32,7 +31,6 @@ export default function LogoutModal({ open, onClose }) {
 
       {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl p-4 sm:p-6 w-full max-w-sm modal-content-enter">
-
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
           Are you sure you want to logout?
         </h2>
@@ -56,7 +54,6 @@ export default function LogoutModal({ open, onClose }) {
             Logout
           </button>
         </div>
-
       </div>
     </div>
   );

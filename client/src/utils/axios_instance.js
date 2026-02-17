@@ -1,12 +1,10 @@
 import axios from "axios";
 
-const Base_Url = import.meta.env.VITE_BASE_URL
-// console.log("backend baseurl is -------",Base_Url);
-
+const Base_Url = import.meta.env.VITE_BASE_URL;
 
 const axiosInstance = axios.create({
-  baseURL: Base_Url, // Replace with your API base URL
-  withCredentials: true, // Include cookies in requests
+  baseURL: Base_Url,
+  withCredentials: true,
 });
 
 export default axiosInstance;

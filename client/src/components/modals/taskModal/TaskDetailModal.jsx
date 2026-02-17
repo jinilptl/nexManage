@@ -35,13 +35,12 @@ export default function TaskDetailModal({ task, onClose }) {
 
   const allTaskActivity = useSelector((state) => state.tasks.activityLogs);
 
-  const {
-    data: subtasks,
-    loading: subtaskLoading,
-  } = useSelector((state) => state.tasks.selectedTaskSubtasks);
+  const { data: subtasks, loading: subtaskLoading } = useSelector(
+    (state) => state.tasks.selectedTaskSubtasks,
+  );
 
   const allTaskAssignee = useSelector(
-    (state) => state.tasks.selectedTask?.data?.assignees || []
+    (state) => state.tasks.selectedTask?.data?.assignees || [],
   );
 
   /* ---------------- SAFE PROJECT ID ---------------- */
@@ -60,7 +59,7 @@ export default function TaskDetailModal({ task, onClose }) {
 
   const canManage = useMemo(
     () => canManageTask(user, projectMembers),
-    [user, projectMembers]
+    [user, projectMembers],
   );
 
   /* ---------------- BODY SCROLL LOCK ---------------- */
@@ -145,8 +144,8 @@ export default function TaskDetailModal({ task, onClose }) {
         projectId,
         task._id,
         token,
-        setUpdateTaskModalOpen
-      )
+        setUpdateTaskModalOpen,
+      ),
     );
   };
 
@@ -158,12 +157,7 @@ export default function TaskDetailModal({ task, onClose }) {
     setIsSavingAssignees(true);
 
     await dispatch(
-      updateAssigneesTaskService(
-        selectedAssignees,
-        projectId,
-        task._id,
-        token
-      )
+      updateAssigneesTaskService(selectedAssignees, projectId, task._id, token),
     );
 
     setAssignees(allTaskAssignee);
@@ -196,7 +190,6 @@ export default function TaskDetailModal({ task, onClose }) {
 
       {/* MODAL */}
       <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in duration-200">
-
         {/* LEFT */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-hide">
           <TaskHeader
@@ -209,7 +202,11 @@ export default function TaskDetailModal({ task, onClose }) {
 
           <div className="space-y-8 mt-2">
             <TaskDescription description={task.description} />
-            <TaskSubtasks subtasks={subtasks || []} task={task} canManage={canManage} />
+            <TaskSubtasks
+              subtasks={subtasks || []}
+              task={task}
+              canManage={canManage}
+            />
             <TaskAttachments task={task} canManage={canManage} />
           </div>
         </div>
@@ -228,11 +225,7 @@ export default function TaskDetailModal({ task, onClose }) {
             canManage={canManage}
           />
 
-          <TaskActivity
-            activities={
-              allTaskActivity?.list || []
-            }
-          />
+          <TaskActivity activities={allTaskActivity?.list || []} />
         </div>
       </div>
 

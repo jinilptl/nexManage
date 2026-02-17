@@ -243,16 +243,12 @@ const forgotPassword = asyncHandler(async (req, res) => {
     .update(resetToken)
     .digest("hex");
 
-  console.log("Generated Reset Token:", resetToken);
-  console.log("Stored Hashed Token:", hashToken);
-
   user.resetPasswordToken = hashToken;
   user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; //15 minutes expires time
 
   await user.save();
 
   const reset_url = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-  console.log("reset url is -----> ", reset_url);
 
   const message = forgot_password_email_template(reset_url);
 
@@ -294,10 +290,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "token not found");
   }
 
-  console.log("reset token is --------> ", token);
-
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  console.log("hased token -------> ", hashedToken);
 
   const user = await UserModel.findOne({
     resetPasswordToken: hashedToken,

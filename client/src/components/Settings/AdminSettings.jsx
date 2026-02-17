@@ -20,14 +20,26 @@ export default function AdminSettings() {
       subtitle="Manage workspace rules and admin controls"
     >
       <div className="border border-gray-200 rounded-xl p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-gray-900">Workspace Details</h3>
+        <h3 className="text-sm font-semibold text-gray-900">
+          Workspace Details
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField label="Company Name" value={companyName} onChange={setCompanyName} />
-          <InputField label="Workspace Name" value={workspaceName} onChange={setWorkspaceName} />
+          <InputField
+            label="Company Name"
+            value={companyName}
+            onChange={setCompanyName}
+          />
+          <InputField
+            label="Workspace Name"
+            value={workspaceName}
+            onChange={setWorkspaceName}
+          />
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Timezone</label>
+            <label className="text-sm font-medium text-gray-700">
+              Timezone
+            </label>
             <select
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
@@ -40,7 +52,9 @@ export default function AdminSettings() {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Language</label>
+            <label className="text-sm font-medium text-gray-700">
+              Language
+            </label>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
@@ -55,7 +69,9 @@ export default function AdminSettings() {
       </div>
 
       <div className="border border-gray-200 rounded-xl p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-gray-900">Permissions & Rules</h3>
+        <h3 className="text-sm font-semibold text-gray-900">
+          Permissions & Rules
+        </h3>
 
         <SettingToggle
           title="Allow members to invite others"

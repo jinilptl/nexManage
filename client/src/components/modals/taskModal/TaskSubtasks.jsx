@@ -12,8 +12,6 @@ export default function TaskSubtasks({ subtasks, task }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  // console.log("subtask is ---> ", subtasks[0]);
-
   const addSubtask = () => {
     if (!newSubtask.trim()) return;
 
@@ -31,8 +29,8 @@ export default function TaskSubtasks({ subtasks, task }) {
         subtask._id,
         task._id,
         task.project,
-        token
-      )
+        token,
+      ),
     );
   };
 
@@ -69,9 +67,12 @@ export default function TaskSubtasks({ subtasks, task }) {
               </span>
             </div>
 
-            <button onClick={()=>{
-              handleDeleteSubTask(sub)
-            }} className="text-gray-400 hover:text-red-500 cursor-pointer">
+            <button
+              onClick={() => {
+                handleDeleteSubTask(sub);
+              }}
+              className="text-gray-400 hover:text-red-500 cursor-pointer"
+            >
               <Trash2 size={14} />
             </button>
           </div>

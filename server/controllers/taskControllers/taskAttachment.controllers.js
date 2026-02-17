@@ -26,13 +26,9 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
       req.file.path,
       `nexmanage/tasks/${taskId}/attachments`
     );
-    console.log("File path:", req.file.path);
-
     if (!uploadResult) {
       throw new ApiError(500, "File upload failed");
     }
-
-    // console.log("resource type is ---> ", uploadResult.resourceType);
 
     const attachment = await TaskAttachmentModel.create({
       task: taskId,
@@ -40,7 +36,6 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
       fileUrl: uploadResult.url,
       fileName: uploadResult.fileName,
       publicId: uploadResult.publicId,
-      // resourceType: uploadResult.resourceType,
       uploadedBy: userId,
     });
 

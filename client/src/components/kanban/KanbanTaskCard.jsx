@@ -32,17 +32,16 @@ export default function KanbanTaskCard({
 
   // SAME COLUMN REORDER
   const [, drop] = useDrop({
-  accept: ItemTypes.TASK,
-  hover(item) {
-    if (!ref.current) return;
-    if (item.columnId !== columnId) return;
-    if (item.index === index) return;
+    accept: ItemTypes.TASK,
+    hover(item) {
+      if (!ref.current) return;
+      if (item.columnId !== columnId) return;
+      if (item.index === index) return;
 
-    moveTask(columnId, item.id, item.index, index);
-    item.index = index;
-  },
-});
-
+      moveTask(columnId, item.id, item.index, index);
+      item.index = index;
+    },
+  });
 
   // DRAG logic
   const [{ isDragging }, drag] = useDrag({
@@ -62,7 +61,7 @@ export default function KanbanTaskCard({
   const cardConfig = priorityConfig[task.priority] || priorityConfig.low;
   const formattedDate = useMemo(
     () => formatDueDate(task.dueDate),
-    [task.dueDate]
+    [task.dueDate],
   );
 
   const dispatch = useDispatch();

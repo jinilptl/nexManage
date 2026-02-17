@@ -170,8 +170,6 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   const projectId=req.params.projectId
 
   const { isCompleted } = req.body;
-  // console.log("is completed---> ",isCompleted);
-  
 
   let subTask = req.subTask;
 
@@ -184,9 +182,6 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
 
   const targetState =
     typeof isCompleted === Boolean ? isCompleted : !subTask.completed;
-
-    // console.log("target state--> ",isCompleted)
-    
 
   if (subTask.completed === targetState) {
     return res

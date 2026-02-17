@@ -126,14 +126,14 @@ export const deleteTeamService = (teamId, token) => {
       const response = await axiosInstance.post(
         `${DELETE_TEAM}/${teamId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
         toast.success("Team deleted successfully!");
 
         const updatedTeams = getState().teams.list.filter(
-          (t) => t._id !== teamId
+          (t) => t._id !== teamId,
         );
 
         dispatch(setTeams(updatedTeams));
@@ -150,7 +150,12 @@ export const deleteTeamService = (teamId, token) => {
 
 //   UPDATE TEAM STATUS (e.g. archive)
 
-export const updateTeamStatusService = (teamId, status, token, currentStatusFilter = "ACTIVE") => {
+export const updateTeamStatusService = (
+  teamId,
+  status,
+  token,
+  currentStatusFilter = "ACTIVE",
+) => {
   return async (dispatch, getState) => {
     try {
       const normalized = String(status).toUpperCase();
@@ -159,12 +164,12 @@ export const updateTeamStatusService = (teamId, status, token, currentStatusFilt
       const response = await axiosInstance.patch(
         url,
         { status: normalized },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
         toast.success(
-          normalized === "ARCHIVED" ? "Team archived." : "Team activated."
+          normalized === "ARCHIVED" ? "Team archived." : "Team activated.",
         );
         dispatch(setSelectedTeamData(response.data.data));
         const role = getState().auth.user.role;
@@ -172,7 +177,7 @@ export const updateTeamStatusService = (teamId, status, token, currentStatusFilt
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to update team status."
+        error.response?.data?.message || "Failed to update team status.",
       );
     }
   };
@@ -188,7 +193,7 @@ export const updateTeamService = (teamId, updatedData, token, onClose) => {
       const response = await axiosInstance.post(
         `${UPDATE_TEAM}/${teamId}`,
         updatedData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -197,7 +202,7 @@ export const updateTeamService = (teamId, updatedData, token, onClose) => {
         dispatch(setSelectedTeamData(response.data.data));
 
         const updatedList = getState().teams.list.map((t) =>
-          t._id === teamId ? response.data.data : t
+          t._id === teamId ? response.data.data : t,
         );
 
         dispatch(setTeams(updatedList));
@@ -220,7 +225,7 @@ export const fetchTeamMembersService = (teamId, token) => {
     try {
       const response = await axiosInstance.get(
         `${GET_TEAM_MEMBERS}/${teamId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -244,7 +249,7 @@ export const addTeamMemberService = (teamId, memberData, token, onClose) => {
       const response = await axiosInstance.post(
         `${ADD_TEAM_MEMBER}/${teamId}`,
         memberData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -271,7 +276,7 @@ export const updateTeamMemberService = (
   updatedData,
   token,
   onClose,
-  setMember
+  setMember,
 ) => {
   return async (dispatch) => {
     dispatch(setUpdateMemberLoading(true));
@@ -280,7 +285,7 @@ export const updateTeamMemberService = (
       const response = await axiosInstance.post(
         `${UPDATE_TEAM_MEMBER}/${teamId}/${memberId}`,
         updatedData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -308,7 +313,7 @@ export const removeTeamMemberService = (teamId, memberId, token) => {
       const response = await axiosInstance.post(
         `${REMOVE_TEAM_MEMBER}/${teamId}/${memberId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {

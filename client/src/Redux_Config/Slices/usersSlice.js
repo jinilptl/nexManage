@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllUsers, updateUser, deleteUser } from "../../services/usersOperations/usersServices";
+import {
+  fetchAllUsers,
+  updateUser,
+  deleteUser,
+} from "../../services/usersOperations/usersServices";
 
 const initialState = {
   list: [],
@@ -27,18 +31,14 @@ const usersSlice = createSlice({
       })
 
       .addCase(updateUser.fulfilled, (state, action) => {
-        const index = state.list.findIndex(
-          (u) => u._id === action.payload._id
-        );
+        const index = state.list.findIndex((u) => u._id === action.payload._id);
         if (index !== -1) {
           state.list[index] = action.payload;
         }
       })
 
       .addCase(deleteUser.fulfilled, (state, action) => {
-        state.list = state.list.filter(
-          (u) => u._id !== action.payload
-        );
+        state.list = state.list.filter((u) => u._id !== action.payload);
       });
   },
 });
