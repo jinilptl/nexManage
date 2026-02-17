@@ -65,8 +65,19 @@ export default function TaskAttachments({ task, canManage }) {
     const projId =
       typeof task.project === "object" ? task.project._id : task.project;
 
+    // Use the resource_type from the attachment object, or default to "raw"
+    // Cloudinary usually returns "image", "video", or "raw".
+    // If it's "auto", we should probably try "raw" or map it, but usually the stored resource_type is correct.
+    const resourceType = attachmentToDelete.resource_type || "raw";
+
     await dispatch(
-      deleteTaskAttachmentService(projId, task._id, attachmentToDelete, token),
+      deleteTaskAttachmentService(
+        projId,
+        task._id,
+        attachmentToDelete._id,
+        token,
+        resourceType,
+      ),
     );
 
     setIsDeleting(false);
@@ -164,7 +175,7 @@ export default function TaskAttachments({ task, canManage }) {
                   className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setAttachmentToDelete(att._id);
+                    setAttachmentToDelete(att);
                   }}
                   title="Delete"
                 >

@@ -54,13 +54,19 @@ export const deleteTaskAttachmentService = (
   taskId,
   attachmentId,
   token,
+  resourceType = "raw",
 ) => {
   return async (dispatch) => {
     dispatch(setAttachmentLoading(true));
     try {
-      const endpoint = DELETE_TASK_ATTACHMENT.replace(":projectId", projectId)
+      let endpoint = DELETE_TASK_ATTACHMENT.replace(":projectId", projectId)
         .replace(":taskId", taskId)
         .replace(":attachmentId", attachmentId);
+
+      // Append resource_type query param
+      // Cloudinary needs to know if it's 'image', 'video', or 'raw' to delete properly.
+      // 'auto' is not valid for delete.
+      endpoint += `?resource_type=${resourceType}`;
 
       const response = await axiosInstance.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` },

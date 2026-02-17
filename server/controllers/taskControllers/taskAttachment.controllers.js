@@ -111,9 +111,19 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
 
   // how to find public id fix it
   if (type === "file" && attachment.publicId) {
-    await cloudinary.uploader.destroy(attachment.publicId, {
-      resource_type: "auto",
-    });
+    try {
+      const resourceType = req.query.resource_type || "raw";
+
+      // Cloudinary destroy does not accept 'auto'.
+      const validResourceType =
+        resourceType === "auto" ? "raw" : resourceType;
+
+      await cloudinary.uploader.destroy(attachment.publicId, {
+        resource_type: validResourceType,
+      });
+    } catch (error) {
+      console.error("Cloudinary destroy failed (non-fatal):", error.message || error);
+    }
   }
 
   await TaskAttachmentModel.findByIdAndDelete(attachment._id);
