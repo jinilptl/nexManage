@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { MoreHorizontal, Calendar, Check } from "lucide-react";
+import { MoreHorizontal, Calendar, Check, Eye } from "lucide-react";
 import TaskPriorityBadge from "../kanban/TaskPriorityBadge";
 import TaskDetailModal from "../modals/taskModal/TaskDetailModal";
 import { formatDueDate } from "../../utils/formatDueDate";
@@ -42,14 +42,8 @@ export default function ListRow({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleRowClick = (e) => {
-    if (
-      e.target.closest("input[type='checkbox']") ||
-      e.target.closest(".actions-container") ||
-      e.target.closest("button")
-    ) {
-      return;
-    }
+  const handleViewTask = () => {
+    setShowActions(false);
     setOpenTaskDetailesModal(true);
     dispatch(setSelectedTaskId(task._id));
     dispatch(setSelectedTask(task));
@@ -62,24 +56,6 @@ export default function ListRow({
     if (onMoveTask) {
       onMoveTask(task._id, newStatusId);
     }
-
-    // 2. Dispatch Action if needed (though onMoveTask usually handles dispatch too)
-    // If onMoveTask is just for local state/UI, ensure API call happens.
-    // In ProjectContent.jsx, onMoveTask is handleMoveTask which might only update local state?
-    // Let's check ProjectContent.jsx handleMoveTask implementation.
-    // Wait, handleMoveTask in ProjectContent is:
-    /*
-      const handleMoveTask = (taskId, newStatus) => {
-        setTasks((prev) =>
-          prev.map((t) =>
-            t.id === taskId ? { ...t, status: newStatus } : t
-          )
-        );
-      };
-    */
-    // It ONLY updates local state. API call must be here or separate.
-    // In KanbanBoard, dispatch(updateTaskStatusService...) is called.
-    // So we MUST dispatch here too.
 
     if (projectId && token) {
       try {
@@ -95,9 +71,8 @@ export default function ListRow({
   return (
     <>
       <div
-        onClick={handleRowClick}
         className={`group grid grid-cols-12 gap-4 px-6 py-3 items-center border-b border-gray-100
-    transition-all cursor-pointer hover:bg-blue-50/40 relative
+    transition-all hover:bg-blue-50/40 relative
     ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
     ${isSelected ? "bg-blue-100/40" : ""}
   `}
@@ -175,9 +150,25 @@ export default function ListRow({
               className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden text-left"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-200 border-b border-gray-100">
+              {/* Header */}
+              <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100">
+                Actions
+              </div>
+
+              {/* View Option */}
+              <button
+                onClick={handleViewTask}
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2 transition-colors border-b border-gray-50"
+              >
+                <Eye size={16} />
+                <span>View Task</span>
+              </button>
+
+              {/* Status Header */}
+              <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-t border-b border-gray-100">
                 Change Status
               </div>
+
               <div className="py-1 max-h-48 overflow-y-auto">
                 {statuses.length > 0 ? (
                   statuses.map((status) => (
