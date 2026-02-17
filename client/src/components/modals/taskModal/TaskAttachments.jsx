@@ -8,7 +8,7 @@ import {
 import ConfirmationModal from "../ConfirmationModal";
 import AttachmentPreviewModal from "../AttachmentPreviewModal";
 
-export default function TaskAttachments({ task }) {
+export default function TaskAttachments({ task, canManage }) {
   const dispatch = useDispatch();
   const token = useSelector((s) => s.auth.token);
   const attachmentLoading = useSelector(
@@ -92,11 +92,13 @@ export default function TaskAttachments({ task }) {
           </span>
         </h3>
 
-        <label className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 transition-all border border-blue-100 group">
-          <span className="group-hover:scale-110 transition-transform">+</span>{" "}
-          Add File
-          <input type="file" hidden onChange={handleFileUpload} />
-        </label>
+        {canManage && (
+          <label className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 transition-all border border-blue-100 group">
+            <span className="group-hover:scale-110 transition-transform">+</span>{" "}
+            Add File
+            <input type="file" hidden onChange={handleFileUpload} />
+          </label>
+        )}
       </div>
 
       {attachmentLoading && attachments.length === 0 && (
@@ -158,16 +160,18 @@ export default function TaskAttachments({ task }) {
                 <Download size={16} />
               </button>
 
-              <button
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setAttachmentToDelete(att._id);
-                }}
-                title="Delete"
-              >
-                <Trash2 size={16} />
-              </button>
+              {canManage && (
+                <button
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setAttachmentToDelete(att._id);
+                  }}
+                  title="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
           </div>
         ))}

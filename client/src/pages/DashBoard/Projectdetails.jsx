@@ -43,74 +43,66 @@ export default function ProjectDetails() {
     });
   };
 
-  let Socket = useRef(null);
-
   useEffect(() => {
-    Socket.current = connectWs();
+    if (!projectId || !user?._id) return;
 
-    Socket.current.connect();
+    const socket = connectWs();
+    socket.connect();
 
-    Socket.current.on("connect", () => {
-      console.log("connected to the server socket ----->"
-      );
-
-      // Socket.current.emit("client-message", "hello from client");
-
-      Socket.current.on("server-message", (msg) => {
-        console.log(" Message from server:", msg);
-      });
-
-      Socket.current.emit("join-project", { projectId });
-
-      const handleTaskCreate = ({ taskId, createdBy }) => {
-        if (createdBy === user._id) return;
-
-        // console.log("TASK:CREATED RECEIVED ", taskId);
-
-        dispatch(getSingleTasksService(projectId, taskId, token));
-      };
-
-      const handleTaskDelete = ({ taskId, createdBy }) => {
-        if (createdBy === user._id) return;
-
-        // console.log("TASK:DELETED RECEIVED ", taskId);
-
-        dispatch(deleteTask(taskId));
-      };
-
-      const handleTaskUpdate = ({ taskId, createdBy }) => {
-        if (createdBy === user._id) return;
-
-        // console.log("TASK:UPDATE RECEIVED ", taskId);
-
-        // dispatch(updateTask(updates))
-
-        dispatch(getSingleTasksService(projectId, taskId, token));
-      };
-
-      const handleTaskMove = ({ taskId, fromStatus, toStatus }) => {
-        // console.log("TASK:MOVE RECEIVED ", taskId);
-        dispatch(moveTaskRealtime({ taskId, fromStatus, toStatus }));
-      };
-
-      Socket.current.on("TASK:CREATE", handleTaskCreate);
-      Socket.current.on("TASK:DELETE", handleTaskDelete);
-      Socket.current.on("TASK:UPDATE", handleTaskUpdate);
-      Socket.current.on("TASK:MOVE", handleTaskMove);
-
-      Socket.current.on("disconnect", () => {
-        console.log(" Disconnected from server");
-      });
-    });
-
-    // console.log("socket cureent==> ", Socket);
-
-    return () => {
-      Socket.current.off("connect");
-      Socket.current.off("server-message");
-      Socket.current.disconnect();
+    // 1. Connection Event (Re-join room on reconnect)
+    const onConnect = () => {
+      console.log("🔌 Socket connected, joining project room:", projectId);
+      socket.emit("join-project", { projectId });
     };
-  }, [projectId]);
+
+    // 2. Task Move Event
+    const handleTaskMove = ({ taskId, toStatus, updatedBy }) => {
+      if (updatedBy === user._id) return; // Ignore self-initiated events
+      console.log("Socket: Task Moved", taskId, "to", toStatus);
+      dispatch(moveTaskRealtime({ taskId, toStatus }));
+    };
+
+    // 3. Task Create Event
+    const handleTaskCreate = ({ taskId, createdBy }) => {
+      if (createdBy === user._id) return;
+      console.log("Socket: Task Created", taskId);
+      // Fetch the full task details to add to Redux
+      dispatch(getSingleTasksService(projectId, taskId, token));
+    };
+
+    // 4. Task Update Event (General updates)
+    const handleTaskUpdate = ({ taskId, updatedBy }) => {
+      if (updatedBy === user._id) return;
+      console.log("Socket: Task Updated", taskId);
+      // Fetch fresh data to ensure consistency
+      dispatch(getSingleTasksService(projectId, taskId, token));
+    };
+
+    // 5. Task Delete Event
+    const handleTaskDelete = ({ taskId, deletedBy }) => {
+      if (deletedBy === user._id) return;
+      console.log("Socket: Task Deleted", taskId);
+      dispatch(deleteTask(taskId));
+    };
+
+    // Attach Listeners
+    socket.on("connect", onConnect);
+    socket.on("TASK:MOVE", handleTaskMove);
+    socket.on("TASK:CREATE", handleTaskCreate);
+    socket.on("TASK:UPDATE", handleTaskUpdate);
+    socket.on("TASK:DELETE", handleTaskDelete);
+
+    // Cleanup
+    return () => {
+      console.log("Cleaning up socket listeners...");
+      socket.off("connect", onConnect);
+      socket.off("TASK:MOVE", handleTaskMove);
+      socket.off("TASK:CREATE", handleTaskCreate);
+      socket.off("TASK:UPDATE", handleTaskUpdate);
+      socket.off("TASK:DELETE", handleTaskDelete);
+      socket.disconnect();
+    };
+  }, [projectId, user?._id, dispatch, token]);
 
   useEffect(() => {
     if (projectId && token) {

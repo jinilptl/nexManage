@@ -24,11 +24,14 @@ import {
 } from "../../../Redux_Config/Slices/tasksSlice";
 
 import ConfirmModal from "../teamsModals/ConfirmModal";
+import { canManageTask } from "../../../utils/permissions";
 
 export default function TaskDetailModal({ task, onClose }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   const project = useSelector((state) => state.projects.selectedProject);
+  const projectMembers = project?.data?.projectMembers || [];
 
   const allTaskActivity = useSelector((state) => state.tasks.activityLogs);
 
@@ -52,6 +55,13 @@ export default function TaskDetailModal({ task, onClose }) {
 
     return task?.project;
   }, [project, task]);
+
+  /* ---------------- PERMISSIONS ---------------- */
+
+  const canManage = useMemo(
+    () => canManageTask(user, projectMembers),
+    [user, projectMembers]
+  );
 
   /* ---------------- BODY SCROLL LOCK ---------------- */
 
@@ -185,33 +195,37 @@ export default function TaskDetailModal({ task, onClose }) {
       />
 
       {/* MODAL */}
-      <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
-        
+      <div className="relative w-full max-w-6xl h-[95vh] sm:h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in duration-200">
+
         {/* LEFT */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-hide">
           <TaskHeader
             task={task}
+            canManage={canManage}
             onEdit={() => setUpdateTaskModalOpen(true)}
             onDelete={handleDeleteTask}
             onClose={onClose}
           />
 
-          <TaskDescription description={task.description} />
-          <TaskSubtasks subtasks={subtasks || []} task={task} />
-          <TaskAttachments task={task} />
+          <div className="space-y-8 mt-2">
+            <TaskDescription description={task.description} />
+            <TaskSubtasks subtasks={subtasks || []} task={task} canManage={canManage} />
+            <TaskAttachments task={task} canManage={canManage} />
+          </div>
         </div>
 
         {/* RIGHT */}
         <div className="w-full md:w-80 border-t md:border-t-0 md:border-l bg-gray-50 p-4 sm:p-6">
           <TaskAssignees
             assignees={assignees}
-            projectMembers={project?.data?.projectMembers || []}
+            projectMembers={projectMembers}
             isAssignMode={isAssignMode}
             setIsAssignMode={setIsAssignMode}
             selectedAssignees={selectedAssignees}
             setSelectedAssignees={setSelectedAssignees}
             onSave={handleSaveAssignees}
             isSaving={isSavingAssignees}
+            canManage={canManage}
           />
 
           <TaskActivity

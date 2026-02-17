@@ -8,44 +8,54 @@ const registerRoomHandlers = (io, socket) => {
       const userId = socket.user._id;
       const userRole = socket.user.role;
 
-      //  Super admin bypass
-      if (userRole === "super_admin") {
+      console.log(`🔌 Join Request: User ${userId} (${userRole}) -> Project ${projectId}`);
+
+      // 1. Super Admin & Admin Bypass
+      if (userRole === "super_admin" || userRole === "admin") {
         const roomName = `project:${projectId}`;
         socket.join(roomName);
-
-        console.log(`Super Admin ${userId} joined room ${roomName}`);
+        console.log(`✅ ${userRole} ${userId} JOINED room ${roomName} (Admin Bypass)`);
         return;
       }
 
-      //Fetch project
+      // Fetch project without population first to check raw IDs
       const project = await Project.findById(projectId);
 
       if (!project) {
-        console.log("Project not found:", projectId);
+        console.log(`❌ Project not found: ${projectId}`);
         return;
       }
 
-      // Project Manager check
+      // 2. Project Manager Check
       if (
         project.projectManager &&
         project.projectManager.toString() === userId.toString()
       ) {
         const roomName = `project:${projectId}`;
         socket.join(roomName);
-
-        console.log(`Project Manager ${userId} joined room ${roomName}`);
+        console.log(`✅ Project Manager ${userId} JOINED room ${roomName}`);
         return;
       }
 
-      //  Active project member check
-      const isActiveMember = project.projectMembers.some(
-        (member) =>
-          member.user.toString() === userId.toString() &&
-          member.status === "active",
-      );
+      // 3. Active Member Check
+      // Ensure we compare strings to avoid ObjectId issues
+      const memberMatch = project.projectMembers.find((member) => {
+        const memberUserId = member.user?._id || member.user; // Handle populated or raw ID
+        if (!memberUserId) return false;
 
-      if (!isActiveMember) {
-        console.log(` User ${userId} not allowed to join project ${projectId}`);
+        return (
+          memberUserId.toString() === userId.toString() &&
+          member.status === "active"
+        );
+      });
+
+      if (!memberMatch) {
+        console.log(`⛔ Access Denied: User ${userId} is NOT an active member of Project ${projectId}`);
+        // Log details for debugging
+        // const memberIds = project.projectMembers.map(m => (m.user?._id || m.user)?.toString());
+        // console.log("   Active Members in Project:", memberIds);
+
+        socket.emit("error", { message: "Access denied to project room" });
         return;
       }
 
@@ -53,7 +63,7 @@ const registerRoomHandlers = (io, socket) => {
       const roomName = `project:${projectId}`;
       socket.join(roomName);
 
-      console.log(`👤 User ${userId} joined room ${roomName}`);
+      console.log(`✅ Member ${userId} JOINED room ${roomName}`);
     } catch (error) {
       console.error("join-project error:", error.message);
     }

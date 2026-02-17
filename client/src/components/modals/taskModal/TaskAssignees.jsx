@@ -1,5 +1,5 @@
 import { Plus, X } from "lucide-react";
- function TaskAssignees({
+function TaskAssignees({
   assignees,
   projectMembers,
   isAssignMode,
@@ -8,6 +8,7 @@ import { Plus, X } from "lucide-react";
   setSelectedAssignees,
   onSave,
   isSaving,
+  canManage,
 }) {
   // open edit mode
   const openEditor = () => {
@@ -48,13 +49,15 @@ import { Plus, X } from "lucide-react";
             </div>
           ))}
 
-          <button
-            onClick={openEditor}
-            className="flex h-8 w-8 items-center cursor-pointer justify-center rounded-full border text-gray-500 hover:bg-gray-100"
-            title="Edit assignees"
-          >
-            <Plus size={14} />
-          </button>
+          {canManage && (
+            <button
+              onClick={openEditor}
+              className="flex h-8 w-8 items-center cursor-pointer justify-center rounded-full border text-gray-500 hover:bg-gray-100 transition-all hover:border-blue-300 hover:text-blue-600"
+              title="Edit assignees"
+            >
+              <Plus size={14} />
+            </button>
+          )}
         </div>
       )}
 

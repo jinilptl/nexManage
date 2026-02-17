@@ -254,6 +254,7 @@ const updateTask = asyncHandler(async (req, res) => {
       taskId: updatedTask._id,
       createdBy: updatedTask.createdBy,
       updates,
+      updatedBy: userId,
     });
   } catch (error) {
     console.error("Socket emit failed (TASK:UPDATE)", error.message);
@@ -306,6 +307,7 @@ const deleteTask = asyncHandler(async (req, res) => {
     io.to(`project:${project}`).emit("TASK:DELETE", {
       taskId: task._id,
       createdBy: task.createdBy,
+      deletedBy: userId,
     });
   } catch (error) {
     console.error("Socket emit failed (TASK_DELETED)", error.message);
@@ -495,6 +497,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
       taskId: task._id,
       fromStatus: oldStatusId.toString(),
       toStatus: statusId.toString(),
+      updatedBy: userId,
     });
   } catch (error) {
     console.error("Socket emit failed (TASK:MOVE)", error.message);
