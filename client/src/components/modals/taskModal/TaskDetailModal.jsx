@@ -25,6 +25,7 @@ import {
 
 import ConfirmModal from "../teamsModals/ConfirmModal";
 import { canManageTask } from "../../../utils/permissions";
+import ModalPortal from "../../ModalPortal";
 
 export default function TaskDetailModal({ task, onClose }) {
   const dispatch = useDispatch();
@@ -169,88 +170,92 @@ export default function TaskDetailModal({ task, onClose }) {
 
   if (subtaskLoading) {
     return (
-      <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div className="relative text-sm text-gray-400">
-          Loading subtasks...
+      <ModalPortal>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative text-sm text-gray-400">
+            Loading subtasks...
+          </div>
         </div>
-      </div>
+      </ModalPortal>
     );
   }
 
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="fixed inset-0 z-100 flex justify-end items-stretch overflow-hidden">
-      {/* BACKDROP */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-        onClick={onClose}
-      />
+    <ModalPortal>
+      <div className="fixed inset-0 z-3000 flex justify-end items-stretch overflow-hidden">
+        {/* BACKDROP */}
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+          onClick={onClose}
+        />
 
-      {/* SIDE DRAWER MODAL */}
-      <div className="relative z-10 w-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:flex-row h-full overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
+        {/* SIDE DRAWER MODAL */}
+        <div className="relative z-10 w-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:flex-row h-full overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
 
-        {/* LEFT PANEL: Main Task Content */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 scrollbar-hide bg-white">
-          <TaskHeader
-            task={task}
-            canManage={canManage}
-            onEdit={() => setUpdateTaskModalOpen(true)}
-            onDelete={handleDeleteTask}
-            onClose={onClose}
-          />
-
-          <div className="space-y-8 mt-6">
-            <TaskDescription description={task.description} />
-            <TaskSubtasks
-              subtasks={subtasks || []}
+          {/* LEFT PANEL: Main Task Content */}
+          <div className="flex-1 overflow-y-auto p-6 sm:p-10 scrollbar-hide bg-white">
+            <TaskHeader
               task={task}
               canManage={canManage}
+              onEdit={() => setUpdateTaskModalOpen(true)}
+              onDelete={handleDeleteTask}
+              onClose={onClose}
             />
-            <TaskAttachments task={task} canManage={canManage} />
+
+            <div className="space-y-8 mt-6">
+              <TaskDescription description={task.description} />
+              <TaskSubtasks
+                subtasks={subtasks || []}
+                task={task}
+                canManage={canManage}
+              />
+              <TaskAttachments task={task} canManage={canManage} />
+            </div>
+          </div>
+
+          {/* RIGHT PANEL: Meta Info & Activity */}
+          <div className="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/80 p-6 overflow-y-auto scrollbar-hide h-full">
+            <TaskAssignees
+              assignees={assignees}
+              projectMembers={projectMembers}
+              isAssignMode={isAssignMode}
+              setIsAssignMode={setIsAssignMode}
+              selectedAssignees={selectedAssignees}
+              setSelectedAssignees={setSelectedAssignees}
+              onSave={handleSaveAssignees}
+              isSaving={isSavingAssignees}
+              canManage={canManage}
+            />
+
+            <div className="mt-8">
+              <TaskActivity activities={allTaskActivity?.list || []} />
+            </div>
           </div>
         </div>
 
-        {/* RIGHT PANEL: Meta Info & Activity */}
-        <div className="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/80 p-6 overflow-y-auto scrollbar-hide h-full">
-          <TaskAssignees
-            assignees={assignees}
-            projectMembers={projectMembers}
-            isAssignMode={isAssignMode}
-            setIsAssignMode={setIsAssignMode}
-            selectedAssignees={selectedAssignees}
-            setSelectedAssignees={setSelectedAssignees}
-            onSave={handleSaveAssignees}
-            isSaving={isSavingAssignees}
-            canManage={canManage}
-          />
+        {/* EDIT TASK MODAL */}
+        <CreateTaskModal
+          isOpen={updateTaskModalOpen}
+          onClose={setUpdateTaskModalOpen}
+          onSubmit={handleUpdateTask}
+          mode="edit"
+          editableData={task}
+        />
 
-          <div className="mt-8">
-            <TaskActivity activities={allTaskActivity?.list || []} />
-          </div>
-        </div>
+        {/* CONFIRM MODAL */}
+        <ConfirmModal
+          open={confirmOpen}
+          title="Delete Task"
+          message="Are you sure you want to delete this task?"
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={handleConfirmAction}
+          onCancel={() => setConfirmOpen(false)}
+        />
       </div>
-
-      {/* EDIT TASK MODAL */}
-      <CreateTaskModal
-        isOpen={updateTaskModalOpen}
-        onClose={setUpdateTaskModalOpen}
-        onSubmit={handleUpdateTask}
-        mode="edit"
-        editableData={task}
-      />
-
-      {/* CONFIRM MODAL */}
-      <ConfirmModal
-        open={confirmOpen}
-        title="Delete Task"
-        message="Are you sure you want to delete this task?"
-        confirmText="Yes"
-        cancelText="Cancel"
-        onConfirm={handleConfirmAction}
-        onCancel={() => setConfirmOpen(false)}
-      />
-    </div>
+    </ModalPortal>
   );
 }
