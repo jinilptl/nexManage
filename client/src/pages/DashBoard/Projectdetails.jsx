@@ -47,12 +47,16 @@ export default function ProjectDetails() {
   useEffect(() => {
     if (!projectId || !user?._id) return;
 
-    const socket = connectWs();
-    socket.connect();
+    const socket = connectWs(token);
 
     // 1. Connection Event (Re-join room on reconnect)
     const onConnect = () => {
+      // console.log("Socket Connected:", socket.id);
       socket.emit("join-project", { projectId });
+    };
+
+    const onError = (err) => {
+      console.error("Socket Connection Error:", err);
     };
 
     // 2. Task Move Event
@@ -81,14 +85,18 @@ export default function ProjectDetails() {
 
     // Attach Listeners
     socket.on("connect", onConnect);
+    socket.on("connect_error", onError);
     socket.on("TASK:MOVE", handleTaskMove);
     socket.on("TASK:CREATE", handleTaskCreate);
     socket.on("TASK:UPDATE", handleTaskUpdate);
     socket.on("TASK:DELETE", handleTaskDelete);
 
+    socket.connect();
+
     // Cleanup
     return () => {
       socket.off("connect", onConnect);
+      socket.off("connect_error", onError);
       socket.off("TASK:MOVE", handleTaskMove);
       socket.off("TASK:CREATE", handleTaskCreate);
       socket.off("TASK:UPDATE", handleTaskUpdate);
