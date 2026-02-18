@@ -1,23 +1,28 @@
 import React from "react";
 
-export default function SettingToggle({ title, desc, enabled, onToggle }) {
+export default function SettingToggle({ title, desc, enabled, onToggle, icon }) {
   return (
-    <div className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-3">
-      <div>
-        <p className="text-sm font-medium text-gray-900">{title}</p>
-        <p className="text-xs text-gray-500">{desc}</p>
+    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition-colors shadow-sm">
+      <div className="flex items-center gap-4">
+        {icon && (
+          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-lg">
+            {icon}
+          </div>
+        )}
+        <div className="space-y-0.5">
+          <h4 className="text-sm font-semibold text-gray-900">{title}</h4>
+          <p className="text-xs text-gray-500">{desc}</p>
+        </div>
       </div>
 
       <button
         onClick={onToggle}
-        className={`w-12 h-6 flex items-center rounded-full px-1 transition ${
-          enabled ? "bg-blue-600" : "bg-gray-300"
-        }`}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${enabled ? 'bg-blue-600' : 'bg-gray-200'
+          }`}
       >
         <span
-          className={`w-4 h-4 bg-white rounded-full transition transform ${
-            enabled ? "translate-x-6" : "translate-x-0"
-          }`}
+          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${enabled ? 'translate-x-5' : 'translate-x-0'
+            }`}
         />
       </button>
     </div>

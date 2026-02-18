@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock, KeyRound, ShieldCheck, Smartphone, Bell, AlertTriangle } from "lucide-react";
 import SettingsCard from "./SettingsCard";
 import SettingToggle from "./SettingToggle";
 import { useDispatch } from "react-redux";
@@ -93,41 +93,65 @@ export default function SecuritySettings() {
         newPassword: false,
       });
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || "Failed to update password");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SettingsCard
-      title="Security"
-      subtitle="Protect your account with extra security options"
-    >
-      {/* <SettingToggle
-        title="Enable Two-Factor Authentication (2FA)"
-        desc="Add extra security by verifying login with OTP"
-        enabled={twoFA}
-        onToggle={() => setTwoFA((p) => !p)}
-      />
+    <div className="space-y-6">
+      {/* Security Features */}
+      {/* <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <ShieldCheck className="text-blue-600" size={20} />
+          Authentication & Alerts
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          <SettingToggle
+            title="Two-Factor Authentication"
+            desc="Add an extra layer of security to your account by requiring a code."
+            enabled={twoFA}
+            onToggle={() => {
+              setTwoFA(!twoFA);
+              toast.success(twoFA ? "Two-Factor Authentication disabled" : "Two-Factor Authentication enabled");
+            }}
+            icon={<Smartphone size={20} />}
+          />
 
-      <SettingToggle
-        title="Login Alerts"
-        desc="Get notified when someone logs into your account"
-        enabled={loginAlerts}
-        onToggle={() => setLoginAlerts((p) => !p)}
-      /> */}
+          <SettingToggle
+            title="Login Notifications"
+            desc="Receive an email when someone logs into your account from an unrecognized device."
+            enabled={loginAlerts}
+            onToggle={() => {
+              setLoginAlerts(!loginAlerts);
+              toast.success(loginAlerts ? "Login alerts disabled" : "Login alerts enabled");
+            }}
+            icon={<Bell size={20} />}
+          />
+        </div>
+      </div> */}
 
-      <div className="border border-gray-200 rounded-xl p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">Change Password</h3>
+      {/* Password Update */}
+      <SettingsCard
+        title="Password Management"
+        subtitle="Manage your password regularly to keep your account secure."
+      >
+        <div className="border border-blue-100 bg-blue-50/50 rounded-lg p-4 mb-6 flex gap-3 text-blue-800">
+          <AlertTriangle size={20} className="shrink-0 mt-0.5" />
+          <p className="text-sm">Never share your password with anyone. Use a strong password containing letters, numbers, and symbols.</p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Current Password */}
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
               Current Password
             </label>
-
-            <div className="relative mt-1">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                <KeyRound size={18} />
+              </div>
               <input
                 type={showPassword.currentPassword ? "text" : "password"}
                 name="currentPassword"
@@ -135,11 +159,12 @@ export default function SecuritySettings() {
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Enter current password"
-                className={`w-full border bg-gray-200 rounded-lg px-3 py-2 pr-10 text-sm outline-none  ${
-                  errors.currentPassword ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full bg-white border rounded-xl pl-10 pr-10 py-2.5 text-sm outline-none transition-all duration-200
+                  ${errors.currentPassword
+                    ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                    : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                  }`}
               />
-
               <button
                 type="button"
                 onClick={() =>
@@ -148,29 +173,27 @@ export default function SecuritySettings() {
                     currentPassword: !prev.currentPassword,
                   }))
                 }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword.currentPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showPassword.currentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             {errors.currentPassword && (
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-xs text-red-600 mt-1.5 ml-1 font-medium flex items-center gap-1">
                 {errors.currentPassword}
               </p>
             )}
           </div>
 
+          {/* New Password */}
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
               New Password
             </label>
-
-            <div className="relative mt-1">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                <Lock size={18} />
+              </div>
               <input
                 type={showPassword.newPassword ? "text" : "password"}
                 name="newPassword"
@@ -178,11 +201,12 @@ export default function SecuritySettings() {
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Enter new password"
-                className={`w-full bg-gray-200 border rounded-lg px-3 py-2 pr-10 text-sm outline-none ${
-                  errors.newPassword ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full bg-white border rounded-xl pl-10 pr-10 py-2.5 text-sm outline-none transition-all duration-200
+                  ${errors.newPassword
+                    ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                    : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                  }`}
               />
-
               <button
                 type="button"
                 onClick={() =>
@@ -191,31 +215,29 @@ export default function SecuritySettings() {
                     newPassword: !prev.newPassword,
                   }))
                 }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword.newPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showPassword.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             {errors.newPassword && (
-              <p className="text-xs text-red-600 mt-1">{errors.newPassword}</p>
+              <p className="text-xs text-red-600 mt-1.5 ml-1 font-medium flex items-center gap-1">
+                {errors.newPassword}
+              </p>
             )}
           </div>
         </div>
 
-        <button
-          onClick={handleUpdatePassword}
-          disabled={loading}
-          className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium
-                     hover:bg-black transition disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? "Updating..." : "Update Password"}
-        </button>
-      </div>
-    </SettingsCard>
+        <div className="pt-4 border-t border-gray-100 flex justify-end">
+          <button
+            onClick={handleUpdatePassword}
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {loading ? "Updating..." : "Update Password"}
+          </button>
+        </div>
+      </SettingsCard>
+    </div>
   );
 }
