@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import DashboardHearderCard from "./DashboardHearderCard";
+import ProjectProgress from "./Analytics/ProjectProgress";
 import { useDispatch, useSelector } from "react-redux";
 import { getDashboardData } from "../Redux_Config/Slices/dashboardSlice";
 
@@ -55,7 +56,7 @@ export default function Dashboard() {
     ? upcomingDeadlines
     : upcomingDeadlines.slice(0, 3);
 
-  const visibleProjects = showAllProjects ? projects : projects.slice(0, 3);
+  const visibleProjects = showAllProjects ? projects : projects.slice(0, 4);
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -189,7 +190,7 @@ export default function Dashboard() {
                     <span className="font-medium">{a.updatedBy?.name}</span>{" "}
                     <span className="text-gray-600">
                       {new Date(a.createdAt).getTime() ===
-                      new Date(a.updatedAt).getTime()
+                        new Date(a.updatedAt).getTime()
                         ? "created task"
                         : "updated task"}
                     </span>{" "}
@@ -229,9 +230,8 @@ export default function Dashboard() {
             return (
               <div
                 key={i}
-                className={`p-3 rounded-lg mb-2 ${
-                  isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
-                }`}
+                className={`p-3 rounded-lg mb-2 ${isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                  }`}
               >
                 <div className="flex justify-between items-start">
                   <div>
@@ -257,43 +257,20 @@ export default function Dashboard() {
         </div>
 
         {/* -------- Project Progress -------- */}
-        <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Project Progress
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Completion status of active projects
-          </p>
-
-          {visibleProjects.length === 0 && (
-            <p className="text-sm text-gray-500">No active projects yet</p>
-          )}
-
-          {visibleProjects.map((p) => (
-            <div key={p.id} className="space-y-2 mb-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-800">{p.name}</span>
-                <span className="text-sm text-gray-700">{p.progress}%</span>
-              </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{ width: `${p.progress}%` }}
-                />
-              </div>
-            </div>
-          ))}
-
-          {projects.length > 3 && (
-            <button
-              onClick={() => setShowAllProjects(!showAllProjects)}
-              className="text-sm text-blue-600 hover:underline mt-2"
-            >
-              {showAllProjects ? "Show less" : "Show more"}
-            </button>
-          )}
-        </div>
+        <ProjectProgress
+          projects={visibleProjects}
+          gridClassName="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-2"
+          footer={
+            projects.length > 4 && (
+              <button
+                onClick={() => setShowAllProjects(!showAllProjects)}
+                className="text-sm text-blue-600 hover:underline mt-4"
+              >
+                {showAllProjects ? "Show less" : "Show more"}
+              </button>
+            )
+          }
+        />
       </div>
     </div>
   );

@@ -12,9 +12,9 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const projectFilter = isAdmin
     ? {}
     : {
-        "projectMembers.user": userId,
-        "projectMembers.status": "active",
-      };
+      "projectMembers.user": userId,
+      "projectMembers.status": "active",
+    };
 
   const projects = await Project.find(projectFilter).select(
     "_id status projectName taskStatuses"
@@ -50,8 +50,8 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const taskFilter = isAdmin
     ? {}
     : {
-        assignees: userId,
-      };
+      assignees: userId,
+    };
 
   const totalTasksCount = await Task.countDocuments(taskFilter);
 
@@ -81,29 +81,29 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const baseTaskFilter = isAdmin
     ? {}
     : {
-        assignees: userId,
-      };
+      assignees: userId,
+    };
 
   const [todoCount, inProgressCount, pendingReviews] = await Promise.all([
     statusIdsMap.todo.length
       ? Task.countDocuments({
-          ...baseTaskFilter,
-          status: { $in: statusIdsMap.todo },
-        })
+        ...baseTaskFilter,
+        status: { $in: statusIdsMap.todo },
+      })
       : 0,
 
     statusIdsMap.in_progress.length
       ? Task.countDocuments({
-          ...baseTaskFilter,
-          status: { $in: statusIdsMap.in_progress },
-        })
+        ...baseTaskFilter,
+        status: { $in: statusIdsMap.in_progress },
+      })
       : 0,
 
     statusIdsMap.review.length
       ? Task.countDocuments({
-          ...baseTaskFilter,
-          status: { $in: statusIdsMap.review },
-        })
+        ...baseTaskFilter,
+        status: { $in: statusIdsMap.review },
+      })
       : 0,
   ]);
 
@@ -144,9 +144,9 @@ export const getDashboardData = asyncHandler(async (req, res) => {
 
     const doneTasks = doneStatus
       ? await Task.countDocuments({
-          project: project._id,
-          status: doneStatus._id,
-        })
+        project: project._id,
+        status: doneStatus._id,
+      })
       : 0;
 
     const progress =
@@ -158,6 +158,10 @@ export const getDashboardData = asyncHandler(async (req, res) => {
       id: project._id,
       name: project.projectName || "Unnamed Project",
       progress,
+      stats: {
+        totalTasks,
+        completedTasks: doneTasks, // Mapping doneTasks to completedTasks for frontend consistency
+      },
     });
   }
 
