@@ -5,7 +5,7 @@ import MetricCard from "../../components/Analytics/MetricCard";
 import StatusPieChart from "../../components/Analytics/StatusPieChart";
 import VelocityLineChart from "../../components/Analytics/VelocityLineChart";
 import PriorityBarChart from "../../components/Analytics/PriorityBarChart";
-import TopContributors from "../../components/Analytics/TopContributors";
+
 import ProjectProgress from "../../components/Analytics/ProjectProgress";
 import { useSelector } from "react-redux";
 import { use, useEffect } from "react";
@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
     statusData,
     priorityData,
     velocityData,
-    contributors,
+
     activeProjects,
   } = useAnalyticsData();
 
@@ -103,9 +103,8 @@ export default function AnalyticsPage() {
         <VelocityLineChart velocityData={velocityData} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <PriorityBarChart priorityData={priorityData} />
-        <TopContributors contributors={contributors} />
       </div>
 
       <ProjectProgress projects={activeProjects} />

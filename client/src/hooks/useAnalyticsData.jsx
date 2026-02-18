@@ -11,7 +11,7 @@ export default function useAnalyticsData() {
     statusData: [],
     priorityData: [],
     velocityData: [],
-    contributors: [],
+
     activeProjects: [],
   });
 

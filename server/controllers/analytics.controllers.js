@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Task } from "../models/Task models/task.models.js";
 import { Project } from "../models/project.models.js";
-import { User } from "../models/user.models.js";
+
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
@@ -144,43 +144,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     completed: v.completed,
   }));
 
-  const contributorsAgg = await Task.aggregate([
-    { $match: baseTaskMatch },
-    { $match: { status: { $in: doneStatusIds } } },
-    { $unwind: "$assignees" },
-    {
-      $group: {
-        _id: "$assignees",
-        tasksCompleted: { $sum: 1 },
-        avgCompletionTime: {
-          $avg: {
-            $divide: [
-              { $subtract: ["$updatedAt", "$createdAt"] },
-              1000 * 60 * 60 * 24,
-            ],
-          },
-        },
-      },
-    },
-    { $sort: { tasksCompleted: -1 } },
-    { $limit: 5 },
-  ]);
 
-  const contributors = await User.populate(contributorsAgg, {
-    path: "_id",
-    select: "name email avatar",
-  });
-
-  const formattedContributors = contributors
-    .filter((c) => c._id)
-    .map((c) => ({
-      id: c._id._id,
-      name: c._id.name,
-      avatar: c._id.avatar || null,
-      tasksCompleted: c.tasksCompleted,
-      comments: 0,
-      avgCompletionTime: Math.max(0, Math.round(c.avgCompletionTime || 0)),
-    }));
 
   const activeProjectsData = [];
   for (const p of userProjects) {
@@ -216,7 +180,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
       statusData,
       priorityData,
       velocityData,
-      contributors: formattedContributors,
+
       activeProjects: activeProjectsData,
     }),
   );
