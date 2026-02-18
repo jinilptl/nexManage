@@ -21,6 +21,7 @@ import {
   updateTask,
 } from "../../Redux_Config/Slices/tasksSlice";
 
+
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
   const { projectId } = useParams();
@@ -166,6 +167,8 @@ export default function ProjectDetails() {
           onSubmit={onSubmit}
         />
       )}
+
+
     </div>
   );
 }
