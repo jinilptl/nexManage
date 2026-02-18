@@ -75,9 +75,8 @@ export default function Navigation({
       </div>
 
       <div
-        className={`hidden md:flex fixed cursor-pointer z-2000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${
-          collapsed ? "w-20" : "w-64"
-        }`}
+        className={`hidden md:flex fixed cursor-pointer z-2000 left-0 top-0 h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex-col transition-all duration-300 ${collapsed ? "w-20" : "w-64"
+          }`}
       >
         <div className="p-4 flex items-center justify-between border-b border-slate-700">
           {!collapsed && (
@@ -108,11 +107,10 @@ export default function Navigation({
               <Link
                 to={item.to}
                 key={idx}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${
-                  collapsed
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${collapsed
                     ? "justify-center"
                     : "text-slate-200 hover:bg-slate-700 hover:text-white"
-                } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
+                  } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
               >
                 <item.icon className="w-5 h-5" />
                 {!collapsed && <span className="text-sm">{item.label}</span>}
@@ -123,9 +121,8 @@ export default function Navigation({
         <div className="relative p-2 border-t border-slate-700">
           <button
             onClick={toggleUserMenu}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full ${
-              collapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full ${collapsed ? "justify-center" : ""
+              }`}
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
               {user.name[0].toUpperCase()}
@@ -142,28 +139,24 @@ export default function Navigation({
 
           {/* Dropdown Menu */}
           {userMenuOpen && (
-            <div className="absolute bottom-14 left-2 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-lg text-sm animate-fadeIn">
-              <div className="px-4 py-2 font-semibold border-b border-slate-700">
-                My Account
+            <div className="absolute bottom-16 left-2 w-60 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="p-4 bg-slate-800/50 border-b border-slate-700/50">
+                <p className="text-sm font-medium text-white">{user.name}</p>
+                <p className="text-xs text-slate-400 truncate mt-0.5 opacity-80">{user.email}</p>
               </div>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Profile
-              </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                Settings
-              </button>
-              <div className="border-t border-slate-700" />
-              <button
-                onClick={() => {
-                  setLogoutModalOpen(true);
-                }}
-                className="w-full text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </button>
+              <div className="p-1.5">
+                <button
+                  onClick={() => {
+                    setLogoutModalOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-800 flex items-center gap-3 text-red-400 hover:text-red-300 transition-all group"
+                >
+                  <div className="p-1.5 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
+                    <LogOut className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium">Sign Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -180,9 +173,8 @@ export default function Navigation({
       )}
 
       <div
-        className={`md:hidden fixed left-0 top-0 h-screen w-64 bg-linear-to-b from-slate-900 to-slate-800 text-white z-50 flex flex-col transition-transform duration-300 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`md:hidden fixed left-0 top-0 h-screen w-64 bg-linear-to-b from-slate-900 to-slate-800 text-white z-50 flex flex-col transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="p-4 flex items-center justify-between border-b border-slate-700">
           <div className="flex items-center gap-2">
@@ -208,9 +200,8 @@ export default function Navigation({
                 key={idx}
                 to={item.to}
                 onClick={() => setMobileOpen(false)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:bg-slate-700 hover:text-white transition-colors ${
-                  location.pathname === item.to ? "bg-slate-700 text-white" : ""
-                }`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:bg-slate-700 hover:text-white transition-colors ${location.pathname === item.to ? "bg-slate-700 text-white" : ""
+                  }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="text-sm">{item.label}</span>
@@ -236,30 +227,24 @@ export default function Navigation({
           </button>
 
           {userMenuOpen && (
-            <div className="absolute bottom-14 left-2 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-lg text-sm animate-fadeIn">
-              <div
-                className={`px-4  py-2 font-semibold border-b border-slate-700`}
-              >
-                My Account
+            <div className="absolute bottom-20 left-4 right-4 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="p-4 bg-slate-800/50 border-b border-slate-700/50">
+                <p className="text-sm font-medium text-white">{user.name}</p>
+                <p className="text-xs text-slate-400 truncate mt-0.5 opacity-80">{user.email}</p>
               </div>
-              <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Profile
-              </button>
-              <button className="w-full text-left cursor-pointer px-4 py-2 hover:bg-slate-700 flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                Settings
-              </button>
-              <div className="border-t border-slate-700" />
-              <button
-                onClick={() => {
-                  setLogoutModalOpen(true);
-                }}
-                className="w-full cursor-pointer text-left px-4 py-2 hover:bg-slate-700 flex items-center gap-2 text-red-500"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </button>
+              <div className="p-1.5">
+                <button
+                  onClick={() => {
+                    setLogoutModalOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-800 flex items-center gap-3 text-red-400 hover:text-red-300 transition-all group"
+                >
+                  <div className="p-1.5 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
+                    <LogOut className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium">Sign Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
