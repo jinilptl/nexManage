@@ -101,19 +101,19 @@ export default function ListRow({
         </div>
 
         {/* Status */}
-        <div className="col-span-2 hidden sm:flex">
+        <div className="col-span-2 sm:flex">
           <span className="px-2.5 py-0.5 rounded-full text-xs bg-gray-200 truncate">
             {statusLabel}
           </span>
         </div>
 
         {/* Priority */}
-        <div className="col-span-2 hidden md:block">
+        <div className="col-span-2 md:block">
           <TaskPriorityBadge priority={task.priority} />
         </div>
 
         {/* Assignee */}
-        <div className="col-span-2 hidden lg:flex -space-x-2">
+        <div className="col-span-2 lg:flex -space-x-2">
           {task.assignees?.length ? (
             task.assignees.map((a, i) => (
               <div
@@ -129,7 +129,7 @@ export default function ListRow({
         </div>
 
         {/* Due Date */}
-        <div className="col-span-1 hidden xl:flex justify-start text-sm">
+        <div className="col-span-1 xl:flex justify-start text-sm">
           <span
             className={isOverdue ? "text-red-600 font-medium" : "text-gray-500"}
           >
@@ -139,7 +139,7 @@ export default function ListRow({
 
         {/* Actions */}
         <div
-          className="col-span-1 hidden sm:flex justify-center relative actions-container"
+          className="col-span-1 sm:flex justify-center relative actions-container"
           ref={actionsRef}
         >
           <button
