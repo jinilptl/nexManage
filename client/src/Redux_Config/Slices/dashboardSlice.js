@@ -3,8 +3,8 @@ import { fetchMainDashboard } from "../../services/analyticsOperations/analytics
 
 export const getDashboardData = createAsyncThunk(
   "dashboard/dashboard",
-  async () => {
-    const res = await fetchMainDashboard();
+  async (token) => {
+    const res = await fetchMainDashboard(token);
     return res.data;
   },
 );

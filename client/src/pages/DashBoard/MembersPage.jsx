@@ -31,9 +31,13 @@ export default function Members() {
     document.title = "Members | NexManage";
   }, []);
 
+  const { token } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    dispatch(fetchAllUsers());
-  }, [dispatch]);
+    if (token) {
+      dispatch(fetchAllUsers(token));
+    }
+  }, [dispatch, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

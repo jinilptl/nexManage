@@ -17,6 +17,7 @@ import { getDashboardData } from "../Redux_Config/Slices/dashboardSlice";
 
 export default function Dashboard() {
   const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token)
   const isAdmin = user?.role === "super_admin" || user?.role === "admin";
   const UserRole = user.role;
   const dispatch = useDispatch();
@@ -26,9 +27,12 @@ export default function Dashboard() {
   const recentActivity = data?.recentActivity || [];
   const [showAllDeadlines, setShowAllDeadlines] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
+
   useEffect(() => {
-    dispatch(getDashboardData());
-  }, [dispatch]);
+    if (token) {
+      dispatch(getDashboardData(token));
+    }
+  }, [dispatch, token]);
 
   const tasks = [
     { label: "To Do", color: "bg-slate-500", count: data?.todoCount || 0 },

@@ -4,9 +4,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchAllUsers = createAsyncThunk(
   "users/fetchAllUsers",
-  async (_, { rejectWithValue }) => {
+  async (token, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(usersEndpoints.GET_ALL_USERS);
+      const response = await axiosInstance.get(usersEndpoints.GET_ALL_USERS, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       return response.data.data;
     } catch (error) {

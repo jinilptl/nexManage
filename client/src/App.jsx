@@ -14,7 +14,7 @@ import ProtectedWrapper from "./components/Wrappers/ProtectedWrapper";
 import AdminWrapper from "./components/Wrappers/AdminWrapper";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProjectDetails from "./pages/DashBoard/Projectdetails";
-import AnalyticsPage from "./pages/Analytics/AnalyticsPage";
+import AnalyticsPage from "./pages/Dashboard/AnalyticsPage";
 import InviteMembers from "./pages/DashBoard/InviteMembers";
 import SettingsPage from "./pages/Settings/SettingsPage";
 import Members from "./pages/DashBoard/MembersPage";

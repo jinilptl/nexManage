@@ -17,7 +17,7 @@ export default function DashboardPage() {
     useSelector((state) => state.auth.token) ||
     localStorage.getItem("token") ||
     sessionStorage.getItem("token");
-
+    
   useEffect(() => {
     if (token) {
       dispatch(getMyProfileService(token));

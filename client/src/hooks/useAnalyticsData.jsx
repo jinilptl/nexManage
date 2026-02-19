@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchDashboardAnalytics } from "../services/analyticsOperations/analyticsServices";
+import { useSelector } from "react-redux";
 
 export default function useAnalyticsData() {
   const [data, setData] = useState({
@@ -17,11 +18,12 @@ export default function useAnalyticsData() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     const loadAnalytics = async () => {
       try {
-        const res = await fetchDashboardAnalytics();
+        const res = await fetchDashboardAnalytics(token);
 
         if (res?.success) {
           setData(res.data);
@@ -36,8 +38,10 @@ export default function useAnalyticsData() {
       }
     };
 
-    loadAnalytics();
-  }, []);
+    if (token) {
+      loadAnalytics();
+    }
+  }, [token]);
 
   return {
     ...data,
