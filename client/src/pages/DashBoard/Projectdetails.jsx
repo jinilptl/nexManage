@@ -85,6 +85,13 @@ export default function ProjectDetails() {
       dispatch(deleteTask(taskId));
     };
 
+    // 6. Task Assignees Updated
+    const handleTaskAssigneesUpdated = ({ taskId, updatedTask }) => {
+      // Dispatch updateTask to update the list and selectedTask
+      // We assume updatedTask is fully populated as per backend contract
+      dispatch(updateTask(updatedTask));
+    };
+
     // Attach Listeners
     socket.on("connect", onConnect);
     socket.on("connect_error", onError);
@@ -92,6 +99,7 @@ export default function ProjectDetails() {
     socket.on("TASK:CREATE", handleTaskCreate);
     socket.on("TASK:UPDATE", handleTaskUpdate);
     socket.on("TASK:DELETE", handleTaskDelete);
+    socket.on("TASK_ASSIGNEES_UPDATED", handleTaskAssigneesUpdated);
 
     socket.connect();
 
@@ -103,6 +111,7 @@ export default function ProjectDetails() {
       socket.off("TASK:CREATE", handleTaskCreate);
       socket.off("TASK:UPDATE", handleTaskUpdate);
       socket.off("TASK:DELETE", handleTaskDelete);
+      socket.off("TASK_ASSIGNEES_UPDATED", handleTaskAssigneesUpdated);
       socket.disconnect();
     };
   }, [projectId, user?._id, dispatch, token]);

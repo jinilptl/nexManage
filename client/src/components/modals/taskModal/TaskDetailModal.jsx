@@ -72,9 +72,25 @@ export default function TaskDetailModal({ task, onClose }) {
     };
   }, []);
 
+  /* ---------------- DERIVED STATE ---------------- */
+
+  const assignees = useMemo(() => {
+    if (!task?.assignees) return [];
+
+    return task.assignees.map((a) => {
+      // If a is an object with name, it's likely populated
+      if (typeof a === "object" && a.name) return a;
+
+      // If unpopulated ID or partial object, find in projectMembers
+      const id = typeof a === "object" ? a._id : a;
+      const member = projectMembers.find((m) => m.user?._id === id);
+      return member?.user || { _id: id, name: "Unknown" };
+    });
+  }, [task?.assignees, projectMembers]);
+
   /* ---------------- LOCAL STATE ---------------- */
 
-  const [assignees, setAssignees] = useState(task.assignees || []);
+  // assignees state removed - using derived assignees above
   const [isAssignMode, setIsAssignMode] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = useState(false);
@@ -161,7 +177,7 @@ export default function TaskDetailModal({ task, onClose }) {
       updateAssigneesTaskService(selectedAssignees, projectId, task._id, token),
     );
 
-    setAssignees(allTaskAssignee);
+    // No need to manually set assignees - Redux update propagates to props
     setIsAssignMode(false);
     setIsSavingAssignees(false);
   };

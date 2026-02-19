@@ -326,43 +326,35 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
 
   const { assignees } = req.body;
 
-  if (!Array.isArray(assignees) || assignees.length === 0) {
-    throw new ApiError(400, "Assignees must be a non-empty array");
+  if (!Array.isArray(assignees)) {
+    throw new ApiError(400, "Assignees must be an array");
   }
-
-  //  Get active project member IDs
 
   const activeProjectMemberIds = project.projectMembers
     .filter((member) => member.status === "active")
     .map((member) => member.user.toString());
 
-  //  Validate all assignees
-
   const areAssigneesValid = assignees.every((assigneeId) =>
-    activeProjectMemberIds.includes(assigneeId.toString()),
+    activeProjectMemberIds.includes(assigneeId.toString())
   );
 
   if (!areAssigneesValid) {
     throw new ApiError(
       400,
-      "One or more assignees are not active project members",
+      "One or more assignees are not active project members"
     );
   }
-
-  //  detect added & removed assignees for meta track
 
   const previousAssignees = task.assignees.map((id) => id.toString());
   const newAssignees = assignees.map((id) => id.toString());
 
   const addedAssignees = newAssignees.filter(
-    (id) => !previousAssignees.includes(id),
+    (id) => !previousAssignees.includes(id)
   );
 
   const removedAssignees = previousAssignees.filter(
-    (id) => !newAssignees.includes(id),
+    (id) => !newAssignees.includes(id)
   );
-
-  //  Update task
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
@@ -370,10 +362,11 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
       assignees: newAssignees,
       updatedBy: userId,
     },
-    { new: true },
-  );
-
-  // Activity log
+    { new: true }
+  )
+    .populate("assignees", "name email")
+    .populate("createdBy", "name email")
+    .populate("updatedBy", "name email");
 
   await createTaskActivityLog({
     taskId: task._id,
@@ -391,8 +384,7 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
 
     io.to(`project:${task.project}`).emit("TASK_ASSIGNEES_UPDATED", {
       taskId: task._id,
-      added: addedAssignees,
-      removed: removedAssignees,
+      updatedTask, 
     });
   } catch (error) {
     console.error("Socket emit failed (TASK_ASSIGNEES_UPDATED)", error.message);
@@ -401,9 +393,10 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Task assignees updated successfully", updatedTask),
+      new ApiResponse(200, "Task assignees updated successfully", updatedTask)
     );
 });
+
 
 // one column to another column
 const updateTaskStatus = asyncHandler(async (req, res) => {
