@@ -192,11 +192,11 @@ export default function TaskDetailModal({ task, onClose }) {
           onClick={onClose}
         />
 
-        {/* SIDE DRAWER MODAL */}
-        <div className="relative z-10 w-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:flex-row h-full overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
+        {/* SIDE DRAWER MODAL - FLEX COLUMN */}
+        <div className="relative z-10 w-full h-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
 
-          {/* LEFT PANEL: Main Task Content */}
-          <div className="flex-1 overflow-y-auto p-6 sm:p-10 scrollbar-hide bg-white">
+          {/* 1. HEADER (Sticky on Mobile, Static on Desktop) */}
+          <div className="flex-none bg-white z-20 border-b border-gray-100 px-4 py-3 sm:px-6 sm:py-5 sticky top-0 md:static">
             <TaskHeader
               task={task}
               canManage={canManage}
@@ -204,35 +204,59 @@ export default function TaskDetailModal({ task, onClose }) {
               onDelete={handleDeleteTask}
               onClose={onClose}
             />
-
-            <div className="space-y-8 mt-6">
-              <TaskDescription description={task.description} />
-              <TaskSubtasks
-                subtasks={subtasks || []}
-                task={task}
-                canManage={canManage}
-              />
-              <TaskAttachments task={task} canManage={canManage} />
-            </div>
           </div>
 
-          {/* RIGHT PANEL: Meta Info & Activity */}
-          <div className="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/80 p-6 overflow-y-auto scrollbar-hide h-full">
-            <TaskAssignees
-              assignees={assignees}
-              projectMembers={projectMembers}
-              isAssignMode={isAssignMode}
-              setIsAssignMode={setIsAssignMode}
-              selectedAssignees={selectedAssignees}
-              setSelectedAssignees={setSelectedAssignees}
-              onSave={handleSaveAssignees}
-              isSaving={isSavingAssignees}
-              canManage={canManage}
-            />
+          {/* 2. CONTENT BODY (Flex Row for Desktop Side-by-Side) */}
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-white">
 
-            <div className="mt-8">
-              <TaskActivity activities={allTaskActivity?.list || []} />
+            {/* LEFT: Main Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 scrollbar-hide bg-white">
+              <div className="space-y-8 pb-10">
+                <TaskDescription description={task.description} />
+                <TaskSubtasks
+                  subtasks={subtasks || []}
+                  task={task}
+                  canManage={canManage}
+                />
+                <TaskAttachments task={task} canManage={canManage} />
+
+                {/* Mobile Only: Meta & Activity */}
+                <div className="md:hidden space-y-8 pt-6 border-t border-gray-100">
+                  <TaskAssignees
+                    assignees={assignees}
+                    projectMembers={projectMembers}
+                    isAssignMode={isAssignMode}
+                    setIsAssignMode={setIsAssignMode}
+                    selectedAssignees={selectedAssignees}
+                    setSelectedAssignees={setSelectedAssignees}
+                    onSave={handleSaveAssignees}
+                    isSaving={isSavingAssignees}
+                    canManage={canManage}
+                  />
+                  <TaskActivity activities={allTaskActivity?.list || []} />
+                </div>
+              </div>
             </div>
+
+            {/* RIGHT: Sidebar (Desktop Only) */}
+            <div className="hidden md:block w-96 border-l border-gray-100 bg-gray-50/80 p-6 overflow-y-auto scrollbar-hide">
+              <TaskAssignees
+                assignees={assignees}
+                projectMembers={projectMembers}
+                isAssignMode={isAssignMode}
+                setIsAssignMode={setIsAssignMode}
+                selectedAssignees={selectedAssignees}
+                setSelectedAssignees={setSelectedAssignees}
+                onSave={handleSaveAssignees}
+                isSaving={isSavingAssignees}
+                canManage={canManage}
+              />
+
+              <div className="mt-8">
+                <TaskActivity activities={allTaskActivity?.list || []} />
+              </div>
+            </div>
+
           </div>
         </div>
 
