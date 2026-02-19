@@ -84,33 +84,6 @@ export default function ListHeader({
           />
         </div>
       </div>
-
-      {/* Table Header Row */}
-      {/* <div className="grid grid-cols-6 gap-4 px-6 py-3 bg-gray-50/50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-100"> */}
-      {/* <div className="col-span-1 flex items-center justify-center">
-                    <input
-                        type="checkbox"
-                        checked={allSelected}
-                        onChange={onToggleSelectAll}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                    />
-                </div> */}
-      {/* <div className="col-span-2 pl-2">Task Name</div>
-                <div className="col-span-2  sm:block">Status</div>
-                <div className="col-span-2 hidden md:block">Priority</div>
-                <div className="col-span-2 hidden lg:block">Assignee</div>
-                <div className="col-span-2 hidden xl:block text-right pr-4">Due Date</div>
-                <div className="col-span-1 hidden sm:block text-center">Actions</div>
-            </div> */}
-
-      <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-200">
-        <div className="col-span-4">Task</div>
-        <div className="col-span-2">Status</div>
-        <div className="col-span-2">Priority</div>
-        <div className="col-span-2">Assignee</div>
-        <div className="col-span-1 text-start">Due</div>
-        <div className="col-span-1 text-center">Actions</div>
-      </div>
     </div>
   );
 }
