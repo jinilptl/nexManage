@@ -1,44 +1,128 @@
-import { Share2, Settings } from "lucide-react";
+import { Layout, Users, Calendar, CheckCircle2, AlertCircle, Archive, Clock } from "lucide-react";
 
 export default function ProjectHeader({ project }) {
-  return (
-    <div className="flex items-start justify-between mb-8">
-      <div className="flex gap-4 min-w-0">
-        {/* Icon */}
-        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
-          🌐
-        </div>
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "ACTIVE":
+        return {
+          bg: "bg-emerald-100",
+          text: "text-emerald-700",
+          border: "border-emerald-200",
+          icon: CheckCircle2
+        };
+      case "COMPLETED":
+        return {
+          bg: "bg-blue-100",
+          text: "text-blue-700",
+          border: "border-blue-200",
+          icon: CheckCircle2
+        };
+      case "ON_HOLD":
+        return {
+          bg: "bg-amber-100",
+          text: "text-amber-700",
+          border: "border-amber-200",
+          icon: AlertCircle
+        };
+      case "ARCHIVED":
+        return {
+          bg: "bg-slate-100",
+          text: "text-slate-700",
+          border: "border-slate-200",
+          icon: Archive
+        };
+      default:
+        return {
+          bg: "bg-gray-100",
+          text: "text-gray-700",
+          border: "border-gray-200",
+          icon: Clock
+        };
+    }
+  };
 
-        {/* Info */}
-        <div className="min-w-0">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-gray-900 truncate max-w-[60vw]">
-              {project.projectName}
-            </h1>
-            <span className="px-3 py-1 text-xs rounded-full bg-black text-white">
-              {project.status}
-            </span>
+  const statusStyle = getStatusStyle(project.status);
+  const StatusIcon = statusStyle.icon;
+
+  // Format date if available
+  const formattedDate = project.createdAt
+    ? new Date(project.createdAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
+    : null;
+
+  return (
+    <div className="bg-white rounded-2xl p-6 mb-8 border border-gray-100 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="flex gap-5 min-w-0 flex-1">
+          {/* Project Icon */}
+          <div className="shrink-0">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
+              <Layout className="w-8 h-8" />
+            </div>
           </div>
 
-          <p className="text-sm text-gray-500 mt-1">{project.description}</p>
+          {/* Project Details */}
+          <div className="flex-1 min-w-0 pt-1">
+            <div className="flex flex-wrap items-center gap-3 mb-2">
+              <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight truncate">
+                {project.projectName}
+              </h1>
+              <span
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+              >
+                <StatusIcon className="w-3.5 h-3.5" />
+                {project.status?.replace("_", " ")}
+              </span>
+            </div>
 
-          {/* Members */}
-          <div className="flex items-center gap-3 mt-3">
-            <div className="flex -space-x-2">
-              {project.projectMembers?.map((m) => (
-                <div className="w-8 h-8 text-xl rounded-full border-2 border-white text-center bg-amber-500">
-                  {m.user?.name[0].toUpperCase()}
+            <p className="text-gray-500 text-sm leading-relaxed max-w-2xl mb-4 line-clamp-2">
+              {project.description || "No description provided for this project."}
+            </p>
+
+            {/* Meta Info */}
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-400" />
+                <span>
+                  {project.projectMembers?.length || 0} Member
+                  {project.projectMembers?.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+              {formattedDate && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <span>Created {formattedDate}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Members Avatars */}
+        {project.projectMembers?.length > 0 && (
+          <div className="flex flex-col items-end gap-2 md:self-center shrink-0">
+            <div className="flex -space-x-3">
+              {project.projectMembers.slice(0, 5).map((m, index) => (
+                <div
+                  key={index}
+                  className="w-10 h-10 rounded-full border-2 border-white bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium shadow-sm ring-2 ring-white cursor-help transition-transform hover:-translate-y-1 z-0 hover:z-10"
+                  title={m.user?.name}
+                >
+                  {m.user?.name ? m.user.name[0].toUpperCase() : "?"}
                 </div>
               ))}
+              {project.projectMembers.length > 5 && (
+                <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-bold shadow-sm ring-2 ring-white z-0">
+                  +{project.projectMembers.length - 5}
+                </div>
+              )}
             </div>
-            <span className="text-sm text-gray-500">
-              {project.projectMembers.length} members
-            </span>
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Actions removed */}
     </div>
   );
 }

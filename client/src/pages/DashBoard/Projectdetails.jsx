@@ -22,6 +22,8 @@ import {
 } from "../../Redux_Config/Slices/tasksSlice";
 
 
+import { Home, ChevronRight } from "lucide-react";
+
 export default function ProjectDetails() {
   const [activeTab, setActiveTab] = useState("board");
   const { projectId } = useParams();
@@ -146,13 +148,15 @@ export default function ProjectDetails() {
   return (
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
       {/* Breadcrumb */}
-      <div className="text-sm text-gray-600 mb-4">
-        <Link to="/dashboard/projects" className="hover:text-blue-600">
+      <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 mx-6 rounded-xl border border-gray-100 shadow-sm w-fit">
+        <Link to="/dashboard/projects" className="hover:text-blue-600 transition-colors">
           Projects
-        </Link>{" "}
-        <span className="mx-1">›</span>
-        <span className="text-gray-700">{projectData?.data?.projectName}</span>
-      </div>
+        </Link>
+        <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
+        <span className="font-medium text-gray-900 truncate max-w-[200px]">
+          {projectData?.data?.projectName}
+        </span>
+      </nav>
 
       <ProjectHeader project={projectData?.data} />
 
