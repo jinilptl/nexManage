@@ -14,11 +14,15 @@ import userRouter from "./routes/user.routes.js";
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173", "http://localhost:4173"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:4173",
+];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: true, // Allow any origin (for development/network access)
     credentials: true,
   }),
 );
