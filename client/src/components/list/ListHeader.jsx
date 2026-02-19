@@ -84,6 +84,16 @@ export default function ListHeader({
           />
         </div>
       </div>
+
+      {/* Column Headers */}
+      <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-200">
+        <div className="col-span-4">Task</div>
+        <div className="col-span-2">Status</div>
+        <div className="col-span-2">Priority</div>
+        <div className="col-span-2">Assignee</div>
+        <div className="col-span-1 text-start">Due</div>
+        <div className="col-span-1 text-center">Actions</div>
+      </div>
     </div>
   );
 }

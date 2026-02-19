@@ -70,14 +70,6 @@ export default function ListRow({
 
   return (
     <>
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-200">
-        <div className="col-span-4">Task</div>
-        <div className="col-span-2">Status</div>
-        <div className="col-span-2">Priority</div>
-        <div className="col-span-2">Assignee</div>
-        <div className="col-span-1 text-start">Due</div>
-        <div className="col-span-1 text-center">Actions</div>
-      </div>
       <div
         className={`group grid grid-cols-12 gap-4 px-6 py-3 items-center border-b border-gray-100
     transition-all hover:bg-blue-50/40 relative
@@ -202,12 +194,14 @@ export default function ListRow({
         </div>
       </div>
 
-      {openTaskDetailesModal && (
-        <TaskDetailModal
-          task={task}
-          onClose={() => setOpenTaskDetailesModal(false)}
-        />
-      )}
+      {
+        openTaskDetailesModal && (
+          <TaskDetailModal
+            task={task}
+            onClose={() => setOpenTaskDetailesModal(false)}
+          />
+        )
+      }
     </>
   );
 }
