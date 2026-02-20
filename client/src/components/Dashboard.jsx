@@ -73,75 +73,82 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <DashboardHearderCard
           heading="Total Projects"
-          mainIcon={<FolderKanban className="h-4 w-4 text-blue-600" />}
+          mainIcon={<FolderKanban className="h-6 w-6 text-white" />}
           data={data?.totalProjects || 0}
           text={`${data?.activeProjectsCount || 0} Active, ${data?.completedProjectsCount || 0} Done`}
-          textColor="text-blue-600"
+          bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
         />
         <DashboardHearderCard
           heading="Total Teams"
-          mainIcon={<Users className="h-4 w-4 text-purple-600" />}
+          mainIcon={<Users className="h-6 w-6 text-white" />}
           data={data?.totalTeams || 0}
           text="Active collaborations"
-          textColor="text-purple-600"
+          bgColor="bg-gradient-to-br from-purple-500 to-purple-600"
         />
         <DashboardHearderCard
           heading={isAdmin ? "Total Tasks" : "My Tasks"}
-          mainIcon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          mainIcon={<CheckCircle2 className="h-6 w-6 text-white" />}
           data={data?.totalTasksCount || 0}
           text={`${data?.completedThisWeek || 0} completed this week`}
-          textColor="text-green-600"
+          bgColor="bg-gradient-to-br from-emerald-500 to-emerald-600"
         />
         <DashboardHearderCard
           heading="Action Required"
-          mainIcon={<AlertCircle className="h-4 w-4 text-orange-600" />}
+          mainIcon={<AlertCircle className="h-6 w-6 text-white" />}
           data={
             (data?.pendingReviews || 0) + (data?.upcomingDeadlines?.length || 0)
           }
           text={`${data?.pendingReviews || 0} reviews pending`}
-          textColor="text-orange-600"
+          bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
         />
       </div>
 
       {/* Project Status Breakdown */}
+      {/* Project Status Breakdown */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
+        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="p-2 bg-blue-50 rounded-lg">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+          </div>
           Project Status Breakdown
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="space-y-1">
-            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">
-              Active
-            </p>
-            <p className="text-2xl font-bold text-blue-600">
+          <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              <p className="text-sm text-gray-600 font-medium">Active</p>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
               {data?.activeProjectsCount || 0}
             </p>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">
-              Completed
-            </p>
-            <p className="text-2xl font-bold text-green-600">
+          <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+              <p className="text-sm text-gray-600 font-medium">Completed</p>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
               {data?.completedProjectsCount || 0}
             </p>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">
-              On Hold
-            </p>
-            <p className="text-2xl font-bold text-yellow-600">
+          <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+              <p className="text-sm text-gray-600 font-medium">On Hold</p>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
               {data?.onHoldProjectsCount || 0}
             </p>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">
-              Archived
-            </p>
-            <p className="text-2xl font-bold text-gray-400">
+          <div className="p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <p className="text-sm text-gray-600 font-medium">Archived</p>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
               {data?.archivedProjectsCount || 0}
             </p>
           </div>
