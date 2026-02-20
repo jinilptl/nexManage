@@ -12,6 +12,7 @@ import {
   updateProject,
   updateProjectManager,
   updateProjectStatus,
+  deleteProjectTaskStatus,
 } from "../controllers/projectControllers/project.controllers.js";
 import {
   activateProjectMember,
@@ -52,6 +53,10 @@ projectRouter
 projectRouter
   .route("/:projectId/status")
   .post(verifyToken, addProjectTaskStatus);
+
+projectRouter
+  .route("/:projectId/status/:statusId")
+  .delete(verifyToken, deleteProjectTaskStatus);
 
 projectRouter
   .route("/update-project-manager/:projectId")

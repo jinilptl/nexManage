@@ -2,7 +2,7 @@ import React from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "./kanbanConfig";
 import KanbanTaskCard from "./KanbanTaskCard";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 export default function KanbanColumn({
   column,
@@ -13,6 +13,7 @@ export default function KanbanColumn({
   onTaskClick,
   onModalOpen,
   userRole,
+  onDeleteColumn,
 }) {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
@@ -50,11 +51,19 @@ export default function KanbanColumn({
         {column.isDefault && userRole !== "member" && (
           <Plus
             size={16}
-            className="cursor-pointer"
+            className="cursor-pointer text-gray-600 hover:text-blue-600"
             onClick={() => {
               onAddTask(column._id);
               onModalOpen(true);
             }}
+          />
+        )}
+
+        {!["todo", "in_progress", "review", "done"].includes(column.key) && userRole !== "member" && (
+          <Trash2
+            size={16}
+            className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors"
+            onClick={onDeleteColumn}
           />
         )}
       </div>

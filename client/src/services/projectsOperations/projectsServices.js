@@ -25,6 +25,8 @@ import {
   addTaskStatusIntoProject,
 } from "../../Redux_Config/Slices/projectsSlice";
 
+import { moveAllTasksToStatus } from "../../Redux_Config/Slices/tasksSlice";
+
 const {
   CREATE_PROJECT,
   GET_ALL_PROJECTS,
@@ -40,6 +42,7 @@ const {
   REMOVE_PROJECT_MEMBER,
   GET_PROJECT_MEMBERS,
   ACTIVE_PROJECT_MEMBER,
+  DELETE_TASK_STATUSES,
 } = PROJECTS_END_POINTS;
 
 function GenerateErrorMessage(error) {
@@ -286,6 +289,41 @@ export const addTaskStatusesIntoProjectService = (
       );
 
       toast.error(GenerateErrorMessage(error) || "error in adding task Status");
+    }
+  };
+};
+
+export const deleteTaskStatusFromProjectService = (projectId, statusId, token) => {
+  return async (dispatch, getState) => {
+    try {
+      const endpoint = DELETE_TASK_STATUSES.replace(":projectId", projectId).replace(":statusId", statusId);
+      const response = await axiosInstance.delete(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        toast.success("Column deleted successfully");
+        const prevProject = getState().projects.selectedProject.data;
+        if (prevProject) {
+          const updatedStatuses = prevProject.taskStatuses.filter(
+            (s) => s._id !== statusId
+          );
+          dispatch(
+            setSelectedProjectData({
+              ...prevProject,
+              taskStatuses: updatedStatuses,
+            })
+          );
+        }
+
+        const todoStatusId = response.data.data?.todoStatusId;
+        if (todoStatusId) {
+          dispatch(moveAllTasksToStatus({ fromStatusId: statusId, toStatusId: todoStatusId }));
+        }
+      }
+    } catch (error) {
+      toast.error(GenerateErrorMessage(error) || "Error deleting column");
     }
   };
 };

@@ -131,6 +131,17 @@ const taskSlice = createSlice({
         }
       }
     },
+
+    moveAllTasksToStatus(state, action) {
+      const { fromStatusId, toStatusId } = action.payload;
+      state.list = state.list.map((task) => {
+        if (task.status === fromStatusId) {
+          return { ...task, status: toStatusId };
+        }
+        return task;
+      });
+    },
+
     moveTaskRealtime(state, action) {
       const { taskId, toStatus } = action.payload;
 
@@ -282,6 +293,7 @@ export const {
 
   setReorderTasksInColumn,
   setUpdateTaskStatus,
+  moveAllTasksToStatus,
   moveTaskRealtime,
 
   setSubtasks,

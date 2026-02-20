@@ -7,6 +7,7 @@ import {
   updateTaskOrderService,
   updateTaskStatusService,
 } from "../../services/taskOperations/taskServices";
+import { deleteTaskStatusFromProjectService } from "../../services/projectsOperations/projectsServices";
 import { Plus } from "lucide-react";
 import AddColumnModal from "../modals/taskModal/AddColumnModal";
 
@@ -119,6 +120,10 @@ export default function KanbanBoard({
     }
   };
 
+  const handleDeleteColumn = (statusId) => {
+    dispatch(deleteTaskStatusFromProjectService(project.data._id, statusId, token));
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="w-full min-w-0 overflow-hidden">
@@ -142,6 +147,7 @@ export default function KanbanBoard({
                 onTaskClick={onTaskClick}
                 onModalOpen={onModalOpen}
                 userRole={user?.role}
+                onDeleteColumn={() => handleDeleteColumn(column._id)}
               />
             ))}
 

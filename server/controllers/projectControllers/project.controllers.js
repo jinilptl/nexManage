@@ -3,6 +3,7 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { Team as TeamModel } from "../../models/team.models.js";
+import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import generateRandomHexColor from "../../utils/generateColor.js";
 
 
@@ -461,6 +462,50 @@ const addProjectTaskStatus = async (req, res) => {
   }
 };
 
+const deleteProjectTaskStatus = async (req, res) => {
+  try {
+    const { projectId, statusId } = req.params;
+
+    const project = await ProjectModel.findById(projectId);
+    if (!project) {
+      throw new ApiError(404, "Project not found");
+    }
+
+    const statusIndex = project.taskStatuses.findIndex(
+      (s) => s._id.toString() === statusId
+    );
+
+    if (statusIndex === -1) {
+      throw new ApiError(404, "Task status not found");
+    }
+
+    if (project.taskStatuses[statusIndex].isDefault) {
+      throw new ApiError(400, "Cannot delete default task status");
+    }
+
+    const todoStatus = project.taskStatuses.find((s) => s.key === "todo");
+    if (!todoStatus) {
+      throw new ApiError(500, "Default To Do status not found in project");
+    }
+
+    // Move tasks to To Do instead of leaving them orphaned
+    await TaskModel.updateMany(
+      { project: projectId, status: statusId },
+      { $set: { status: todoStatus._id } }
+    );
+
+    project.taskStatuses.splice(statusIndex, 1);
+    await project.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Task status deleted successfully", { statusId, todoStatusId: todoStatus._id }));
+  } catch (error) {
+    console.error("Delete Task Status Error:", error);
+    throw new ApiError(500, "Internal server error");
+  }
+};
+
 //extra controllers.... no need right now...
 
 const updateProjectManager = asyncHandler(async (req, res) => {
@@ -552,5 +597,6 @@ export {
   deleteProject,
   getUserProjects,
   updateProjectManager,
-  addProjectTaskStatus
+  addProjectTaskStatus,
+  deleteProjectTaskStatus
 };
