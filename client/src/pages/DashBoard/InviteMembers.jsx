@@ -55,14 +55,10 @@ const InviteMembers = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header with Back Button */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-          Invite New Member
-        </h2>
-        <p className="text-gray-500 mt-1">
-          Add a new team member to your workspace and assign their role.
-        </p>
-      </div>
+        <div className="mb-8">
+          <h1 className="text-gray-900  text-2xl font-bold">Invite New Member</h1>
+          <p className="text-gray-600">Add a new team member to your workspace and assign their role.</p>
+        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* ================= LEFT : FORM ================= */}

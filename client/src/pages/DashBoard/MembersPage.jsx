@@ -136,18 +136,14 @@ export default function Members() {
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-            Team Members
-          </h2>
-          <p className="text-gray-500 mt-1">
-            Manage your team, permissions, and roles.
-          </p>
+          <div>
+          <h2 className="text-gray-900  text-2xl font-bold">Team Members</h2>
+          <p className="text-gray-600">Manage your team, permissions, and roles.</p>
         </div>
 
         <button
           onClick={() => navigate("/dashboard/invite-members")}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 font-medium"
+          className="flex items-center  gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 font-medium"
         >
           <Plus size={20} />
           <span>Invite Member</span>
