@@ -39,44 +39,58 @@ export default function ProjectCard({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 animate-pulse">
-        <div className="w-12 h-12 rounded-lg bg-slate-200" />
-        <div className="mt-4 h-4 w-32 bg-slate-200 rounded" />
-        <div className="mt-2 h-3 w-52 bg-slate-200 rounded" />
-        <div className="mt-2 h-3 w-40 bg-slate-200 rounded" />
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-pulse">
+        <div className="w-12 h-12 rounded-xl bg-slate-200" />
+        <div className="mt-4 h-6 w-3/4 bg-slate-200 rounded" />
+        <div className="mt-4 h-3 w-full bg-slate-200 rounded" />
+        <div className="mt-2 h-3 w-5/6 bg-slate-200 rounded" />
 
-        <div className="mt-6 h-4 w-28 bg-slate-200 rounded" />
-        <div className="mt-2 h-4 w-full bg-slate-200 rounded" />
+        <div className="mt-8 flex items-center gap-2">
+          <div className="h-4 w-4 bg-slate-200 rounded" />
+          <div className="h-4 w-24 bg-slate-200 rounded" />
+        </div>
+
+        <div className="mt-6 pt-5 border-t border-gray-100 flex justify-between">
+          <div className="h-6 w-20 bg-slate-200 rounded-lg" />
+          <div className="h-6 w-16 bg-slate-200 rounded-full" />
+        </div>
+        <div className="mt-4 flex justify-between items-center">
+          <div className="h-3 w-16 bg-slate-200 rounded" />
+          <div className="flex gap-2 items-center">
+            <div className="h-6 w-6 bg-slate-200 rounded-full" />
+            <div className="h-3 w-20 bg-slate-200 rounded" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div
-      className="bg-white rounded-lg shadow hover:shadow-lg transition relative cursor-pointer"
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative cursor-pointer group flex flex-col h-full"
       onClick={() => {
         ProjectDetails();
       }}
     >
-      <div className="p-6">
+      <div className="p-6 flex flex-col h-full">
         <div className="flex items-start justify-between">
-          <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100/50 group-hover:scale-110 transition-transform duration-300 shadow-sm">
             <Users className="w-6 h-6 text-blue-600" />
           </div>
 
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
-              className="p-1 rounded-md hover:bg-gray-100"
+              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-400 hover:text-gray-700"
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(!menuOpen);
               }}
             >
-              <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
+              <MoreVertical className="w-5 h-5 cursor-pointer" />
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg z-50 animate-fadeIn border border-gray-100 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl z-50 animate-fadeIn border border-gray-100 overflow-hidden">
                 <button
                   className="w-full flex items-center cursor-pointer justify-between px-4 py-2 hover:bg-gray-100 text-sm"
                   onClick={() => {
@@ -91,11 +105,10 @@ export default function ProjectCard({
 
                 {UserRole !== "member" && (
                   <button
-                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${
-                      (project.status || "").toUpperCase() === "ARCHIVED"
+                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${(project.status || "").toUpperCase() === "ARCHIVED"
                         ? "text-green-600"
                         : "text-yellow-600"
-                    } hover:bg-gray-100`}
+                      } hover:bg-gray-100`}
                     onClick={() => {
                       const newStatus =
                         (project.status || "").toUpperCase() === "ARCHIVED"
@@ -118,37 +131,39 @@ export default function ProjectCard({
           </div>
         </div>
 
-        <h2 className="text-lg font-semibold mt-3">{project.projectName}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">{project.projectName}</h2>
 
-        <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+        <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed flex-grow">
           {project.description || "No description provided"}
         </p>
 
-        <div className="mt-6 space-y-4">
-          <div className="flex items-center text-gray-600 gap-2 text-sm">
-            <Calendar className="w-4 h-4" />
+        <div className="mt-6 space-y-5">
+          <div className="flex items-center text-gray-500 gap-2 text-sm font-medium">
+            <Calendar className="w-4 h-4 text-gray-400" />
             <span>
-              {new Date(project.createdAt).toLocaleDateString("en-IN")}
+              {new Date(project.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t">
-            <span className="text-sm text-gray-700">
-              {membersCount} Members
-            </span>
+          <div className="flex items-center justify-between pt-5 border-t border-gray-100">
+            <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
+              <span className="text-xs font-bold text-gray-700">
+                {membersCount}
+              </span>
+              <span className="text-xs font-medium text-gray-500">Members</span>
+            </div>
 
             <span
-              className={`px-2 py-1 text-xs rounded-md ${
-                (project.status || "").toUpperCase() === "ACTIVE"
-                  ? "bg-green-100 text-green-700"
+              className={`px-3 py-1 text-xs font-bold rounded-full border ${(project.status || "").toUpperCase() === "ACTIVE"
+                  ? "bg-green-50 text-green-700 border-green-200"
                   : (project.status || "").toUpperCase() === "ON_HOLD"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
                     : (project.status || "").toUpperCase() === "COMPLETED"
-                      ? "bg-blue-100 text-blue-700"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
                       : (project.status || "").toUpperCase() === "ARCHIVED"
-                        ? "bg-gray-200 text-gray-700"
-                        : "bg-gray-100 text-gray-700"
-              }`}
+                        ? "bg-gray-50 text-gray-600 border-gray-200"
+                        : "bg-gray-50 text-gray-600 border-gray-200"
+                }`}
             >
               {{
                 ACTIVE: "Active",
@@ -161,16 +176,19 @@ export default function ProjectCard({
             </span>
           </div>
 
-          <div className="p-1 flex justify-center">
-            <span className="text-xs text-gray-500 flex gap-1">
-              Created By :
-              <span className="font-semibold whitespace-nowrap">
+          <div className="pt-2 flex items-center justify-between">
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Created By</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm border md:border-white">
+                {project.createdBy?.name ? project.createdBy.name[0].toUpperCase() : "?"}
+              </div>
+              <span className="text-xs font-bold text-gray-700">
                 {project.createdBy?.name
                   ? project.createdBy.name[0].toUpperCase() +
-                    project.createdBy.name.slice(1)
+                  project.createdBy.name.slice(1)
                   : "Unknown"}
               </span>
-            </span>
+            </div>
           </div>
         </div>
       </div>

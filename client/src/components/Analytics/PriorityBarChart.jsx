@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Cell,
 } from "recharts";
 import SectionCard from "./SectionCard";
 
@@ -25,7 +26,18 @@ export default function PriorityBarChart({ priorityData }) {
             <YAxis dataKey="name" type="category" />
             <Tooltip />
             <Legend />
-            <Bar dataKey="count" fill="#3B82F6" name="Tasks" />
+            <Bar dataKey="count" name="Tasks">
+              {priorityData?.map((entry, index) => {
+                const name = (entry.name || "").toLowerCase();
+                let color = "#3B82F6"; // Default
+                if (name.includes("critical")) color = "#D32F2F";
+                else if (name.includes("high")) color = "#F57C00";
+                else if (name.includes("medium")) color = "#FBC02D";
+                else if (name.includes("low")) color = "#388E3C";
+
+                return <Cell key={`cell-${index}`} fill={color} />;
+              })}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>

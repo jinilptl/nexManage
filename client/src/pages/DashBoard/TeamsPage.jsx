@@ -119,9 +119,8 @@ export default function TeamsPage() {
 
   return (
     <div
-      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
-        openTeamModal && "overflow-y-hidden"
-      }`}
+      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
+        }`}
     >
       {/* MAIN PAGE LOADER */}
       {loading && <NexManageLoader />}
@@ -144,11 +143,10 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
-             ${
-               loading
-                 ? "bg-blue-300 cursor-not-allowed"
-                 : "bg-blue-600 hover:bg-blue-700 text-white"
-             }`}
+             ${loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -157,30 +155,35 @@ export default function TeamsPage() {
       </div>
 
       {/* FILTERS */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-md">
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors duration-200" />
             <input
               placeholder="Search teams..."
               disabled={loading}
-              className={`w-full pl-10 pr-4 py-2 shadow-sm border border-gray-100 rounded-md 
-                focus:ring-2 ring-blue-500 outline-none
-                ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 text-sm font-medium text-gray-700 placeholder:text-gray-400 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               onChange={(e) => setSearchInput(e.target.value)}
             />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            disabled={loading}
-            className="shadow-sm rounded-md px-3 py-2 text-sm w-full sm:w-48 cursor-pointer border border-gray-200 outline-none focus:ring-2 ring-blue-500"
-          >
-            <option value="ACTIVE">Active Teams</option>
-            <option value="ARCHIVED">Archived Teams</option>
-            <option value="ALL">All Teams</option>
-          </select>
+          <div className="relative w-full sm:w-56">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              disabled={loading}
+              className={`w-full appearance-none bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 cursor-pointer focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <option value="ACTIVE" className="font-medium">Active Teams</option>
+              <option value="ARCHIVED" className="font-medium">Archived Teams</option>
+              <option value="ALL" className="font-medium">All Teams</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -205,10 +208,9 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-blue-700"
+                    ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
                     }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
@@ -225,12 +227,12 @@ export default function TeamsPage() {
           {filterTeams.map((team) => (
             <div
               key={team._id}
-              className={`bg-white rounded-lg shadow-md hover:shadow-lg transition
+              className={`bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group flex flex-col h-full
                 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
             >
-              <div className="p-6">
+              <div className="p-6 flex flex-col h-full">
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100/50 group-hover:scale-110 transition-transform duration-300 shadow-sm">
                     <UsersIcon className="w-6 h-6 text-blue-600" />
                   </div>
 
@@ -240,11 +242,10 @@ export default function TeamsPage() {
                   >
                     <button
                       disabled={loading}
-                      className={`p-1 rounded-md ${
-                        loading
+                      className={`p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 ${loading
                           ? "opacity-40 cursor-not-allowed"
-                          : "hover:bg-gray-100"
-                      }`}
+                          : "cursor-pointer"
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!loading)
@@ -253,11 +254,11 @@ export default function TeamsPage() {
                           );
                       }}
                     >
-                      <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
+                      <MoreVertical className="w-5 h-5" />
                     </button>
 
                     {openMenuId === team._id && !loading && (
-                      <div className="absolute right-0 mt-2 w-44 bg-white shadow-md rounded-lg z-50 animate-fadeIn">
+                      <div className="absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-xl z-50 animate-fadeIn border border-gray-100 overflow-hidden">
                         <button
                           disabled={loading}
                           onClick={() => {
@@ -325,73 +326,71 @@ export default function TeamsPage() {
                   </div>
                 </div>
 
-                <h2 className="text-lg font-semibold mt-3">{team.teamName}</h2>
-                <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                  {team.description}
+                <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">{team.teamName}</h2>
+                <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed flex-grow">
+                  {team.description || "No description provided"}
                 </p>
 
-                <div className="mt-6 space-y-4">
+                <div className="mt-6 space-y-5">
                   <div>
-                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                       Team Lead
                     </p>
                     {findTeamLeadName(team) ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-200 rounded-full text-blue-500 text-center">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm border md:border-white">
                           {findTeamLeadName(team)?.charAt(0)}
                         </div>
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm font-bold text-gray-700">
                           {findTeamLeadName(team)}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-900">
-                        No team Lead available now
+                      <span className="text-sm font-bold text-gray-500 italic">
+                        No team lead available
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-sm pt-3 border-t border-gray-300">
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <UsersIcon className="w-4 h-4" />
-                      <span>{team.members.length} members</span>
+                  <div className="flex items-center gap-4 text-sm pt-5 border-t border-gray-100">
+                    <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
+                      <UsersIcon className="w-4 h-4 text-gray-500" />
+                      <span className="text-xs font-bold text-gray-700">{team.members.length}</span>
+                      <span className="text-xs font-medium text-gray-500">Members</span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <FolderKanban className="w-4 h-4" />
-                      <span>{team.projectsCount ?? 0} projects</span>
+                    <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
+                      <FolderKanban className="w-4 h-4 text-gray-500" />
+                      <span className="text-xs font-bold text-gray-700">{team.projectsCount ?? 0}</span>
+                      <span className="text-xs font-medium text-gray-500">Projects</span>
                     </div>
                   </div>
 
                   {/* FOOTER */}
-                  <div className="pt-3 border-t border-gray-300 flex items-center justify-between">
+                  <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
                     <span
-                      className={`px-2 py-1 text-xs rounded-md ${
-                        (team.status || "").toUpperCase() === "ARCHIVED"
-                          ? "bg-gray-200 text-gray-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
+                      className={`px-3 py-1 text-xs font-bold rounded-full border ${(team.status || "").toUpperCase() === "ACTIVE"
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-gray-50 text-gray-600 border-gray-200"
+                        }`}
                     >
-                      {(team.status || "").toUpperCase() === "ARCHIVED"
-                        ? "Archived"
-                        : "Active"}
+                      {(team.status || "").toUpperCase() === "ACTIVE"
+                        ? "Active"
+                        : "Archived"}
                     </span>
 
-                    <span className="text-xs text-gray-600 flex flex-col gap-1">
-                      Created At
-                      <span>
-                        {new Date(team.createdAt).toLocaleDateString("en-GB")}
-                      </span>
+                    <span className="text-[11px] font-medium text-gray-400">
+                      Created {new Date(team.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
                   </div>
 
-                  <div className="p-1 flex justify-center">
-                    <span className="text-xs text-gray-600 flex  gap-1">
-                      Created By :
-                      <span className=" font-semibold whitespace-nowrap">
-                        {findCreatedBy(team)}
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Created By</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-700">
+                        {findCreatedBy(team) || "Unknown"}
                       </span>
-                    </span>
+                    </div>
                   </div>
                 </div>
               </div>
