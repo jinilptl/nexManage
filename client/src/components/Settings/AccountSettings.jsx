@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { User, Mail, Shield } from "lucide-react";
 
 export default function AccountSettings() {
-  const user = useSelector((state) => state.auth.user);
+  const { user, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const role = user?.role === "member" ? "User" : "Administrator";
@@ -43,6 +43,7 @@ export default function AccountSettings() {
         updateUser({
           userId: user._id,
           data: formData,
+          token,
         }),
       ).unwrap();
 
@@ -76,8 +77,6 @@ export default function AccountSettings() {
                 user?.name?.[0]?.toUpperCase()
               )}
             </div>
-            <button className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full border border-gray-200 shadow-sm text-gray-500 hover:text-blue-600 cursor-pointer">
-            </button>
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>
@@ -113,7 +112,7 @@ export default function AccountSettings() {
             <InputField
               label="Email Address"
               value={formData.email}
-              disabled={!isEditing || loading}
+              disabled={true}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               icon={<Mail size={18} />}
             />

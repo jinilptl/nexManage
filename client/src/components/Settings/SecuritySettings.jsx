@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Lock, KeyRound, ShieldCheck, Smartphone, Bell, AlertTriangle } from "lucide-react";
 import SettingsCard from "./SettingsCard";
 import SettingToggle from "./SettingToggle";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { updatePassword } from "../../services/usersOperations/usersServices";
 
 export default function SecuritySettings() {
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+
 
   const [twoFA, setTwoFA] = useState(false);
   const [loginAlerts, setLoginAlerts] = useState(true);
@@ -78,6 +80,7 @@ export default function SecuritySettings() {
         updatePassword({
           currentPassword: password.currentPassword,
           newPassword: password.newPassword,
+          token,
         }),
       ).unwrap();
 

@@ -23,11 +23,16 @@ export const fetchAllUsers = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, data }, { rejectWithValue }) => {
+  async ({ userId, data, token }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put(
         usersEndpoints.UPDATE_USER(userId),
         data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       return res.data.data;
     } catch (err) {
@@ -38,9 +43,13 @@ export const updateUser = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
-  async (userId, { rejectWithValue }) => {
+  async ({ userId, token }, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(usersEndpoints.DELETE_USER(userId));
+      await axiosInstance.delete(usersEndpoints.DELETE_USER(userId), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return userId;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
@@ -50,12 +59,20 @@ export const deleteUser = createAsyncThunk(
 
 export const updatePassword = createAsyncThunk(
   "users/updatePassword",
-  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+  async ({ currentPassword, newPassword, token }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(usersEndpoints.CHANGE_PASSWORD, {
-        oldPassword: currentPassword,
-        newPassword,
-      });
+      const res = await axiosInstance.post(
+        usersEndpoints.CHANGE_PASSWORD,
+        {
+          oldPassword: currentPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       return res.data.message;
     } catch (err) {

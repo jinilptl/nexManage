@@ -48,6 +48,7 @@ export default function Members() {
           updateUser({
             userId: editingMember._id,
             data: formData,
+            token,
           }),
         ).unwrap();
 
@@ -71,7 +72,7 @@ export default function Members() {
 
   const confirmDelete = async () => {
     try {
-      await dispatch(deleteUser(deleteUserId)).unwrap();
+      await dispatch(deleteUser({ userId: deleteUserId, token })).unwrap();
       toast.success("User deleted successfully");
       closeDeleteModal();
     } catch (error) {
@@ -310,12 +311,12 @@ export default function Members() {
                 <input
                   type="email"
                   placeholder="e.g. john@example.com"
+                  disabled
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  required
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 cursor-no-drop py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
