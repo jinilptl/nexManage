@@ -12,6 +12,7 @@ export default function KanbanColumn({
   onAddTask,
   onTaskClick,
   onModalOpen,
+  userRole,
 }) {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
@@ -31,10 +32,9 @@ export default function KanbanColumn({
       className={`
         min-w-[300px] max-w-[300px]
         shrink-0 rounded-2xl p-4 transition
-        ${
-          isOver
-            ? "bg-blue-50 border-2 border-dashed border-blue-400"
-            : "bg-gray-50"
+        ${isOver
+          ? "bg-blue-50 border-2 border-dashed border-blue-400"
+          : "bg-gray-50"
         }
       `}
     >
@@ -47,7 +47,7 @@ export default function KanbanColumn({
           </span>
         </div>
 
-        {column.isDefault && (
+        {column.isDefault && userRole !== "member" && (
           <Plus
             size={16}
             className="cursor-pointer"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -27,6 +27,26 @@ export default function Navigation({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const location = useLocation();
+
+  const desktopMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        userMenuOpen &&
+        (!desktopMenuRef.current || !desktopMenuRef.current.contains(event.target)) &&
+        (!mobileMenuRef.current || !mobileMenuRef.current.contains(event.target))
+      ) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuOpen]);
 
   const user = useSelector((state) => state.auth.user);
   const isAdmin = user?.role === "super_admin" || user?.role === "admin";
@@ -108,8 +128,8 @@ export default function Navigation({
                 to={item.to}
                 key={idx}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200 ${collapsed
-                    ? "justify-center"
-                    : "text-slate-200 hover:bg-slate-700 hover:text-white"
+                  ? "justify-center"
+                  : "text-slate-200 hover:bg-slate-700 hover:text-white"
                   } ${location.pathname === item.to ? "bg-slate-700 text-white" : ""}`}
               >
                 <item.icon className="w-5 h-5" />
@@ -118,7 +138,7 @@ export default function Navigation({
             ))}
         </nav>
 
-        <div className="relative p-2 border-t border-slate-700">
+        <div ref={desktopMenuRef} className="relative p-2 border-t border-slate-700">
           <button
             onClick={toggleUserMenu}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full ${collapsed ? "justify-center" : ""
@@ -209,7 +229,7 @@ export default function Navigation({
             ))}
         </nav>
 
-        <div className="relative p-2 border-t border-slate-700">
+        <div ref={mobileMenuRef} className="relative p-2 border-t border-slate-700">
           <button
             onClick={toggleUserMenu}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full cursor-pointer"

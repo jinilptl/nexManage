@@ -243,8 +243,8 @@ export default function TeamsPage() {
                     <button
                       disabled={loading}
                       className={`p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 ${loading
-                          ? "opacity-40 cursor-not-allowed"
-                          : "cursor-pointer"
+                        ? "opacity-40 cursor-not-allowed"
+                        : "cursor-pointer"
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -276,9 +276,9 @@ export default function TeamsPage() {
                           View Team
                         </button>
 
-                        <div className="border-t"></div>
+                        {role !== "member" && <div className="border-t"></div>}
 
-                        {(team.status || "").toUpperCase() !== "ARCHIVED" && (
+                        {role !== "member" && (team.status || "").toUpperCase() !== "ARCHIVED" && (
                           <button
                             disabled={loading}
                             onClick={() => {
@@ -300,7 +300,7 @@ export default function TeamsPage() {
                           </button>
                         )}
 
-                        {(team.status || "").toUpperCase() === "ARCHIVED" && (
+                        {role !== "member" && (team.status || "").toUpperCase() === "ARCHIVED" && (
                           <button
                             disabled={loading}
                             onClick={() => {
@@ -370,8 +370,8 @@ export default function TeamsPage() {
                   <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
                     <span
                       className={`px-3 py-1 text-xs font-bold rounded-full border ${(team.status || "").toUpperCase() === "ACTIVE"
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-gray-50 text-gray-600 border-gray-200"
+                        ? "bg-green-50 text-green-700 border-green-200"
+                        : "bg-gray-50 text-gray-600 border-gray-200"
                         }`}
                     >
                       {(team.status || "").toUpperCase() === "ACTIVE"

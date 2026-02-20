@@ -141,15 +141,18 @@ export default function KanbanBoard({
                 onAddTask={onAddTask}
                 onTaskClick={onTaskClick}
                 onModalOpen={onModalOpen}
+                userRole={user?.role}
               />
             ))}
 
-            <button
-              onClick={() => setIsAddColumnOpen(true)}
-              className="h-12 w-12 cursor-pointer flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-100 text-gray-500"
-            >
-              <Plus size={30} />
-            </button>
+            {user?.role !== "member" && (
+              <button
+                onClick={() => setIsAddColumnOpen(true)}
+                className="h-12 w-12 cursor-pointer flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-100 text-gray-500"
+              >
+                <Plus size={30} />
+              </button>
+            )}
           </div>
         </div>
       </div>
