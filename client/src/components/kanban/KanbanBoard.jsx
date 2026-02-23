@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import KanbanColumn from "./KanbanColumn";
@@ -26,6 +26,70 @@ export default function KanbanBoard({
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
 
   const dispatch = useDispatch();
+
+  const scrollContainerRef = useRef(null);
+  const scrollSpeedRef = useRef(0);
+  const animationFrameRef = useRef(null);
+
+  useEffect(() => {
+    const startScrolling = () => {
+      if (!animationFrameRef.current) {
+        const scroll = () => {
+          if (scrollContainerRef.current && scrollSpeedRef.current !== 0) {
+            scrollContainerRef.current.scrollLeft += scrollSpeedRef.current;
+            animationFrameRef.current = requestAnimationFrame(scroll);
+          } else {
+            animationFrameRef.current = null;
+          }
+        };
+        animationFrameRef.current = requestAnimationFrame(scroll);
+      }
+    };
+
+    const stopScrolling = () => {
+      scrollSpeedRef.current = 0;
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+
+    const handleDragOver = (e) => {
+      if (!scrollContainerRef.current) return;
+
+      const { left, right } = scrollContainerRef.current.getBoundingClientRect();
+      const edgeThreshold = 100; // pixels from edge to trigger scroll
+      const clientX = e.clientX;
+
+      if (clientX < left + edgeThreshold) {
+        const intensity = Math.max(0, left + edgeThreshold - clientX) / edgeThreshold;
+        scrollSpeedRef.current = -(10 + intensity * 15);
+        startScrolling();
+      } else if (clientX > right - edgeThreshold) {
+        const intensity = Math.max(0, clientX - (right - edgeThreshold)) / edgeThreshold;
+        scrollSpeedRef.current = 10 + intensity * 15;
+        startScrolling();
+      } else {
+        stopScrolling();
+      }
+    };
+
+    const handleDragEnd = () => {
+      stopScrolling();
+    };
+
+    // Attach to document to catch all drag movements
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("dragend", handleDragEnd);
+    document.addEventListener("drop", handleDragEnd);
+
+    return () => {
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("dragend", handleDragEnd);
+      document.removeEventListener("drop", handleDragEnd);
+      stopScrolling();
+    };
+  }, []);
 
   useEffect(() => {
     setTasks(initialTasks || []);
@@ -127,7 +191,10 @@ export default function KanbanBoard({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="w-full min-w-0 overflow-hidden">
-        <div className="overflow-x-auto overflow-y-hidden max-w-full kanban-scrollbar">
+        <div
+          ref={scrollContainerRef}
+          className="overflow-x-auto overflow-y-hidden max-w-full kanban-scrollbar"
+        >
           <div className="flex gap-2 min-w-max px-2 pb-4 items-start">
             {columns.map((column) => (
               <KanbanColumn
