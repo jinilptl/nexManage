@@ -12,15 +12,18 @@ import {
   getSingleTasksService,
   updateTaskService,
 } from "../../services/taskOperations/taskServices";
+import { addProjectMemberService } from "../../services/projectsOperations/projectsServices";
 import { Link, useParams } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
 import { connectWs } from "../../sockets/socket";
+import { Plus } from "lucide-react";
 import {
   deleteTask,
   moveTaskRealtime,
   updateTask,
 } from "../../Redux_Config/Slices/tasksSlice";
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
+import InviteProjectMemberModal from "../../components/modals/projectModals/InviteProjectMemberModal";
 
 
 import { Home, ChevronRight } from "lucide-react";
@@ -30,10 +33,13 @@ export default function ProjectDetails() {
   const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
   const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const projectData = useSelector((state) => state.projects.selectedProject);
+  const addMemberLoading = useSelector((state) => state.projects.projectMembers.addMemberLoading);
   const taskList = useSelector((state) => state.tasks.list);
   const { token, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const UserRole = user.role;
 
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
@@ -147,6 +153,12 @@ export default function ProjectDetails() {
     );
   };
 
+  const onInviteSubmit = (formData) => {
+    dispatch(
+      addProjectMemberService(projectId, formData, token, setInviteModalOpen)
+    );
+  };
+
   if (!projectData?.data) {
     return (
       <div className=" flex justify-center items-center h-[70vh]">
@@ -157,16 +169,30 @@ export default function ProjectDetails() {
 
   return (
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
-      {/* Breadcrumb */}
-      <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 mx-6 rounded-xl border border-gray-100 shadow-sm w-fit">
-        <Link to="/dashboard/projects" className="hover:text-blue-600 transition-colors">
-          Projects
-        </Link>
-        <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
-        <span className="font-medium text-gray-900 truncate max-w-[200px]">
-          {projectData?.data?.projectName}
-        </span>
-      </nav>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Breadcrumb */}
+        <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 mx-6 rounded-xl border border-gray-100 shadow-sm w-fit">
+          <Link to="/dashboard/projects" className="hover:text-blue-600 transition-colors">
+            Projects
+          </Link>
+          <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
+          <span className="font-medium text-gray-900 truncate max-w-[200px]">
+            {projectData?.data?.projectName}
+          </span>
+        </nav>
+
+        {UserRole !== "member" && (
+          <button
+            onClick={() => {
+              setInviteModalOpen(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer flex items-center gap-2 text-sm hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" /> Invite Member
+          </button>
+        )}
+      </div>
 
       <ProjectHeader project={projectData?.data} />
 
@@ -190,7 +216,14 @@ export default function ProjectDetails() {
         />
       )}
 
-
+      {inviteModalOpen && (
+        <InviteProjectMemberModal
+          isOpen={inviteModalOpen}
+          onClose={setInviteModalOpen}
+          onSubmit={onInviteSubmit}
+          loading={addMemberLoading}
+        />
+      )}
     </div>
   );
 }

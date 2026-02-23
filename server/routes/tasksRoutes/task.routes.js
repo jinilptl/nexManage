@@ -6,6 +6,7 @@ import { isProjectMember } from "../../middlewares/taskMiddlewares/isProjectMemb
 import { isProjectManager } from "../../middlewares/taskMiddlewares/isProjectManager.middlewares.js";
 import { attachTaskToRequest } from "../../middlewares/taskMiddlewares/attachTaskToRequest.middlewares.js";
 import { isAssigneeOrProjectManager } from "../../middlewares/taskMiddlewares/isAssigneeOrProjectManager.middlewares.js";
+import { isNotObserver } from "../../middlewares/taskMiddlewares/isNotObserver.middlewares.js";
 import {
   createTask,
   deleteTask,
@@ -28,6 +29,7 @@ taskRouter
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     isProjectMember,
+    isNotObserver,
     isProjectManager,
     createTask,
   );
@@ -62,6 +64,8 @@ taskRouter
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
+    isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     updateTask,
   );
@@ -72,6 +76,8 @@ taskRouter
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
+    isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     updateTaskStatus,
   );
@@ -82,6 +88,8 @@ taskRouter
     verifyToken,
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
+    isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     updateTaskOrder,
   );
@@ -92,6 +100,7 @@ taskRouter
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
+    isNotObserver,
     isProjectManager,
     deleteTask,
   );
@@ -102,6 +111,7 @@ taskRouter
     verifyToken,
     attachTaskToRequest,
     isProjectMember,
+    isNotObserver,
     isProjectManager,
     updateTaskAssignees,
   );

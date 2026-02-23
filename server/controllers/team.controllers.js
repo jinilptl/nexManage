@@ -278,8 +278,8 @@ const addTeamMember = asyncHandler(async (req, res) => {
 
   // Find user
   const userDoc = await UserModel.findOne({ email });
-  if (!userDoc) {
-    throw new ApiError(404, "User not found");
+  if (!userDoc || userDoc.isTempMember) {
+    throw new ApiError(404, "User not found or has not registered yet");
   }
 
   const userId = userDoc._id;

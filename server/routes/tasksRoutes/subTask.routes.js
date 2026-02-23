@@ -6,6 +6,7 @@ import { isProjectMember } from "../../middlewares/taskMiddlewares/isProjectMemb
 import { isProjectManager } from "../../middlewares/taskMiddlewares/isProjectManager.middlewares.js";
 import { attachTaskToRequest } from "../../middlewares/taskMiddlewares/attachTaskToRequest.middlewares.js";
 import { isAssigneeOrProjectManager } from "../../middlewares/taskMiddlewares/isAssigneeOrProjectManager.middlewares.js";
+import { isNotObserver } from "../../middlewares/taskMiddlewares/isNotObserver.middlewares.js";
 import { attachSubTaskToRequest } from "../../middlewares/taskMiddlewares/subTaskMiddlewares/attechSubTaskToRequest.middlewares.js";
 import {
   addSubTask,
@@ -24,6 +25,7 @@ subTaskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     addSubTask,
   );
@@ -57,6 +59,7 @@ subTaskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachSubTaskToRequest,
     isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     toggleSubTaskCompletion,
   );
@@ -68,6 +71,7 @@ subTaskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachSubTaskToRequest,
     isProjectMember,
+    isNotObserver,
     isAssigneeOrProjectManager,
     deleteSubTask,
   );

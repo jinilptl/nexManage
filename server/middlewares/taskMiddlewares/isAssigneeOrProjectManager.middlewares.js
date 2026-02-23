@@ -24,7 +24,7 @@ const isAssigneeOrProjectManager = asyncHandler(async (req, res, next) => {
     project.projectManager.toString() === userId.toString();
 
   const member = project.projectMembers.find(
-    (m) => m.user.toString() === userId.toString() && m.status === "active"
+    (m) => m.user && m.user.toString() === userId.toString() && m.status === "active"
   );
 
   const isRoleManager = member?.roleInProject === "project-manager";

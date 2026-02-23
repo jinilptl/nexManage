@@ -20,6 +20,7 @@ const projectMembersSchema = new mongoose.Schema(
         "qa",
         "reviewer",
         "contributor",
+        "observer",
       ],
       default: "contributor",
     },
@@ -138,7 +139,7 @@ const projectSchema = new mongoose.Schema(
 
     taskStatuses: {
       type: [taskStatusSchema],
-      default:undefined
+      default: undefined
     },
   },
   { timestamps: true }

@@ -7,7 +7,7 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
 
 
   const projectId =
-    req.params.projectId 
+    req.params.projectId
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized user");
@@ -22,14 +22,15 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
   if (!project) {
     throw new ApiError(404, "Project not found");
 
-    
+
   }
 
 
-  if(req.user.role==='admin' || req.user.role==='super_admin'){
+  if (req.user.role === 'admin' || req.user.role === 'super_admin') {
     req.project = project;
-      return next();
-    }
+    req.roleInProject = "admin";
+    return next();
+  }
 
   // Check if user is project manager
   if (
@@ -37,25 +38,25 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
     project.projectManager.toString() === userId.toString()
   ) {
     req.project = project;
+    req.roleInProject = "project-manager";
     return next();
   }
 
   // Check active project member
-  const isActiveMember = project.projectMembers.some(
-    (member) =>
-      member.user.toString() === userId.toString() &&
-      member.status === "active"
+  const projectMember = project.projectMembers.find(
+    (member) => member.user && member.user.toString() === userId.toString() && member.status === "active"
   );
 
-  if (!isActiveMember) {
+  if (!projectMember) {
     throw new ApiError(
       403,
       "You are not an active member of this project"
     );
   }
 
- 
+
   req.project = project;
+  req.roleInProject = projectMember.roleInProject;
   next();
 });
 

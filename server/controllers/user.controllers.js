@@ -10,7 +10,7 @@ import crypto from "crypto";
 import { invite_member_email_template } from "../templates/inviteMemberMail.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, isTempMember } = req.body;
 
   if (!name || !email || !password) {
     throw new ApiError(401, "all feilds are required");
@@ -29,6 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password: hashPassword,
     role: role || "member",
+    isTempMember: isTempMember || false,
     createdby: req.user?._id,
   });
 
@@ -73,6 +74,9 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid credentilas");
   }
 
+  // If user was a temp member, keep them temp unless explicitly promoted
+  // (Previously we were auto-promoting here which was wrong for Observers)
+
   let tokenPayload = {
     _id: existingUser._id,
     name: existingUser.name,
@@ -103,6 +107,7 @@ const allUsers = asyncHandler(async (req, res) => {
 
   let filter = {
     _id: { $ne: currentUserId },
+    isTempMember: { $ne: true },
   };
 
   if (currentUserRole === "admin") {

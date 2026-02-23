@@ -75,7 +75,7 @@ export default function ProjectCard({
     >
       <div className="p-6 flex flex-col h-full">
         <div className="flex items-start justify-between">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100/50 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100/50 group-hover:scale-110 transition-transform duration-300 shadow-sm">
             <Users className="w-6 h-6 text-blue-600" />
           </div>
 
@@ -134,7 +134,7 @@ export default function ProjectCard({
 
         <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">{project.projectName}</h2>
 
-        <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed flex-grow">
+        <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed grow">
           {project.description || "No description provided"}
         </p>
 

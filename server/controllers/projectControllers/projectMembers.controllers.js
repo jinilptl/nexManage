@@ -1,13 +1,17 @@
 import { Project as ProjectModel } from "../../models/project.models.js";
-import {User as UserModel} from "../../models/user.models.js"
+import { User as UserModel } from "../../models/user.models.js"
 import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
-import {Team as TeamModel} from "../../models/team.models.js"
+import { Team as TeamModel } from "../../models/team.models.js"
+import sendEmail from "../../utils/sendMail.js";
+import { project_invite_email_template } from "../../templates/projectInviteMail.js";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const addProjectMember = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const { email, roleInProject } = req.body;
+  const { email, roleInProject, inviteType } = req.body; // inviteType: 'member' or 'observer'
 
   // Validate
   if (!projectId) throw new ApiError(400, "Project ID is required");
@@ -20,7 +24,8 @@ const addProjectMember = asyncHandler(async (req, res) => {
     "designer",
     "qa",
     "reviewer",
-    "contributor"
+    "contributor",
+    "observer"
   ];
 
   if (roleInProject && !validRoles.includes(roleInProject)) {
@@ -32,9 +37,37 @@ const addProjectMember = asyncHandler(async (req, res) => {
   if (!project) throw new ApiError(404, "Project not found");
 
   // Find user by email
-  const userDoc = await UserModel.findOne({ email });
+  let userDoc = await UserModel.findOne({ email });
+  let isNewUser = false;
+  let rawPassword = "";
+
   if (!userDoc) {
-    throw new ApiError(404, "User not found with this email");
+    isNewUser = true;
+    rawPassword = "User@123"; // Simplified static password for invitation flow
+    const hashPassword = await bcrypt.hash(rawPassword, 10);
+
+    // Create temp user if it's an observer, otherwise create a standing member
+    const isObserver = inviteType === "observer";
+
+    userDoc = await UserModel.create({
+      name: email.split("@")[0],
+      email,
+      password: hashPassword,
+      role: "member",
+      isTempMember: isObserver,
+      createdby: req.user?._id,
+    });
+
+    // If it's an observer, let's force the project role too
+    if (isObserver) {
+      req.body.roleInProject = "observer";
+    }
+  } else {
+    // If an existing temp member is invited as a full 'member', promote them
+    if (inviteType === "member" && userDoc.isTempMember) {
+      userDoc.isTempMember = false;
+      await userDoc.save();
+    }
   }
 
   const userId = userDoc._id;
@@ -60,11 +93,35 @@ const addProjectMember = asyncHandler(async (req, res) => {
   project.projectMembers.push(newMember);
   await project.save();
 
-    const populatedProject = await ProjectModel.findById(projectId)
+  // SEND INVITE EMAIL
+  try {
+    const loginLink = `${process.env.CLIENT_URL}/`;
+    const message = project_invite_email_template(
+      project.projectName,
+      email,
+      rawPassword || "User@123", // Send the actual password or default
+      loginLink,
+      !isNewUser
+    );
+
+    await sendEmail({
+      email,
+      subject: `Project Invitation: ${project.projectName}`,
+      message,
+    });
+  } catch (err) {
+    console.error("Failed to send project invite email:", err);
+  }
+
+  const populatedProject = await ProjectModel.findById(projectId)
     .populate("projectMembers.user", "name email");
 
+  if (!populatedProject) {
+    throw new ApiError(404, "Project not found after update");
+  }
+
   const populatedNewMember = populatedProject.projectMembers.find(
-    (m) => m.user._id.toString() === userId.toString()
+    (m) => m.user && m.user._id.toString() === userId.toString()
   );
 
   return res.status(201).json(
@@ -167,7 +224,7 @@ const updateProjectMember = asyncHandler(async (req, res) => {
 
 
 
-   return res.status(200).json(
+  return res.status(200).json(
     new ApiResponse(200, "Member updated successfully", {
       updatedMember,
       allMembers: populatedProject.projectMembers,
@@ -178,7 +235,7 @@ const updateProjectMember = asyncHandler(async (req, res) => {
 
 
 
- const removeProjectMember = asyncHandler(async (req, res) => {
+const removeProjectMember = asyncHandler(async (req, res) => {
   const { projectId, memberId } = req.params;
 
   if (!projectId || !memberId)
@@ -291,4 +348,4 @@ const syncProjectMembers = asyncHandler(async (req, res) => {
 });
 
 
-export {addProjectMember,updateProjectMember,removeProjectMember,activateProjectMember,syncProjectMembers,getAllProjectMembers}
+export { addProjectMember, updateProjectMember, removeProjectMember, activateProjectMember, syncProjectMembers, getAllProjectMembers }

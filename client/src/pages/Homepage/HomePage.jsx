@@ -133,7 +133,7 @@ const HomePage = () => {
         </div>
 
         <p className="text-blue-100 text-sm">
-          © ${new Date().getFullYear()} NexManage. All rights reserved.
+          © {new Date().getFullYear()} NexManage. All rights reserved.
         </p>
       </div>
 

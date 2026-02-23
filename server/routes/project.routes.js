@@ -2,6 +2,8 @@ import express from "express";
 import { verifyToken } from "../middlewares/authMiddlewares/varifyToken.middlewares.js";
 import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewares.js";
 import { canChangeProjectStatus } from "../middlewares/authMiddlewares/canChangeProjectStatus.middlewares.js";
+import { isProjectMember } from "../middlewares/taskMiddlewares/isProjectMember.middlewares.js";
+import { isNotObserver } from "../middlewares/taskMiddlewares/isNotObserver.middlewares.js";
 import {
   addProjectTaskStatus,
   createProject,
@@ -52,11 +54,11 @@ projectRouter
 
 projectRouter
   .route("/:projectId/status")
-  .post(verifyToken, addProjectTaskStatus);
+  .post(verifyToken, isProjectMember, isNotObserver, addProjectTaskStatus);
 
 projectRouter
   .route("/:projectId/status/:statusId")
-  .delete(verifyToken, deleteProjectTaskStatus);
+  .delete(verifyToken, isProjectMember, isNotObserver, deleteProjectTaskStatus);
 
 projectRouter
   .route("/update-project-manager/:projectId")
@@ -66,11 +68,11 @@ projectRouter
 
 projectRouter
   .route("/add-members/:projectId")
-  .post(verifyToken, addProjectMember);
+  .post(verifyToken, isProjectMember, isNotObserver, addProjectMember);
 
 projectRouter
   .route("/update-members/:projectId/:memberId")
-  .post(verifyToken, updateProjectMember);
+  .post(verifyToken, isProjectMember, isNotObserver, updateProjectMember);
 
 projectRouter
   .route("/all-members/:projectId")
@@ -78,14 +80,14 @@ projectRouter
 
 projectRouter
   .route("/active-members/:projectId/:memberId")
-  .patch(verifyToken, activateProjectMember);
+  .patch(verifyToken, isProjectMember, isNotObserver, activateProjectMember);
 
 projectRouter
   .route("/remove-members/:projectId/:memberId")
-  .delete(verifyToken, removeProjectMember);
+  .delete(verifyToken, isProjectMember, isNotObserver, removeProjectMember);
 
 projectRouter
   .route("/sync-members/:projectId")
-  .patch(verifyToken, syncProjectMembers);
+  .patch(verifyToken, isProjectMember, isNotObserver, syncProjectMembers);
 
 export default projectRouter;
