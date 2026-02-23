@@ -9,6 +9,7 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ModalSmallLoader from "../../components/Lodders/ModalSmallLoader";
+import NexManageLoader from "../../components/Lodders/NexManageLoader";
 
 export default function Members() {
   const dispatch = useDispatch();
@@ -132,11 +133,19 @@ export default function Members() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <div>
+        <div>
           <h2 className="text-gray-900  text-2xl font-bold">Team Members</h2>
           <p className="text-gray-600">Manage your team, permissions, and roles.</p>
         </div>
@@ -189,16 +198,7 @@ export default function Members() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                <tr>
-                  <td colSpan="4" className="p-12 text-center">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <ModalSmallLoader />
-                      <p className="text-gray-500 text-sm">Loading members...</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredMembers?.length === 0 ? (
+              {filteredMembers?.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="p-12 text-center">
                     <div className="flex flex-col items-center justify-center gap-2">

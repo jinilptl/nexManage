@@ -14,6 +14,7 @@ import DashboardHearderCard from "./DashboardHearderCard";
 import ProjectProgress from "./Analytics/ProjectProgress";
 import { useDispatch, useSelector } from "react-redux";
 import { getDashboardData } from "../Redux_Config/Slices/dashboardSlice";
+import NexManageLoader from "./Lodders/NexManageLoader";
 
 export default function Dashboard() {
   const user = useSelector((state) => state.auth.user);
@@ -53,7 +54,13 @@ export default function Dashboard() {
     },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
+      </div>
+    );
+  }
   if (!data) return null;
 
   const visibleDeadlines = showAllDeadlines

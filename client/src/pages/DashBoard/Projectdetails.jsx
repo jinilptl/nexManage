@@ -20,6 +20,7 @@ import {
   moveTaskRealtime,
   updateTask,
 } from "../../Redux_Config/Slices/tasksSlice";
+import NexManageLoader from "../../components/Lodders/NexManageLoader";
 
 
 import { Home, ChevronRight } from "lucide-react";
@@ -148,8 +149,8 @@ export default function ProjectDetails() {
 
   if (!projectData?.data) {
     return (
-      <div className="flex h-screen items-center justify-center text-gray-600">
-        Loading project details...
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
       </div>
     );
   }

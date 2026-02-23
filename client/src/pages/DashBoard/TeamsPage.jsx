@@ -117,14 +117,19 @@ export default function TeamsPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
         }`}
     >
-      {/* MAIN PAGE LOADER */}
-      {loading && <NexManageLoader />}
-
       {(teamLoading || membersLoading) && (
         <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
           <ModalSmallLoader />

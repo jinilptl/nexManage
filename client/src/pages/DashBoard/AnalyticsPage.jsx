@@ -9,6 +9,7 @@ import PriorityBarChart from "../../components/Analytics/PriorityBarChart";
 import ProjectProgress from "../../components/Analytics/ProjectProgress";
 import { useSelector } from "react-redux";
 import { use, useEffect } from "react";
+import NexManageLoader from "../../components/Lodders/NexManageLoader";
 
 export default function AnalyticsPage() {
   const role = useSelector((state) => state.auth.user?.role);
@@ -34,8 +35,8 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
       </div>
     );
   }

@@ -15,6 +15,7 @@ import {
 import toast from "react-hot-toast";
 import { addMemberService } from "../../services/authOperations/authServices";
 import { useNavigate } from "react-router-dom";
+import NexManageLoader from "../../components/Lodders/NexManageLoader";
 
 const InviteMembers = () => {
   const dispatch = useDispatch();
@@ -52,13 +53,21 @@ const InviteMembers = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className=" flex justify-center items-center h-[70vh]">
+        <NexManageLoader />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header with Back Button */}
-        <div className="mb-8">
-          <h1 className="text-gray-900  text-2xl font-bold">Invite New Member</h1>
-          <p className="text-gray-600">Add a new team member to your workspace and assign their role.</p>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-gray-900  text-2xl font-bold">Invite New Member</h1>
+        <p className="text-gray-600">Add a new team member to your workspace and assign their role.</p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* ================= LEFT : FORM ================= */}
