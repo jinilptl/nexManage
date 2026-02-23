@@ -264,7 +264,6 @@ const updateTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, "Task Updated successfully", updatedTask));
 });
 
-// delete task with proper reorder logics and activity log
 const deleteTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const task = req.task;

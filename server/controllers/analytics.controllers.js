@@ -44,17 +44,14 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
 
   const totalTasks = await Task.countDocuments(baseTaskMatch);
 
-  // Optimized completed tasks count
   const completedTasks = doneStatusIds.length > 0
     ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: doneStatusIds } })
     : 0;
 
-  // Optimized in progress tasks count
   const inProgressTasks = inProgressStatusIds.length > 0
     ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: inProgressStatusIds } })
     : 0;
 
-  // Optimized overdue tasks count (not Done and due date passed)
   const overdueTasks = await Task.countDocuments({
     ...baseTaskMatch,
     status: { $nin: doneStatusIds },
@@ -143,8 +140,6 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     week: `W${v._id.week}`,
     completed: v.completed,
   }));
-
-
 
   const activeProjectsData = [];
   for (const p of userProjects) {
