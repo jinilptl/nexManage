@@ -17,6 +17,7 @@ import {
 import { Link, NavLink, useLocation, useParams } from "react-router-dom";
 import LogoutModal from "./modals/authModal/LogOutModal";
 import { useSelector } from "react-redux";
+import Avatar from "./common/Avatar";
 
 export default function Navigation({
   collapsed,
@@ -144,9 +145,7 @@ export default function Navigation({
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full ${collapsed ? "justify-center" : ""
               }`}
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
-              {user.name[0].toUpperCase()}
-            </div>
+            <Avatar user={user} className="w-8 h-8 text-sm text-[12px] shadow-sm border border-slate-700 font-bold" />
             {!collapsed && (
               <div className="flex-1 text-left">
                 <div className="text-sm">
@@ -234,9 +233,7 @@ export default function Navigation({
             onClick={toggleUserMenu}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
-              {user.name[0].toUpperCase()}
-            </div>
+            <Avatar user={user} className="w-8 h-8 text-sm text-[12px] shadow-sm border border-slate-700 font-bold" />
             <div className="flex-1 text-left">
               <div className="text-sm">
                 {user.name[0].toUpperCase() + user.name.slice(1)}

@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { MoreHorizontal, Calendar, Check, Eye } from "lucide-react";
 import TaskPriorityBadge from "../kanban/TaskPriorityBadge";
 import TaskDetailModal from "../modals/taskModal/TaskDetailModal";
+import Avatar from "../common/Avatar";
 import { formatDueDate } from "../../utils/formatDueDate";
 import {
   setSelectedTask,
@@ -108,12 +109,11 @@ export default function ListRow({
         <div className="col-span-2 lg:flex -space-x-2">
           {task.assignees?.length ? (
             task.assignees.map((a, i) => (
-              <div
+              <Avatar
                 key={i}
-                className="h-8 w-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center ring-2 ring-white"
-              >
-                {a.name?.[0]}
-              </div>
+                user={a}
+                className="w-8 h-8 text-xs ring-2 ring-white"
+              />
             ))
           ) : (
             <span className="text-gray-400 text-xs italic">—</span>

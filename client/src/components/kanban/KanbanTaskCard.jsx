@@ -9,6 +9,7 @@ import {
   Tag,
 } from "lucide-react";
 import TaskDetailModal from "../modals/taskModal/TaskDetailModal";
+import Avatar from "../common/Avatar";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -76,8 +77,7 @@ export default function KanbanTaskCard({
           dispatch(setSelectedTask(task));
         }}
         className={`
-          group relative bg-white rounded-xl shadow-md border-t-4 ${
-            cardConfig.border
+          group relative bg-white rounded-xl shadow-md border-t-4 ${cardConfig.border
           }
           p-4 mb-3 cursor-pointer 
           transition-all duration-300 transform
@@ -115,13 +115,11 @@ export default function KanbanTaskCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {task.assignees?.map((assignee, i) => (
-              <div
+              <Avatar
                 key={i}
-                title={assignee.name}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700 ring-2 ring-white"
-              >
-                {assignee.name?.[0]?.toUpperCase()}
-              </div>
+                user={assignee}
+                className="w-7 h-7 text-xs ring-2 ring-white"
+              />
             ))}
           </div>
 

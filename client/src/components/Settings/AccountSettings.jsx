@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../services/usersOperations/usersServices";
 import toast from "react-hot-toast";
 import { User, Mail, Shield } from "lucide-react";
+import Avatar from "../common/Avatar";
 
 export default function AccountSettings() {
   const { user, token } = useSelector((state) => state.auth);
@@ -70,13 +71,13 @@ export default function AccountSettings() {
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative group">
-            <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600 border-4 border-white shadow-sm overflow-hidden">
-              {user?.avatar ? (
+            {user?.avatar ? (
+              <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden">
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                user?.name?.[0]?.toUpperCase()
-              )}
-            </div>
+              </div>
+            ) : (
+              <Avatar user={user} className="w-20 h-20 text-3xl border-4 border-white shadow-sm" />
+            )}
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>

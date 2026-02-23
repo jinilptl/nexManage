@@ -1,4 +1,5 @@
 import { Layout, Users, Calendar, CheckCircle2, AlertCircle, Archive, Clock } from "lucide-react";
+import Avatar from "../common/Avatar";
 
 export default function ProjectHeader({ project }) {
   const getStatusStyle = (status) => {
@@ -106,13 +107,11 @@ export default function ProjectHeader({ project }) {
           <div className="flex flex-col items-end gap-2 md:self-center shrink-0">
             <div className="flex -space-x-3">
               {project.projectMembers.slice(0, 5).map((m, index) => (
-                <div
+                <Avatar
                   key={index}
-                  className="w-10 h-10 rounded-full border-2 border-white bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium shadow-sm ring-2 ring-white transition-transform hover:-translate-y-1 z-0 hover:z-10"
-                  title={m.user?.name}
-                >
-                  {m.user?.name ? m.user.name[0].toUpperCase() : "?"}
-                </div>
+                  user={m.user}
+                  className="w-10 h-10 text-sm border-2 border-white shadow-sm ring-2 ring-white transition-transform hover:-translate-y-1 z-0 hover:z-10"
+                />
               ))}
               {project.projectMembers.length > 5 && (
                 <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-bold shadow-sm ring-2 ring-white z-0">

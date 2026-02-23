@@ -22,6 +22,7 @@ import { setSelectedTeamId } from "../../Redux_Config/Slices/teamsSlice";
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
 import ButtonLoader from "../../components/Lodders/ButtonLoader";
 import ModalSmallLoader from "../../components/Lodders/ModalSmallLoader";
+import Avatar from "../../components/common/Avatar";
 
 export default function TeamsPage() {
   const dispatch = useDispatch();
@@ -109,6 +110,13 @@ export default function TeamsPage() {
     if (lead) {
       return capitalizedName(lead.user.name);
     }
+  };
+
+  const findTeamLeadUser = (team) => {
+    const lead = team.members.find(
+      (member) => member.roleInTeam === "team lead",
+    );
+    return lead ? lead.user : null;
   };
 
   const findCreatedBy = (team) => {
@@ -343,9 +351,7 @@ export default function TeamsPage() {
                     </p>
                     {findTeamLeadName(team) ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm border md:border-white">
-                          {findTeamLeadName(team)?.charAt(0)}
-                        </div>
+                        <Avatar user={findTeamLeadUser(team)} className="w-6 h-6 text-[10px] shadow-sm border md:border-white" />
                         <span className="text-sm font-bold text-gray-700">
                           {findTeamLeadName(team)}
                         </span>

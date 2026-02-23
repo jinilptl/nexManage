@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import DashboardHearderCard from "./DashboardHearderCard";
 import ProjectProgress from "./Analytics/ProjectProgress";
+import Avatar from "./common/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import { getDashboardData } from "../Redux_Config/Slices/dashboardSlice";
 import NexManageLoader from "./Lodders/NexManageLoader";
@@ -199,9 +200,7 @@ export default function Dashboard() {
           <div className="space-y-4 max-h-[246px] overflow-y-auto pr-2">
             {data?.recentActivity?.map((a, i) => (
               <div key={i} className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold">
-                  {a.updatedBy?.name?.[0]?.toUpperCase()}
-                </div>
+                <Avatar user={a.updatedBy} className="w-8 h-8 text-sm" />
 
                 <div className="flex-1">
                   <p className="text-sm text-gray-900">

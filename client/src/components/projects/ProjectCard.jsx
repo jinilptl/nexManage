@@ -8,6 +8,7 @@ import {
   setSelectedProjectData,
   setSelectedProjectId,
 } from "../../Redux_Config/Slices/projectsSlice";
+import Avatar from "../common/Avatar";
 
 export default function ProjectCard({
   project,
@@ -106,8 +107,8 @@ export default function ProjectCard({
                 {UserRole !== "member" && (
                   <button
                     className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${(project.status || "").toUpperCase() === "ARCHIVED"
-                        ? "text-green-600"
-                        : "text-yellow-600"
+                      ? "text-green-600"
+                      : "text-yellow-600"
                       } hover:bg-gray-100`}
                     onClick={() => {
                       const newStatus =
@@ -155,14 +156,14 @@ export default function ProjectCard({
 
             <span
               className={`px-3 py-1 text-xs font-bold rounded-full border ${(project.status || "").toUpperCase() === "ACTIVE"
-                  ? "bg-green-50 text-green-700 border-green-200"
-                  : (project.status || "").toUpperCase() === "ON_HOLD"
-                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                    : (project.status || "").toUpperCase() === "COMPLETED"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : (project.status || "").toUpperCase() === "ARCHIVED"
-                        ? "bg-gray-50 text-gray-600 border-gray-200"
-                        : "bg-gray-50 text-gray-600 border-gray-200"
+                ? "bg-green-50 text-green-700 border-green-200"
+                : (project.status || "").toUpperCase() === "ON_HOLD"
+                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                  : (project.status || "").toUpperCase() === "COMPLETED"
+                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                    : (project.status || "").toUpperCase() === "ARCHIVED"
+                      ? "bg-gray-50 text-gray-600 border-gray-200"
+                      : "bg-gray-50 text-gray-600 border-gray-200"
                 }`}
             >
               {{
@@ -179,9 +180,7 @@ export default function ProjectCard({
           <div className="pt-2 flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Created By</span>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm border md:border-white">
-                {project.createdBy?.name ? project.createdBy.name[0].toUpperCase() : "?"}
-              </div>
+              <Avatar user={project.createdBy} className="w-6 h-6 text-[10px] shadow-sm border md:border-white" />
               <span className="text-xs font-bold text-gray-700">
                 {project.createdBy?.name
                   ? project.createdBy.name[0].toUpperCase() +

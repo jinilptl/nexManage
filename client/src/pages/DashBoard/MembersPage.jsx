@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ModalSmallLoader from "../../components/Lodders/ModalSmallLoader";
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
+import Avatar from "../../components/common/Avatar";
 
 export default function Members() {
   const dispatch = useDispatch();
@@ -220,9 +221,7 @@ export default function Members() {
                   >
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm ring-2 ring-white">
-                          {member.name?.charAt(0)?.toUpperCase()}
-                        </div>
+                        <Avatar user={member} className="w-10 h-10 ring-2 ring-white shadow-sm" />
                         <div>
                           <p className="font-medium text-gray-900 leading-tight">{member.name}</p>
                         </div>
