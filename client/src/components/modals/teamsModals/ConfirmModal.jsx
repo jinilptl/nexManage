@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function ConfirmModal({
   open,
@@ -10,31 +10,40 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
-  if (!open) return null;
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       document.body.classList.add("modal-open");
       return () => document.body.classList.remove("modal-open");
     }
   }, [open]);
 
+  if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-9999 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
-        onClick={onCancel}
+        className={`absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter ${loading ? "" : "cursor-pointer"}`}
+        onClick={!loading ? onCancel : undefined}
+        aria-hidden="true"
       />
 
       {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-4 sm:p-6 modal-content-enter">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
+        <h3 id="modal-title" className="text-lg font-semibold text-gray-900 mb-2">
+          {title}
+        </h3>
 
         <p className="text-sm text-gray-600 mb-6">{message}</p>
 
         <div className="flex justify-end gap-3">
           <button
+            type="button"
             onClick={onCancel}
             disabled={loading}
             className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -43,6 +52,7 @@ export default function ConfirmModal({
           </button>
 
           <button
+            type="button"
             onClick={onConfirm}
             disabled={loading}
             className="px-4 py-2 text-sm font-medium bg-red-600 text-white cursor-pointer hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

@@ -108,7 +108,7 @@ export default function ProjectHeader({ project }) {
               {project.projectMembers.slice(0, 5).map((m, index) => (
                 <div
                   key={index}
-                  className="w-10 h-10 rounded-full border-2 border-white bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium shadow-sm ring-2 ring-white cursor-help transition-transform hover:-translate-y-1 z-0 hover:z-10"
+                  className="w-10 h-10 rounded-full border-2 border-white bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium shadow-sm ring-2 ring-white transition-transform hover:-translate-y-1 z-0 hover:z-10"
                   title={m.user?.name}
                 >
                   {m.user?.name ? m.user.name[0].toUpperCase() : "?"}

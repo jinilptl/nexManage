@@ -8,8 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ModalSmallLoader from "../../Lodders/ModalSmallLoader";
 
 export default function CreateTeamModal({ open, setOpen, mode }) {
-  if (!open) return null;
-
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
 
@@ -55,6 +53,8 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
     }
   }, [open]);
 
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
@@ -67,6 +67,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
       <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
         {/* CLOSE BUTTON */}
         <button
+          type="button"
           disabled={modalLoading}
           onClick={() => !modalLoading && setOpen(false)}
           aria-label="Close create team dialog"

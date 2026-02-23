@@ -11,7 +11,6 @@ export default function CreateTaskModal({
   mode = "create",
   editableData = null,
 }) {
-  if (!isOpen) return null;
 
   const isEditMode = mode === "edit";
 
@@ -63,6 +62,8 @@ export default function CreateTaskModal({
     }
   }, [isOpen]);
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
@@ -79,6 +80,7 @@ export default function CreateTaskModal({
             {isEditMode ? "Edit Task" : "Create New Task"}
           </h2>
           <button
+            type="button"
             onClick={() => onClose(false)}
             aria-label="Close create task dialog"
             className="p-1 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors "
@@ -189,12 +191,14 @@ export default function CreateTaskModal({
         {/* FOOTER */}
         <div className="flex justify-end gap-3 px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
           <button
+            type="button"
             onClick={() => onClose(false)}
             className="px-4 py-2 text-sm font-medium cursor-pointer rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             className="px-5 py-2 text-sm font-medium cursor-pointer rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >

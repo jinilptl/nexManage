@@ -21,7 +21,6 @@ import ButtonLoader from "../../Lodders/ButtonLoader";
 import ConfirmModal from "./ConfirmModal";
 
 export default function TeamDetailModal({ open, onClose }) {
-  if (!open) return null;
 
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
@@ -92,6 +91,8 @@ export default function TeamDetailModal({ open, onClose }) {
     }
   }, [open]);
 
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
       {/* BACKDROP */}
@@ -141,8 +142,8 @@ export default function TeamDetailModal({ open, onClose }) {
         <div className="mt-3">
           <span
             className={`px-3 py-1 text-xs rounded-md ${team?.isActive
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-200 text-gray-700"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-200 text-gray-700"
               }`}
           >
             {team?.isActive ? "Active" : "Inactive"}
