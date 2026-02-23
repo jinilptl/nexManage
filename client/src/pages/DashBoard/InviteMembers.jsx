@@ -62,9 +62,9 @@ const InviteMembers = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">
       {/* Header with Back Button */}
-      <div className="mb-8">
+      <div className="">
         <h1 className="text-gray-900  text-2xl font-bold">Invite New Member</h1>
         <p className="text-gray-600">Add a new team member to your workspace and assign their role.</p>
       </div>

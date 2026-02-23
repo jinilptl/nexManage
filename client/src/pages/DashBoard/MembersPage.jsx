@@ -142,7 +142,7 @@ export default function Members() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
