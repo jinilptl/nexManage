@@ -72,12 +72,7 @@ export default function ProjectDetails() {
     );
   }, [projectData]);
 
-  const removedObservers = useMemo(() => {
-    if (!projectData?.data?.projectMembers) return [];
-    return projectData.data.projectMembers.filter(
-      (m) => m.roleInProject === "observer" && m.status === "removed" && !m.user?.isTempMember
-    );
-  }, [projectData]);
+
 
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
@@ -219,18 +214,13 @@ export default function ProjectDetails() {
           )}
 
           {/* Observers list toggle — visible to admin/super_admin/PM only */}
-          {isProjectManagerOrAdmin && (observers.length > 0 || removedObservers.length > 0) && (
+          {isProjectManagerOrAdmin && observers.length > 0 && (
             <button
               onClick={() => setShowObserversList(!showObserversList)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-gray-700 text-xs font-medium transition-colors"
             >
               <Eye className="w-3.5 h-3.5" />
               {observers.length} Observer{observers.length !== 1 ? "s" : ""}
-              {removedObservers.length > 0 && (
-                <span className="text-gray-400 ml-0.5">
-                  (+{removedObservers.length} removed)
-                </span>
-              )}
             </button>
           )}
 
@@ -249,7 +239,7 @@ export default function ProjectDetails() {
       </div>
 
       {/* Observers List Panel — only for admin/super_admin/PM */}
-      {isProjectManagerOrAdmin && showObserversList && (observers.length > 0 || removedObservers.length > 0) && (
+      {isProjectManagerOrAdmin && showObserversList && observers.length > 0 && (
         <div className="mx-6 mb-4 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
@@ -302,51 +292,6 @@ export default function ProjectDetails() {
             ))}
           </div>
 
-          {/* Removed Observers — Re-add section */}
-          {removedObservers.length > 0 && (
-            <>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 border-t border-gray-200">
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Removed Observers</h4>
-                <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full font-medium">
-                  {removedObservers.length}
-                </span>
-              </div>
-              <div className="divide-y divide-gray-50">
-                {removedObservers.map((obs, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors opacity-60 hover:opacity-100"
-                  >
-                    <Avatar
-                      user={obs.user}
-                      className="w-8 h-8 text-xs border border-gray-200 grayscale"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-700 truncate">
-                        {obs.user?.name || "Unknown"}
-                      </p>
-                      <p className="text-xs text-gray-400 truncate">
-                        {obs.user?.email || ""}
-                      </p>
-                    </div>
-                    <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 bg-red-50 text-red-500 border border-red-200 rounded-full">
-                      Removed
-                    </span>
-                    <button
-                      onClick={() => {
-                        dispatch(activeProjectMemberService(projectId, obs.user?._id, token));
-                      }}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors duration-150 cursor-pointer"
-                      title="Re-add Observer"
-                    >
-                      <UserPlus className="w-3.5 h-3.5" />
-                      Re-add
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
         </div>
       )}
 

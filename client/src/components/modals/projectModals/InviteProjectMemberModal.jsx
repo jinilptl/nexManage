@@ -157,8 +157,7 @@ export default function InviteProjectMemberModal({
                                 {removedMatch && (
                                     <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
                                         <UserPlus className="w-3.5 h-3.5" />
-                                        Previously removed observer found — click Re-add to restore
-                                        access
+                                        This observer already has an account — you can add them directly
                                     </div>
                                 )}
                             </div>
