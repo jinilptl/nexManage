@@ -6,14 +6,12 @@ import { ApiError } from "../../utils/ApiError.js";
 import { Team as TeamModel } from "../../models/team.models.js"
 import sendEmail from "../../utils/sendMail.js";
 import { project_invite_email_template } from "../../templates/projectInviteMail.js";
-import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 const addProjectMember = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const { email, roleInProject, inviteType } = req.body; // inviteType: 'member' or 'observer'
+  const { email, roleInProject } = req.body;
 
-  // Validate
   if (!projectId) throw new ApiError(400, "Project ID is required");
   if (!email) throw new ApiError(400, "Email is required");
 
@@ -32,76 +30,107 @@ const addProjectMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid roleInProject value");
   }
 
-  // Find project
   const project = await ProjectModel.findById(projectId);
   if (!project) throw new ApiError(404, "Project not found");
 
-  // Find user by email
   let userDoc = await UserModel.findOne({ email });
   let isNewUser = false;
-  let rawPassword = "";
 
   if (!userDoc) {
     isNewUser = true;
-    rawPassword = "User@123"; // Simplified static password for invitation flow
-    const hashPassword = await bcrypt.hash(rawPassword, 10);
 
-    // Create temp user if it's an observer, otherwise create a standing member
-    const isObserver = inviteType === "observer";
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
 
     userDoc = await UserModel.create({
       name: email.split("@")[0],
       email,
-      password: hashPassword,
       role: "member",
-      isTempMember: isObserver,
+      isTempMember: true,
+      isInvited: true,
+      inviteToken: hashedToken,
+      inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000,
       createdby: req.user?._id,
     });
 
-    // If it's an observer, let's force the project role too
-    if (isObserver) {
-      req.body.roleInProject = "observer";
+    const userId = userDoc._id;
+
+    const exists = project.projectMembers.find(
+      (m) => m.user.toString() === userId.toString()
+    );
+    if (exists) {
+      throw new ApiError(409, "This user is already a member of this project");
     }
-  } else {
-    // If an existing temp member is invited as a full 'member', promote them
-    if (inviteType === "member" && userDoc.isTempMember) {
-      userDoc.isTempMember = false;
-      await userDoc.save();
+
+    const newMember = {
+      user: userId,
+      roleInProject: "observer",
+      status: "active",
+      addedFromTeam: null,
+      addedAt: Date.now()
+    };
+
+    project.projectMembers.push(newMember);
+    await project.save();
+
+    try {
+      const setPasswordLink = `${process.env.CLIENT_URL}/set-password/${rawToken}`;
+      const message = project_invite_email_template(
+        project.projectName,
+        email,
+        setPasswordLink,
+        false
+      );
+
+      await sendEmail({
+        email,
+        subject: `Project Invitation: ${project.projectName}`,
+        message,
+      });
+    } catch (err) {
+      console.error("Failed to send project invite email:", err);
     }
+
+    const populatedProject = await ProjectModel.findById(projectId)
+      .populate("projectMembers.user", "name email");
+
+    const populatedNewMember = populatedProject.projectMembers.find(
+      (m) => m.user && m.user._id.toString() === userId.toString()
+    );
+
+    return res.status(201).json(
+      new ApiResponse(201, "Observer added to project successfully", populatedNewMember)
+    );
   }
 
+  // Existing user flow
   const userId = userDoc._id;
 
-  // Duplicate check
   const exists = project.projectMembers.find(
     (m) => m.user.toString() === userId.toString()
   );
-
   if (exists) {
     throw new ApiError(409, "This user is already a member of this project");
   }
 
-  // Add new member → manually added → ALWAYS null
   const newMember = {
     user: userId,
-    roleInProject: roleInProject || "contributor",
+    roleInProject: "observer",
     status: "active",
-    addedFromTeam: null,      // FORCE null (correct behavior)
+    addedFromTeam: null,
     addedAt: Date.now()
   };
 
   project.projectMembers.push(newMember);
   await project.save();
 
-  // SEND INVITE EMAIL
   try {
     const loginLink = `${process.env.CLIENT_URL}/`;
     const message = project_invite_email_template(
       project.projectName,
       email,
-      rawPassword || "User@123", // Send the actual password or default
       loginLink,
-      !isNewUser
+      true
     );
 
     await sendEmail({
@@ -116,20 +145,12 @@ const addProjectMember = asyncHandler(async (req, res) => {
   const populatedProject = await ProjectModel.findById(projectId)
     .populate("projectMembers.user", "name email");
 
-  if (!populatedProject) {
-    throw new ApiError(404, "Project not found after update");
-  }
-
   const populatedNewMember = populatedProject.projectMembers.find(
     (m) => m.user && m.user._id.toString() === userId.toString()
   );
 
   return res.status(201).json(
-    new ApiResponse(
-      201,
-      "Member added to project successfully",
-      populatedNewMember
-    )
+    new ApiResponse(201, "Observer added to project successfully", populatedNewMember)
   );
 });
 

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { X, Mail, Loader2, Users } from "lucide-react";
+import { X, Mail, Loader2, Eye } from "lucide-react";
 
 export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, loading }) {
     const [email, setEmail] = useState("");
-    const [inviteType, setInviteType] = useState("member");
     const [error, setError] = useState("");
 
     if (!isOpen) return null;
@@ -23,7 +22,7 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
             return;
         }
 
-        onSubmit({ email, inviteType });
+        onSubmit({ email, inviteType: "observer" });
     };
 
     return (
@@ -33,7 +32,7 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                    <h3 className="text-lg font-semibold text-gray-900">Invite Member</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Invite Observer</h3>
                     <button
                         onClick={() => onClose(false)}
                         className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
@@ -66,40 +65,13 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                            Invitation Role
-                        </label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <button
-                                type="button"
-                                onClick={() => setInviteType("member")}
-                                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${inviteType === "member"
-                                    ? "border-blue-500 bg-blue-50/50 text-blue-700"
-                                    : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200"
-                                    }`}
-                            >
-                                <Users className={`w-6 h-6 mb-2 ${inviteType === "member" ? "text-blue-600" : "text-gray-400"}`} />
-                                <span className="text-sm font-semibold">Member</span>
-                                <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">Standard Project Member</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => setInviteType("observer")}
-                                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${inviteType === "observer"
-                                    ? "border-blue-500 bg-blue-50/50 text-blue-700"
-                                    : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200"
-                                    }`}
-                            >
-                                <Mail className={`w-6 h-6 mb-2 ${inviteType === "observer" ? "text-blue-600" : "text-gray-400"}`} />
-                                <span className="text-sm font-semibold">Observer</span>
-                                <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">Temporary/Guest Access</span>
-                            </button>
+                        <div className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-blue-500 bg-blue-50/50 text-blue-700">
+                            <Eye className="w-6 h-6 mb-2 text-blue-600" />
+                            <span className="text-sm font-semibold">Observer</span>
+                            <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">Temporary/Guest Access (Read-Only)</span>
                         </div>
                         <p className="mt-3 text-[11px] text-gray-500 leading-relaxed italic">
-                            {inviteType === "member"
-                                ? "Members are registered as full users immediately."
-                                : "Observers are added as temp members and hidden from team selection."}
+                            Observers are added as temp members with read-only access and hidden from team selection.
                         </p>
                     </div>
 
@@ -123,7 +95,7 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                                     Inviting...
                                 </>
                             ) : (
-                                "Invite Member"
+                                "Invite Observer"
                             )}
                         </button>
                     </div>

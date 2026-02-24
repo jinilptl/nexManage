@@ -189,7 +189,7 @@ export default function ProjectDetails() {
             }}
             className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer flex items-center gap-2 text-sm hover:bg-blue-700"
           >
-            <Plus className="w-4 h-4" /> Invite Member
+            <Plus className="w-4 h-4" /> Invite Observer
           </button>
         )}
       </div>
