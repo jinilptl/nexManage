@@ -21,6 +21,7 @@ export default function ListRow({
   onMoveTask,
   projectId,
   token,
+  isObserver = false,
 }) {
   const [openTaskDetailesModal, setOpenTaskDetailesModal] = useState(false);
   const [showActions, setShowActions] = useState(false);
@@ -164,31 +165,35 @@ export default function ListRow({
                 <span>View Task</span>
               </button>
 
-              {/* Status Header */}
-              <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-t border-b border-gray-100">
-                Change Status
-              </div>
-
-              <div className="py-1 max-h-48 overflow-y-auto">
-                {statuses.length > 0 ? (
-                  statuses.map((status) => (
-                    <button
-                      key={status._id}
-                      onClick={() => handleStatusChange(status._id)}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-between group/item transition-colors"
-                    >
-                      <span>{status.label}</span>
-                      {task.status === status._id && (
-                        <Check size={14} className="text-blue-600" />
-                      )}
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-sm text-gray-400 italic">
-                    No statuses available
+              {/* Status change — hidden for observers */}
+              {!isObserver && (
+                <>
+                  <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-t border-b border-gray-100">
+                    Change Status
                   </div>
-                )}
-              </div>
+
+                  <div className="py-1 max-h-48 overflow-y-auto">
+                    {statuses.length > 0 ? (
+                      statuses.map((status) => (
+                        <button
+                          key={status._id}
+                          onClick={() => handleStatusChange(status._id)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-between group/item transition-colors"
+                        >
+                          <span>{status.label}</span>
+                          {task.status === status._id && (
+                            <Check size={14} className="text-blue-600" />
+                          )}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-2 text-sm text-gray-400 italic">
+                        No statuses available
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

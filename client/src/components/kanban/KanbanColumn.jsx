@@ -14,16 +14,19 @@ export default function KanbanColumn({
   onModalOpen,
   userRole,
   onDeleteColumn,
+  isObserver = false,
 }) {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
+    canDrop: () => !isObserver,
     drop: (item) => {
+      if (isObserver) return;
       if (item.columnId !== column._id) {
         onMoveTaskToColumn(item.id, column._id);
       }
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      isOver: !isObserver && monitor.isOver(),
     }),
   });
 
@@ -48,7 +51,7 @@ export default function KanbanColumn({
           </span>
         </div>
 
-        {column.isDefault && userRole !== "member" && (
+        {!isObserver && column.isDefault && userRole !== "member" && (
           <Plus
             size={16}
             className="cursor-pointer text-gray-600 hover:text-blue-600"
@@ -59,7 +62,7 @@ export default function KanbanColumn({
           />
         )}
 
-        {!["todo", "in_progress", "review", "done"].includes(column.key) && userRole !== "member" && (
+        {!isObserver && !["todo", "in_progress", "review", "done"].includes(column.key) && userRole !== "member" && (
           <Trash2
             size={16}
             className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors"
@@ -78,6 +81,7 @@ export default function KanbanColumn({
             columnId={column._id}
             moveTask={onReorderTask}
             onClick={onTaskClick}
+            isObserver={isObserver}
           />
         ))}
       </div>

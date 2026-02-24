@@ -27,6 +27,7 @@ export default function KanbanTaskCard({
   columnId,
   moveTask,
   onClick,
+  isObserver = false,
 }) {
   const ref = useRef(null);
   const [openTaskDetailesModal, setOpenTaskDetailesModal] = useState(false);
@@ -34,7 +35,9 @@ export default function KanbanTaskCard({
   // SAME COLUMN REORDER
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
+    canDrop: () => !isObserver,
     hover(item) {
+      if (isObserver) return;
       if (!ref.current) return;
       if (item.columnId !== columnId) return;
       if (item.index === index) return;
@@ -47,6 +50,7 @@ export default function KanbanTaskCard({
   // DRAG logic
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.TASK,
+    canDrag: () => !isObserver,
     item: () => ({
       id: task._id,
       index,
@@ -85,9 +89,11 @@ export default function KanbanTaskCard({
           ${isDragging ? "opacity-30 rotate-1 scale-95" : ""}
         `}
       >
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
-          <GripVertical size={18} className="text-gray-400" />
-        </div>
+        {!isObserver && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
+            <GripVertical size={18} className="text-gray-400" />
+          </div>
+        )}
 
         <div className="flex items-center justify-between mb-2">
           <TaskPriorityBadge priority={task.priority} />

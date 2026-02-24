@@ -17,6 +17,7 @@ export default function KanbanBoard({
   onAddTask,
   onModalOpen,
   onMoveTask,
+  isObserver = false,
 }) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
@@ -58,7 +59,7 @@ export default function KanbanBoard({
       if (!scrollContainerRef.current) return;
 
       const { left, right } = scrollContainerRef.current.getBoundingClientRect();
-      const edgeThreshold = 100; // pixels from edge to trigger scroll
+      const edgeThreshold = 100;
       const clientX = e.clientX;
 
       if (clientX < left + edgeThreshold) {
@@ -78,7 +79,6 @@ export default function KanbanBoard({
       stopScrolling();
     };
 
-    // Attach to document to catch all drag movements
     document.addEventListener("dragover", handleDragOver);
     document.addEventListener("dragend", handleDragEnd);
     document.addEventListener("drop", handleDragEnd);
@@ -111,13 +111,17 @@ export default function KanbanBoard({
       (m) => (m.user?._id || m.user) === user?._id,
     );
 
-    return currentMember?.roleInProject === "project-manager";
+    if (currentMember?.roleInProject === "project-manager") return true;
+    if (currentMember?.roleInProject === "observer") return true;
+
+    return false;
   }, [user, project]);
 
   const reorderTask = (columnId, taskId, fromIndex, toIndex) => {
+    if (isObserver) return;
+
     let realToIndex = toIndex;
 
-    // If restricted view, map the visible index to the global index
     if (!canViewAllTasks) {
       const columnTasks = tasks.filter((t) => t.status === columnId);
       const isVisible = (t) =>
@@ -126,7 +130,7 @@ export default function KanbanBoard({
       const movedTaskIndex = columnTasks.findIndex((t) => t._id === taskId);
       if (movedTaskIndex !== -1) {
         const tempColumnTasks = [...columnTasks];
-        tempColumnTasks.splice(movedTaskIndex, 1); // Remove moving task
+        tempColumnTasks.splice(movedTaskIndex, 1);
         const currentVisibleTasks = tempColumnTasks.filter(isVisible);
 
         if (toIndex >= currentVisibleTasks.length) {
@@ -169,6 +173,8 @@ export default function KanbanBoard({
   };
 
   const moveTaskToColumn = (taskId, targetColumnId) => {
+    if (isObserver) return;
+
     setTasks((prev) =>
       prev.map((task) =>
         task._id === taskId ? { ...task, status: targetColumnId } : task,
@@ -185,6 +191,7 @@ export default function KanbanBoard({
   };
 
   const handleDeleteColumn = (statusId) => {
+    if (isObserver) return;
     dispatch(deleteTaskStatusFromProjectService(project.data._id, statusId, token));
   };
 
@@ -215,10 +222,11 @@ export default function KanbanBoard({
                 onModalOpen={onModalOpen}
                 userRole={user?.role}
                 onDeleteColumn={() => handleDeleteColumn(column._id)}
+                isObserver={isObserver}
               />
             ))}
 
-            {user?.role !== "member" && (
+            {user?.role !== "member" && !isObserver && (
               <button
                 onClick={() => setIsAddColumnOpen(true)}
                 className="h-12 w-12 cursor-pointer flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-100 text-gray-500"
@@ -230,7 +238,6 @@ export default function KanbanBoard({
         </div>
       </div>
 
-      {/* Add Column Modal */}
       {isAddColumnOpen && (
         <AddColumnModal
           onClose={() => setIsAddColumnOpen(false)}

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import ListHeader from "./ListHeader";
 import ListRow from "./ListRow";
 
-export default function ListView({ tasks, onTaskClick, onMoveTask }) {
+export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = false }) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
@@ -28,14 +28,18 @@ export default function ListView({ tasks, onTaskClick, onMoveTask }) {
   const canViewAllTasks = useMemo(() => {
     if (!user) return false;
     if (user.role === "super_admin" || user.role === "admin") return true;
+    if (isObserver) return true;
 
     const projectMembers = project?.data?.projectMembers || [];
     const currentMember = projectMembers.find(
       (m) => (m.user?._id || m.user) === user?._id,
     );
 
-    return currentMember?.roleInProject === "project-manager";
-  }, [user, project]);
+    if (currentMember?.roleInProject === "project-manager") return true;
+    if (currentMember?.roleInProject === "observer") return true;
+
+    return false;
+  }, [user, project, isObserver]);
 
   // Handle Filtering
   const filteredTasks = useMemo(() => {
@@ -137,6 +141,7 @@ export default function ListView({ tasks, onTaskClick, onMoveTask }) {
                 onMoveTask={onMoveTask}
                 projectId={project?.data?._id}
                 token={token}
+                isObserver={isObserver}
               />
             ))}
           </div>

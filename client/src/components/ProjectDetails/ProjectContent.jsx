@@ -8,6 +8,7 @@ export default function ProjectContent({
   setTasks,
   reorderTaskInColumn,
   onModalOpen,
+  isObserver = false,
 }) {
   const handleMoveTask = (taskId, newStatus) => {
     setTasks((prev) =>
@@ -22,6 +23,7 @@ export default function ProjectContent({
           tasks={tasks}
           onTaskClick={(task) => console.log("List View Task Click", task)}
           onMoveTask={handleMoveTask}
+          isObserver={isObserver}
         />
       </div>
     );
@@ -37,6 +39,7 @@ export default function ProjectContent({
           onMoveTask={handleMoveTask}
           onReorderTask={reorderTaskInColumn}
           onModalOpen={onModalOpen}
+          isObserver={isObserver}
         />
       </div>
     );
