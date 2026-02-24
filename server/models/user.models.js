@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
     },
     role: {
         type: String,
@@ -32,6 +31,16 @@ const userSchema = new mongoose.Schema({
     isTempMember: {
         type: Boolean,
         default: false
+    },
+    isInvited: {
+        type: Boolean,
+        default: false
+    },
+    inviteToken: {
+        type: String
+    },
+    inviteTokenExpire: {
+        type: Date
     }
 }, { timestamps: true })
 

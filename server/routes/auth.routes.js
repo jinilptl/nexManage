@@ -4,7 +4,8 @@ import {
   changePassword,
   forgotPassword,
   loginUser,
-  registerUser,
+  inviteUser,
+  setPassword,
   resetPassword,
   logoutUser,
   getMyProfile,
@@ -14,20 +15,24 @@ import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewa
 
 const authRouter = express.Router();
 
-//register and login routes
-authRouter.route("/register").post(verifyToken, roleChecker(["super_admin"]), registerUser);
+authRouter
+  .route("/register")
+  .post(verifyToken, roleChecker(["super_admin"]), inviteUser);
+
 authRouter.route("/login").post(loginUser);
+
 authRouter.route("/getmyprofile").get(verifyToken, getMyProfile);
+
 authRouter.route("/logout").post(verifyToken, logoutUser);
 
-// get all users route - only super admin can access
 authRouter
   .route("/alluser")
   .get(verifyToken, roleChecker(["super_admin"]), allUsers);
 
-// change password
 authRouter.route("/change-password").post(verifyToken, changePassword);
 authRouter.route("/forget-password").post(forgotPassword);
 authRouter.route("/reset-password/:token").post(resetPassword);
+
+authRouter.route("/set-password/:token").post(setPassword);
 
 export default authRouter;

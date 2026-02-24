@@ -6,7 +6,7 @@ import { ApiError } from "../../utils/ApiError.js";
  * Requires isProjectMember middleware to be run first to populate req.roleInProject.
  */
 const isNotObserver = asyncHandler(async (req, res, next) => {
-    if (req.roleInProject === "observer") {
+    if (req.roleInProject === "observer" || req.user?.isTempMember === true) {
         throw new ApiError(403, "Observers have read-only access and cannot perform this action");
     }
     next();

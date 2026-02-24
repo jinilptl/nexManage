@@ -2,103 +2,207 @@ import { User as UserModel } from "../models/user.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { forgot_password_email_template } from "../templates/forgotPasswordMail.js";
 import sendEmail from "../utils/sendMail.js";
 import crypto from "crypto";
 import { invite_member_email_template } from "../templates/inviteMemberMail.js";
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role, isTempMember } = req.body;
+const inviteUser = asyncHandler(async (req, res) => {
+  const { name, email, role, isTempMember } = req.body;
 
-  if (!name || !email || !password) {
-    throw new ApiError(401, "all feilds are required");
+  if (!name || !email) {
+    throw new ApiError(400, "Name and email are required");
   }
 
   const existingUser = await UserModel.findOne({ email });
 
-  if (existingUser) {
-    throw new ApiError(401, "user already registerd");
+  if (existingUser && !existingUser.isInvited) {
+    throw new ApiError(400, "User already registered with this email");
   }
 
-  const hashPassword = await bcrypt.hash(password, 10);
+  const rawToken = crypto.randomBytes(32).toString("hex");
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  if (existingUser && existingUser.isInvited) {
+    existingUser.name = name;
+    existingUser.role = role || "member";
+    existingUser.isTempMember = isTempMember || false;
+    existingUser.inviteToken = hashedToken;
+    existingUser.inviteTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    existingUser.isInvited = true;
+    existingUser.password = undefined;
+    existingUser.createdby = req.user?._id;
+
+    await existingUser.save();
+
+    const setPasswordLink = `${process.env.CLIENT_URL}/set-password/${rawToken}`;
+    const message = invite_member_email_template(name, setPasswordLink);
+
+    try {
+      await sendEmail({
+        email,
+        subject: "You are invited to NexManage",
+        message,
+      });
+    } catch (error) {
+      console.error("Email sending failed:", error);
+      existingUser.inviteToken = undefined;
+      existingUser.inviteTokenExpire = undefined;
+      await existingUser.save();
+      throw new ApiError(500, "Failed to send invite email. Please try again.");
+    }
+
+    const updatedUser = await UserModel.findById(existingUser._id)
+      .select("-password -inviteToken -inviteTokenExpire")
+      .populate("createdby", "name email role");
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Invitation resent successfully", updatedUser),
+      );
+  }
 
   const createdUser = await UserModel.create({
     name,
     email,
-    password: hashPassword,
     role: role || "member",
     isTempMember: isTempMember || false,
+    isInvited: true,
+    inviteToken: hashedToken,
+    inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     createdby: req.user?._id,
   });
 
-  const message = invite_member_email_template(
-    name,
-    email,
-    password,
-    `${process.env.CLIENT_URL}/`,
-  );
+  const setPasswordLink = `${process.env.CLIENT_URL}/set-password/${rawToken}`;
+  const message = invite_member_email_template(name, setPasswordLink);
 
-  await sendEmail({
-    email,
-    subject: "You are invited to NexManage",
-    message,
-  });
+  try {
+    await sendEmail({
+      email,
+      subject: "You are invited to NexManage",
+      message,
+    });
+  } catch (error) {
+    console.error("Email sending failed:", error);
+    await UserModel.findByIdAndDelete(createdUser._id);
+    throw new ApiError(500, "Failed to send invite email. Please try again.");
+  }
 
   const registeredUser = await UserModel.findById(createdUser._id)
-    .select("-password")
-    .populate("createdby", "name email role ");
+    .select("-password -inviteToken -inviteTokenExpire")
+    .populate("createdby", "name email role");
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, "Invitation sent successfully", registeredUser));
+});
+
+const setPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    throw new ApiError(400, "Password is required");
+  }
+
+  if (password.length < 6) {
+    throw new ApiError(400, "Password must be at least 6 characters long");
+  }
+
+  if (!token) {
+    throw new ApiError(400, "Token is required");
+  }
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await UserModel.findOne({
+    inviteToken: hashedToken,
+    inviteTokenExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(400, "Invalid or expired invite link");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  user.password = hashedPassword;
+  user.inviteToken = undefined;
+  user.inviteTokenExpire = undefined;
+  user.isInvited = false;
+
+  await user.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "user register succesfully", registeredUser));
+    .json(
+      new ApiResponse(200, "Password set successfully. You can now log in."),
+    );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new ApiError(400, "all fields are required");
+    throw new ApiError(400, "All fields are required");
   }
 
   const existingUser = await UserModel.findOne({ email });
 
   if (!existingUser) {
-    throw new ApiError(400, "user not found.. please register first");
+    throw new ApiError(400, "User not found. Please register first.");
+  }
+
+  if (existingUser.isInvited) {
+    throw new ApiError(
+      403,
+      "Please set your password using the invitation link sent to your email before logging in.",
+    );
+  }
+
+  if (!existingUser.password) {
+    throw new ApiError(
+      403,
+      "No password set for this account. Please use the invite link to set your password.",
+    );
   }
 
   const matchPassword = await bcrypt.compare(password, existingUser.password);
 
   if (!matchPassword) {
-    throw new ApiError(400, "invalid credentilas");
+    throw new ApiError(400, "Invalid credentials");
   }
-
-  // If user was a temp member, keep them temp unless explicitly promoted
-  // (Previously we were auto-promoting here which was wrong for Observers)
 
   let tokenPayload = {
     _id: existingUser._id,
     name: existingUser.name,
     email: existingUser.email,
     role: existingUser.role,
+    isTempMember: existingUser.isTempMember,
   };
 
   let userdDetailes = await UserModel.findOne({ email }).select("-password");
 
-  let token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+  let jwtToken = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 
   const data = {
     userdDetailes,
-    token,
+    token: jwtToken,
   };
 
   return res
     .status(200)
-    .cookie("token", token, { httponly: true, secure: true })
-    .json(new ApiResponse(200, "user login succesfully", data));
+    .cookie("token", jwtToken, { httpOnly: true, secure: false })
+    .json(new ApiResponse(200, "User login successfully", data));
 });
 
 const allUsers = asyncHandler(async (req, res) => {
@@ -118,13 +222,14 @@ const allUsers = asyncHandler(async (req, res) => {
     filter.role = { $in: ["admin", "member"] };
   }
 
-  const users = await UserModel.find(filter).select("-password");
+  const users = await UserModel.find(filter).select(
+    "-password -inviteToken -inviteTokenExpire",
+  );
 
   return res
     .status(200)
     .json(new ApiResponse(200, "All users fetched successfully", users));
 });
-
 
 const updateUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
@@ -190,31 +295,31 @@ const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    throw new ApiError(400, "all fileds are required ");
+    throw new ApiError(400, "All fields are required");
   }
 
   if (!userId) {
-    throw new ApiError(400, "usrId not found in the chnagePassword ");
+    throw new ApiError(400, "userId not found in changePassword");
   }
 
   const user = await UserModel.findById(userId);
 
   if (!user) {
-    throw new ApiError(400, "user not found with this userId");
+    throw new ApiError(400, "User not found with this userId");
   }
 
   const isMatch = await bcrypt.compare(oldPassword, user.password);
 
   if (!isMatch) {
-    throw new ApiError(400, "something went wrong.enter correct password");
+    throw new ApiError(400, "Enter correct current password");
   }
 
   const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-  const checkIsdifferent = await bcrypt.compare(newPassword, user.password);
+  const checkIsDifferent = await bcrypt.compare(newPassword, user.password);
 
-  if (checkIsdifferent) {
-    throw new ApiError(400, "new password must be different from old password");
+  if (checkIsDifferent) {
+    throw new ApiError(400, "New password must be different from old password");
   }
 
   user.password = hashedNewPassword;
@@ -229,7 +334,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    throw new ApiError(400, "all fileds are required");
+    throw new ApiError(400, "Email is required");
   }
 
   const user = await UserModel.findOne({ email });
@@ -237,7 +342,14 @@ const forgotPassword = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(
       400,
-      "user not found with this email..enter registerd email",
+      "User not found with this email. Enter registered email.",
+    );
+  }
+
+  if (user.isInvited) {
+    throw new ApiError(
+      400,
+      "This account is pending invitation. Please use the invite link to set your password first.",
     );
   }
 
@@ -249,7 +361,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     .digest("hex");
 
   user.resetPasswordToken = hashToken;
-  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; //15 minutes expires time
+  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
   await user.save();
 
@@ -258,7 +370,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const message = forgot_password_email_template(reset_url);
 
   try {
-    sendEmail({
+    await sendEmail({
       email: user.email,
       subject: "NexManage Password Reset",
       message: message,
@@ -273,14 +385,14 @@ const forgotPassword = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error(
-      "SendGrid Email Error in forgot password ",
+      "SendGrid Email Error in forgot password:",
       error.response ? error.response.body : error,
     );
     user.resetPasswordExpire = undefined;
     user.resetPasswordToken = undefined;
 
     await user.save();
-    throw new ApiError(500, "Email could not be send in forgot password");
+    throw new ApiError(500, "Email could not be sent");
   }
 });
 
@@ -289,10 +401,10 @@ const resetPassword = asyncHandler(async (req, res) => {
   const { newPassword } = req.body;
 
   if (!newPassword) {
-    throw new ApiError(400, "all fields are required");
+    throw new ApiError(400, "All fields are required");
   }
   if (!token) {
-    throw new ApiError(400, "token not found");
+    throw new ApiError(400, "Token not found");
   }
 
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -332,11 +444,12 @@ const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .cookie("token", "", { httponly: true, secure: true })
-    .json(new ApiResponse(200, "user logged out successfully"));
+    .json(new ApiResponse(200, "User logged out successfully"));
 });
 
 export {
-  registerUser,
+  inviteUser,
+  setPassword,
   loginUser,
   allUsers,
   changePassword,

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  registerUser,
+  inviteUser,
   loginUser,
   allUsers,
   changePassword,
@@ -17,7 +17,7 @@ import { roleChecker } from "../middlewares/authMiddlewares/roleChecker.middlewa
 const router = express.Router();
 
 // Auth
-router.post("/register", registerUser);
+router.post("/register", verifyToken, roleChecker(["super_admin"]), inviteUser);
 router.post("/login", loginUser);
 router.post("/logout", verifyToken, logoutUser);
 

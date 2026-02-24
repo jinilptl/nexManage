@@ -10,11 +10,10 @@ import {
 } from "../../Redux_Config/Slices/authSlice";
 import { clearTeams } from "../../Redux_Config/Slices/teamsSlice";
 
-let Logger = console.log;
-
 const {
   LOGIN,
-  ADD_MEMBER,
+  INVITE_MEMBER,
+  SET_PASSWORD,
   GET_MY_PROFILE,
   LOGOUT,
   FORGET_PASSWORD,
@@ -60,12 +59,12 @@ export function loginUserService(email, password, navigate, rememberMe) {
   };
 }
 
-export function addMemberService(memberData, token) {
+export function inviteMemberService(memberData, token) {
   return async (dispatch) => {
     dispatch(setAuthLoading(true));
 
     try {
-      const response = await axiosInstance.post(ADD_MEMBER, memberData, {
+      const response = await axiosInstance.post(INVITE_MEMBER, memberData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,17 +75,42 @@ export function addMemberService(memberData, token) {
         throw new Error(response.data.message);
       }
 
-      toast.success(response.data.message || "User registered successfully");
+      toast.success(response.data.message || "Invitation sent successfully");
+      return true;
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Failed to add member",
+        error.message ||
+        "Failed to send invitation",
       );
+      return false;
     } finally {
       dispatch(setAuthLoading(false));
     }
   };
+}
+
+export async function setPasswordService(token, password) {
+  try {
+    const response = await axiosInstance.post(
+      `${SET_PASSWORD}/${token}`,
+      { password },
+      { withCredentials: true },
+    );
+
+    if (response.data.success) {
+      toast.success(
+        response.data.message || "Password set successfully. You can now log in."
+      );
+      return true;
+    }
+    return false;
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || "Failed to set password. The link may have expired."
+    );
+    return false;
+  }
 }
 
 export function getMyProfileService(token) {
@@ -174,7 +198,6 @@ export const logoutService = (token, navigate) => {
         },
       );
 
-      // Redux clear
       dispatch(clearAuth());
       dispatch(clearTeams());
       localStorage.removeItem("user");

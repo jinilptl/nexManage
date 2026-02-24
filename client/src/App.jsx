@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/Homepage/HomePage";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import SetPasswordPage from "./pages/SetPassword/SetPasswordPage";
 import { useSelector } from "react-redux";
 import DashboardPage from "./pages/DashBoard/DashboardPage";
 import Dashboard from "./components/Dashboard";
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/set-password/:token" element={<SetPasswordPage />} />
 
         <Route
           path="/dashboard"

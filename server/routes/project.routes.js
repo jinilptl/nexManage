@@ -38,19 +38,19 @@ projectRouter
 projectRouter.route("/get-my-projects").get(verifyToken, getUserProjects);
 projectRouter
   .route("/update-project/:projectId")
-  .post(verifyToken, updateProject);
+  .post(verifyToken, isProjectMember, isNotObserver, updateProject);
 
 projectRouter
   .route("/delete-project/:projectId")
-  .delete(verifyToken, deleteProject);
+  .delete(verifyToken, isProjectMember, isNotObserver, deleteProject);
 
 projectRouter
   .route("/update-project-status/:projectId")
-  .post(verifyToken, canChangeProjectStatus, updateProjectStatus);
+  .post(verifyToken, isProjectMember, isNotObserver, canChangeProjectStatus, updateProjectStatus);
 
 projectRouter
   .route("/:projectId/status")
-  .patch(verifyToken, canChangeProjectStatus, updateProjectStatus);
+  .patch(verifyToken, isProjectMember, isNotObserver, canChangeProjectStatus, updateProjectStatus);
 
 projectRouter
   .route("/:projectId/status")
@@ -62,7 +62,7 @@ projectRouter
 
 projectRouter
   .route("/update-project-manager/:projectId")
-  .post(verifyToken, updateProjectManager);
+  .post(verifyToken, isProjectMember, isNotObserver, updateProjectManager);
 
 // members routes
 
