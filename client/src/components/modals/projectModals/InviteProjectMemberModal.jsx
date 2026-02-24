@@ -1,9 +1,37 @@
-import React, { useState } from "react";
-import { X, Mail, Loader2, Eye } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { X, Mail, Loader2, Eye, UserPlus, Send, UserCheck } from "lucide-react";
 
-export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, loading }) {
+export default function InviteProjectMemberModal({
+    isOpen,
+    onClose,
+    onSubmit,
+    onReAdd,
+    loading,
+    projectMembers = [],
+}) {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+
+    // Check if this email matches a removed observer in the project
+    const removedMatch = useMemo(() => {
+        if (!email.trim()) return null;
+        return projectMembers.find(
+            (m) =>
+                m.user?.email?.toLowerCase() === email.trim().toLowerCase() &&
+                m.roleInProject === "observer" &&
+                m.status === "removed"
+        );
+    }, [email, projectMembers]);
+
+    // Check if this email matches an active member already
+    const activeMatch = useMemo(() => {
+        if (!email.trim()) return null;
+        return projectMembers.find(
+            (m) =>
+                m.user?.email?.toLowerCase() === email.trim().toLowerCase() &&
+                m.status === "active"
+        );
+    }, [email, projectMembers]);
 
     if (!isOpen) return null;
 
@@ -22,8 +50,52 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
             return;
         }
 
-        onSubmit({ email, inviteType: "observer" });
+        if (activeMatch) {
+            setError("This user is already an active member of this project");
+            return;
+        }
+
+        // If it's a removed observer, re-add them directly
+        if (removedMatch && onReAdd) {
+            onReAdd(removedMatch.user?._id);
+            return;
+        }
+
+        // Otherwise, send a new invitation
+        onSubmit({ email: email.trim(), inviteType: "observer" });
     };
+
+    // Determine button label and style
+    const getButtonConfig = () => {
+        if (activeMatch) {
+            return {
+                label: "Already a Member",
+                icon: UserCheck,
+                className:
+                    "flex-1 px-4 py-2.5 bg-gray-400 text-white font-semibold rounded-xl cursor-not-allowed flex items-center justify-center gap-2",
+                disabled: true,
+            };
+        }
+        if (removedMatch) {
+            return {
+                label: "Re-add Observer",
+                icon: UserPlus,
+                className:
+                    "flex-1 px-4 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20",
+                disabled: false,
+            };
+        }
+        return {
+            label: "Send Invitation",
+            icon: Send,
+            className:
+                "flex-1 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20",
+            disabled: false,
+        };
+    };
+
+    const btnConfig = getButtonConfig();
+    const BtnIcon = btnConfig.icon;
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
@@ -32,7 +104,9 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                    <h3 className="text-lg font-semibold text-gray-900">Invite Observer</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                        Invite Observer
+                    </h3>
                     <button
                         onClick={() => onClose(false)}
                         className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
@@ -43,7 +117,10 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
 
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="mb-6">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Email Address
                         </label>
                         <div className="relative group">
@@ -57,21 +134,48 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                                     } rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all`}
                                 placeholder="example@company.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    setError("");
+                                }}
                                 disabled={loading}
                             />
                         </div>
-                        {error && <p className="mt-2 text-sm text-red-600 font-medium">{error}</p>}
+                        {error && (
+                            <p className="mt-2 text-sm text-red-600 font-medium">{error}</p>
+                        )}
+
+                        {/* Status hint below input */}
+                        {email.trim() && !error && (
+                            <div className="mt-2.5">
+                                {activeMatch && (
+                                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium">
+                                        <UserCheck className="w-3.5 h-3.5" />
+                                        This user is already an active member of this project
+                                    </div>
+                                )}
+                                {removedMatch && (
+                                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
+                                        <UserPlus className="w-3.5 h-3.5" />
+                                        Previously removed observer found — click Re-add to restore
+                                        access
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div className="mb-6">
                         <div className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-blue-500 bg-blue-50/50 text-blue-700">
                             <Eye className="w-6 h-6 mb-2 text-blue-600" />
                             <span className="text-sm font-semibold">Observer</span>
-                            <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">Temporary/Guest Access (Read-Only)</span>
+                            <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">
+                                Temporary/Guest Access (Read-Only)
+                            </span>
                         </div>
                         <p className="mt-3 text-[11px] text-gray-500 leading-relaxed italic">
-                            Observers are added as temp members with read-only access and hidden from team selection.
+                            Observers are added as temp members with read-only access and
+                            hidden from team selection.
                         </p>
                     </div>
 
@@ -86,16 +190,19 @@ export default function InviteProjectMemberModal({ isOpen, onClose, onSubmit, lo
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
-                            className="flex-1 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                            disabled={loading || btnConfig.disabled}
+                            className={btnConfig.className}
                         >
                             {loading ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Inviting...
+                                    {removedMatch ? "Re-adding..." : "Sending..."}
                                 </>
                             ) : (
-                                "Invite Observer"
+                                <>
+                                    <BtnIcon className="w-4 h-4" />
+                                    {btnConfig.label}
+                                </>
                             )}
                         </button>
                     </div>

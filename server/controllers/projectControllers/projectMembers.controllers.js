@@ -61,8 +61,46 @@ const addProjectMember = asyncHandler(async (req, res) => {
     const exists = project.projectMembers.find(
       (m) => m.user.toString() === userId.toString(),
     );
-    if (exists) {
+    if (exists && exists.status === "active") {
       throw new ApiError(409, "This user is already a member of this project");
+    }
+
+    // If previously removed, reactivate
+    if (exists && exists.status === "removed") {
+      exists.roleInProject = "observer";
+      exists.status = "active";
+      exists.addedAt = Date.now();
+      await project.save();
+
+      try {
+        const setPasswordLink = `${process.env.CLIENT_URL}/set-password/${rawToken}`;
+        const message = project_invite_email_template(
+          project.projectName,
+          email,
+          setPasswordLink,
+          false,
+        );
+        await sendEmail({
+          email,
+          subject: `Project Invitation: ${project.projectName}`,
+          message,
+        });
+      } catch (err) {
+        console.error("Failed to send project invite email:", err);
+      }
+
+      const populatedProject = await ProjectModel.findById(projectId).populate(
+        "projectMembers.user",
+        "name email isTempMember",
+      );
+      const populatedMember = populatedProject.projectMembers.find(
+        (m) => m.user && m.user._id.toString() === userId.toString(),
+      );
+      return res
+        .status(201)
+        .json(
+          new ApiResponse(201, "Observer re-added to project successfully", populatedMember),
+        );
     }
 
     const newMember = {
@@ -119,8 +157,46 @@ const addProjectMember = asyncHandler(async (req, res) => {
   const exists = project.projectMembers.find(
     (m) => m.user.toString() === userId.toString(),
   );
-  if (exists) {
+  if (exists && exists.status === "active") {
     throw new ApiError(409, "This user is already a member of this project");
+  }
+
+  // If previously removed, reactivate
+  if (exists && exists.status === "removed") {
+    exists.roleInProject = "observer";
+    exists.status = "active";
+    exists.addedAt = Date.now();
+    await project.save();
+
+    try {
+      const loginLink = `${process.env.CLIENT_URL}/`;
+      const message = project_invite_email_template(
+        project.projectName,
+        email,
+        loginLink,
+        true,
+      );
+      await sendEmail({
+        email,
+        subject: `Project Invitation: ${project.projectName}`,
+        message,
+      });
+    } catch (err) {
+      console.error("Failed to send project invite email:", err);
+    }
+
+    const populatedProject = await ProjectModel.findById(projectId).populate(
+      "projectMembers.user",
+      "name email isTempMember",
+    );
+    const populatedMember = populatedProject.projectMembers.find(
+      (m) => m.user && m.user._id.toString() === userId.toString(),
+    );
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(201, "Observer re-added to project successfully", populatedMember),
+      );
   }
 
   const newMember = {

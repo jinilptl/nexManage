@@ -54,9 +54,9 @@ export default function ProjectHeader({ project }) {
     })
     : null;
 
-  // Filter out temp/invited observers who haven't registered yet
+  // Filter out observers (shown separately) and temp/invited users
   const confirmedMembers = (project.projectMembers || []).filter(
-    (m) => m.user && !m.user.isTempMember
+    (m) => m.user && !m.user.isTempMember && m.roleInProject !== "observer"
   );
 
   return (

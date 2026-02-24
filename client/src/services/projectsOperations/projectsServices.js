@@ -486,7 +486,6 @@ export const removeProjectMemberService = (projectId, memberId, token) => {
     try {
       const response = await axiosInstance.delete(
         `${REMOVE_PROJECT_MEMBER}/${projectId}/${memberId}`,
-        {},
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
