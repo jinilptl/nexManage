@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isObserver: {
+        type: Boolean,
+        default: false
+    },
     isInvited: {
         type: Boolean,
         default: false

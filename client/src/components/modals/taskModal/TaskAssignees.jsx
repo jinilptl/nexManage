@@ -107,7 +107,7 @@ function TaskAssignees({
 
           {/* Modal */}
           <div className="relative z-20 w-full bg-white rounded-xl shadow-xl border border-gray-200 ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200">
-            
+
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
               <h3 className="text-sm font-semibold text-gray-900">
@@ -125,63 +125,63 @@ function TaskAssignees({
             <div className="max-h-64 overflow-y-auto p-2">
               {Array.isArray(projectMembers) && projectMembers.length > 0 ? (
                 <div className="space-y-1">
-                  {projectMembers.map((member) => {
-                    const userId = member?.user?._id;
-                    if (!userId) return null;
+                  {projectMembers
+                    .filter((member) => member.roleInProject !== "observer" && !member?.user?.isTempMember)
+                    .map((member) => {
+                      const userId = member?.user?._id;
+                      if (!userId) return null;
 
-                    const isSelected =
-                      selectedAssignees?.includes(userId);
+                      const isSelected =
+                        selectedAssignees?.includes(userId);
 
-                    return (
-                      <label
-                        key={userId}
-                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all border ${
-                          isSelected
-                            ? "bg-blue-50 border-blue-100"
-                            : "hover:bg-gray-50 border-transparent"
-                        }`}
-                      >
-                        {/* Custom Checkbox */}
-                        <div
-                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
-                            isSelected
-                              ? "bg-blue-600 border-blue-600"
-                              : "border-gray-300 bg-white"
-                          }`}
+                      return (
+                        <label
+                          key={userId}
+                          className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all border ${isSelected
+                              ? "bg-blue-50 border-blue-100"
+                              : "hover:bg-gray-50 border-transparent"
+                            }`}
                         >
-                          {isSelected && (
-                            <Plus
-                              size={12}
-                              className="text-white rotate-45"
-                            />
-                          )}
-                        </div>
-
-                        {/* Hidden real checkbox */}
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={isSelected}
-                          onChange={() => toggleAssignee(userId)}
-                        />
-
-                        {/* Avatar */}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 ring-2 ring-white">
-                          {member?.user?.name?.[0]?.toUpperCase() || "U"}
-                        </div>
-
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900 truncate">
-                            {member?.user?.name || "Unknown"}
+                          {/* Custom Checkbox */}
+                          <div
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${isSelected
+                                ? "bg-blue-600 border-blue-600"
+                                : "border-gray-300 bg-white"
+                              }`}
+                          >
+                            {isSelected && (
+                              <Plus
+                                size={12}
+                                className="text-white rotate-45"
+                              />
+                            )}
                           </div>
-                          <div className="text-xs text-gray-500 truncate">
-                            {member?.roleInProject || "Member"}
+
+                          {/* Hidden real checkbox */}
+                          <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={isSelected}
+                            onChange={() => toggleAssignee(userId)}
+                          />
+
+                          {/* Avatar */}
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 ring-2 ring-white">
+                            {member?.user?.name?.[0]?.toUpperCase() || "U"}
                           </div>
-                        </div>
-                      </label>
-                    );
-                  })}
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-900 truncate">
+                              {member?.user?.name || "Unknown"}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {member?.roleInProject || "Member"}
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
                 </div>
               ) : (
                 <div className="p-4 text-center text-sm text-gray-500">

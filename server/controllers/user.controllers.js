@@ -213,6 +213,7 @@ const allUsers = asyncHandler(async (req, res) => {
   let filter = {
     _id: { $ne: currentUserId },
     isTempMember: { $ne: true },
+    isObserver: { $ne: true },
   };
 
   if (currentUserRole === "admin") {

@@ -50,6 +50,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
       email,
       role: "member",
       isTempMember: true,
+      isObserver: true,
       isInvited: true,
       inviteToken: hashedToken,
       inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000,

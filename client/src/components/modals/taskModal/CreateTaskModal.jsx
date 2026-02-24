@@ -162,7 +162,7 @@ export default function CreateTaskModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {projectMembers
-                  .filter((member) => member.user)
+                  .filter((member) => member.user && member.roleInProject !== "observer" && !member.user.isTempMember)
                   .map((member) => (
                     <label
                       key={member.user._id}
