@@ -96,7 +96,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
 
     const populatedProject = await ProjectModel.findById(projectId).populate(
       "projectMembers.user",
-      "name email",
+      "name email isTempMember",
     );
 
     const populatedNewMember = populatedProject.projectMembers.find(
@@ -154,7 +154,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
 
   const populatedProject = await ProjectModel.findById(projectId).populate(
     "projectMembers.user",
-    "name email",
+    "name email isTempMember",
   );
 
   const populatedNewMember = populatedProject.projectMembers.find(
@@ -180,7 +180,7 @@ const getAllProjectMembers = asyncHandler(async (req, res) => {
   const project = await ProjectModel.findById(projectId)
     .populate({
       path: "projectMembers.user",
-      select: "name email role",
+      select: "name email role isTempMember",
     })
     .populate({
       path: "projectMembers.addedFromTeam",
@@ -249,7 +249,7 @@ const updateProjectMember = asyncHandler(async (req, res) => {
 
   const populatedProject = await ProjectModel.findById(projectId).populate(
     "projectMembers.user",
-    "name email",
+    "name email isTempMember",
   );
 
   const updatedMember = populatedProject.projectMembers.find(

@@ -14,7 +14,7 @@ import {
 import toast from "react-hot-toast";
 import { inviteMemberService } from "../../services/authOperations/authServices";
 import { useNavigate } from "react-router-dom";
-import NexManageLoader from "../../components/Lodders/NexManageLoader";
+
 
 const InviteMembers = () => {
   const dispatch = useDispatch();
@@ -50,14 +50,6 @@ const InviteMembers = () => {
     } catch (error) {
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[70vh]">
-        <NexManageLoader />
-      </div>
-    );
-  }
 
   return (
     <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">

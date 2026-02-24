@@ -54,6 +54,11 @@ export default function ProjectHeader({ project }) {
     })
     : null;
 
+  // Filter out temp/invited observers who haven't registered yet
+  const confirmedMembers = (project.projectMembers || []).filter(
+    (m) => m.user && !m.user.isTempMember
+  );
+
   return (
     <div className="bg-white rounded-2xl p-6 mb-8 border border-gray-100 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -88,8 +93,8 @@ export default function ProjectHeader({ project }) {
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-gray-400" />
                 <span>
-                  {project.projectMembers?.length || 0} Member
-                  {project.projectMembers?.length !== 1 ? "s" : ""}
+                  {confirmedMembers.length} Member
+                  {confirmedMembers.length !== 1 ? "s" : ""}
                 </span>
               </div>
               {formattedDate && (
@@ -103,19 +108,19 @@ export default function ProjectHeader({ project }) {
         </div>
 
         {/* Members Avatars */}
-        {project.projectMembers?.length > 0 && (
+        {confirmedMembers.length > 0 && (
           <div className="flex flex-col items-end gap-2 md:self-center shrink-0">
             <div className="flex -space-x-3">
-              {project.projectMembers.slice(0, 5).map((m, index) => (
+              {confirmedMembers.slice(0, 5).map((m, index) => (
                 <Avatar
                   key={index}
                   user={m.user}
                   className="w-10 h-10 text-sm border-2 border-white shadow-sm ring-2 ring-white transition-transform hover:-translate-y-1 z-0 hover:z-10"
                 />
               ))}
-              {project.projectMembers.length > 5 && (
+              {confirmedMembers.length > 5 && (
                 <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-bold shadow-sm ring-2 ring-white z-0">
-                  +{project.projectMembers.length - 5}
+                  +{confirmedMembers.length - 5}
                 </div>
               )}
             </div>

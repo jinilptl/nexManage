@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MoreVertical, Users, Calendar } from "lucide-react";
+import { MoreVertical, Users, Calendar, Eye, Archive, RotateCcw } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import { useNavigate } from "react-router-dom";
@@ -91,42 +91,56 @@ export default function ProjectCard({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl z-50 animate-fadeIn border border-gray-100 overflow-hidden">
-                <button
-                  className="w-full flex items-center cursor-pointer justify-between px-4 py-2 hover:bg-gray-100 text-sm"
-                  onClick={() => {
-                    onView(project);
-                    setMenuOpen(false);
-                  }}
-                >
-                  <span>View Project</span>
-                </button>
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
+                style={{ boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)' }}
+              >
+                {/* Accent top border */}
+                <div className="h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-                {UserRole !== "member" && <div className="border-t"></div>}
+                {/* Header */}
+                <div className="px-3 pt-2.5 pb-1.5">
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Actions</p>
+                </div>
 
-                {UserRole !== "member" && (
+                <div className="px-1.5 pb-1.5 space-y-0.5">
                   <button
-                    className={`w-full flex items-center cursor-pointer justify-between px-4 py-2 text-sm ${(project.status || "").toUpperCase() === "ARCHIVED"
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                      } hover:bg-gray-100`}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 cursor-pointer"
                     onClick={() => {
-                      const newStatus =
-                        (project.status || "").toUpperCase() === "ARCHIVED"
-                          ? "ACTIVE"
-                          : "ARCHIVED";
-                      onArchive?.({ ...project, status: newStatus });
+                      onView(project);
                       setMenuOpen(false);
                     }}
                   >
-                    <span>
+                    <Eye className="w-4 h-4" />
+                    View Project
+                  </button>
+
+                  {UserRole !== "member" && (
+                    <button
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 cursor-pointer ${(project.status || "").toUpperCase() === "ARCHIVED"
+                          ? "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                          : "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                        }`}
+                      onClick={() => {
+                        const newStatus =
+                          (project.status || "").toUpperCase() === "ARCHIVED"
+                            ? "ACTIVE"
+                            : "ARCHIVED";
+                        onArchive?.({ ...project, status: newStatus });
+                        setMenuOpen(false);
+                      }}
+                    >
+                      {(project.status || "").toUpperCase() === "ARCHIVED" ? (
+                        <RotateCcw className="w-4 h-4" />
+                      ) : (
+                        <Archive className="w-4 h-4" />
+                      )}
                       {(project.status || "").toUpperCase() === "ARCHIVED"
                         ? "Activate Project"
                         : "Archive Project"}
-                    </span>
-                    {loading && <ButtonLoader />}
-                  </button>
-                )}
+                      {loading && <ButtonLoader />}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

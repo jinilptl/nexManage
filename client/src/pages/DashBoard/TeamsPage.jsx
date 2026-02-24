@@ -5,6 +5,9 @@ import {
   Users as UsersIcon,
   FolderKanban,
   MoreVertical,
+  Eye,
+  Archive,
+  RotateCcw,
 } from "lucide-react";
 
 import CreateTeamModal from "../../components/modals/teamsModals/CreateTeamModal";
@@ -271,69 +274,82 @@ export default function TeamsPage() {
                     </button>
 
                     {openMenuId === team._id && !loading && (
-                      <div className="absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-xl z-50 animate-fadeIn border border-gray-100 overflow-hidden">
-                        <button
-                          disabled={loading}
-                          onClick={() => {
-                            if (!loading) {
-                              dispatch(setSelectedTeamId(team._id));
-                              dispatch(fetchSingleTeamService(team._id, token));
-                              dispatch(
-                                fetchTeamMembersService(team._id, token),
-                              );
-                              setOpenMenuId(null);
-                            }
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm cursor-pointer"
-                        >
-                          View Team
-                        </button>
+                      <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
+                        style={{ boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)' }}
+                      >
+                        {/* Accent top border */}
+                        <div className="h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-                        {role !== "member" && <div className="border-t"></div>}
+                        {/* Header */}
+                        <div className="px-3 pt-2.5 pb-1.5">
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Actions</p>
+                        </div>
 
-                        {role !== "member" && (team.status || "").toUpperCase() !== "ARCHIVED" && (
+                        <div className="px-1.5 pb-1.5 space-y-0.5">
                           <button
                             disabled={loading}
                             onClick={() => {
                               if (!loading) {
+                                dispatch(setSelectedTeamId(team._id));
+                                dispatch(fetchSingleTeamService(team._id, token));
                                 dispatch(
-                                  updateTeamStatusService(
-                                    team._id,
-                                    "ARCHIVED",
-                                    token,
-                                    statusFilter,
-                                  ),
+                                  fetchTeamMembersService(team._id, token),
                                 );
                                 setOpenMenuId(null);
                               }
                             }}
-                            className="w-full cursor-pointer text-left px-4 py-2 text-yellow-600 hover:bg-gray-100 text-sm"
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 cursor-pointer"
                           >
-                            Archive Team
+                            <Eye className="w-4 h-4" />
+                            View Team
                           </button>
-                        )}
 
-                        {role !== "member" && (team.status || "").toUpperCase() === "ARCHIVED" && (
-                          <button
-                            disabled={loading}
-                            onClick={() => {
-                              if (!loading) {
-                                dispatch(
-                                  updateTeamStatusService(
-                                    team._id,
-                                    "ACTIVE",
-                                    token,
-                                    statusFilter,
-                                  ),
-                                );
-                                setOpenMenuId(null);
-                              }
-                            }}
-                            className="w-full cursor-pointer text-left px-4 py-2 text-green-600 hover:bg-gray-100 text-sm"
-                          >
-                            Activate Team
-                          </button>
-                        )}
+                          {role !== "member" && (team.status || "").toUpperCase() !== "ARCHIVED" && (
+                            <button
+                              disabled={loading}
+                              onClick={() => {
+                                if (!loading) {
+                                  dispatch(
+                                    updateTeamStatusService(
+                                      team._id,
+                                      "ARCHIVED",
+                                      token,
+                                      statusFilter,
+                                    ),
+                                  );
+                                  setOpenMenuId(null);
+                                }
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-colors duration-150 cursor-pointer"
+                            >
+                              <Archive className="w-4 h-4" />
+                              Archive Team
+                            </button>
+                          )}
+
+                          {role !== "member" && (team.status || "").toUpperCase() === "ARCHIVED" && (
+                            <button
+                              disabled={loading}
+                              onClick={() => {
+                                if (!loading) {
+                                  dispatch(
+                                    updateTeamStatusService(
+                                      team._id,
+                                      "ACTIVE",
+                                      token,
+                                      statusFilter,
+                                    ),
+                                  );
+                                  setOpenMenuId(null);
+                                }
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150 cursor-pointer"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                              Activate Team
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -67,7 +67,7 @@ export default function ProjectDetails() {
   const observers = useMemo(() => {
     if (!projectData?.data?.projectMembers) return [];
     return projectData.data.projectMembers.filter(
-      (m) => m.roleInProject === "observer" && m.status === "active"
+      (m) => m.roleInProject === "observer" && m.status === "active" && !m.user?.isTempMember
     );
   }, [projectData]);
 

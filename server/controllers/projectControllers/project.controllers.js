@@ -146,7 +146,7 @@ const getAllProjects = asyncHandler(async (req, res) => {
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
-    .populate("projectMembers.user", "name")
+    .populate("projectMembers.user", "name isTempMember")
     .sort({ createdAt: -1 });
 
   return res
@@ -186,7 +186,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
-    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.user", "name email isTempMember")
     .populate("projectMembers.addedFromTeam", "teamName")
     .sort({ createdAt: -1 });
 
@@ -206,7 +206,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
-    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.user", "name email isTempMember")
     .populate("projectMembers.addedFromTeam", "teamName")
     .exec();
 
@@ -325,7 +325,7 @@ const updateProject = asyncHandler(async (req, res) => {
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
-    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.user", "name email isTempMember")
     .populate("projectMembers.addedFromTeam", "teamName")
     .exec();
 
@@ -386,7 +386,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     .populate("createdBy", "name email")
     .populate("projectManager", "name email")
     .populate("teams", "teamName")
-    .populate("projectMembers.user", "name email")
+    .populate("projectMembers.user", "name email isTempMember")
     .populate("projectMembers.addedFromTeam", "teamName")
     .exec();
 

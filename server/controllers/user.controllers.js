@@ -137,6 +137,7 @@ const setPassword = asyncHandler(async (req, res) => {
   user.inviteToken = undefined;
   user.inviteTokenExpire = undefined;
   user.isInvited = false;
+  user.isTempMember = false;
 
   await user.save();
 

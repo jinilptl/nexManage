@@ -412,7 +412,7 @@ export const addProjectMemberService = (
       );
 
       if (response.data.success) {
-        toast.success("Member added successfully!");
+        toast.success("Invitation sent successfully!");
 
         const newMember = response.data.data;
 
