@@ -10,13 +10,12 @@ const getTaskActivityTimeline = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Task ID is required");
   }
 
-  // for pagination .. it is optional 
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
   const logs = await TaskActivityLogModel.find({ task: taskId })
-    .sort({ performedAt: -1 }) 
+    .sort({ performedAt: -1 })
     .skip(skip)
     .limit(limit)
     .populate({
@@ -30,7 +29,7 @@ const getTaskActivityTimeline = asyncHandler(async (req, res) => {
       limit,
       count: logs.length,
       logs,
-    })
+    }),
   );
 });
 

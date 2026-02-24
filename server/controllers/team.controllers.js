@@ -11,27 +11,22 @@ import mongoose from "mongoose";
 const createNewTeam = asyncHandler(async (req, res) => {
   const { teamName, description } = req.body;
 
-  // Basic input validation
   if (!teamName || !description) {
     throw new ApiError(400, "All fields are required");
   }
 
-  // Logged-in user's ID (creator)
   const creatorId = req.user._id;
 
-  // Validate user existence
   const userDoc = await UserModel.findById(creatorId);
   if (!userDoc) {
     throw new ApiError(401, "User not authorized or not found");
   }
 
-  // Check for duplicate team name
   const existingTeamName = await TeamModel.findOne({ teamName });
   if (existingTeamName) {
     throw new ApiError(400, "Team name already exists");
   }
 
-  // Create new team
   const createdTeamDoc = await TeamModel.create({
     teamName,
     description,
@@ -63,7 +58,7 @@ const getAllTeams = asyncHandler(async (req, res) => {
     if (!TEAM_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`,
       );
     }
     matchStage.$or = [
@@ -93,7 +88,7 @@ const getAllTeams = asyncHandler(async (req, res) => {
       $project: {
         projects: 0,
       },
-    }
+    },
   );
 
   const teams = await TeamModel.aggregate(pipeline);
@@ -119,7 +114,7 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
     if (!TEAM_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`
+        `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}, ALL`,
       );
     }
     matchStage.$or = [
@@ -163,12 +158,10 @@ const getUsersAllTeams = asyncHandler(async (req, res) => {
 const getTeamById = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
 
-  // Validate team ID
   if (!teamId) {
     throw new ApiError(400, "Team ID is required");
   }
 
-  // Find team by ID
   const teamDoc = await TeamModel.findById(teamId)
     .populate("createdby", "name email")
     .populate("members.user", "name email role");
@@ -177,18 +170,15 @@ const getTeamById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No team found with the provided ID");
   }
 
-  // Respond with team data
   return res
     .status(200)
     .json(new ApiResponse(200, "Team fetched successfully", teamDoc));
 });
 
 const updateTeamDetails = asyncHandler(async (req, res) => {
-  // Extract updated details and team ID from request
   const { teamName, description } = req.body;
   const teamId = req.params.teamId;
 
-  // Validate input fields
   if (!teamName || !description) {
     throw new ApiError(400, "All fields are required");
   }
@@ -197,49 +187,40 @@ const updateTeamDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Team ID is required");
   }
 
-  // Check if team exists
   const teamDoc = await TeamModel.findById(teamId);
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
   }
 
-  // Update team information
   teamDoc.teamName = teamName;
   teamDoc.description = description;
   await teamDoc.save();
 
-  // Fetch updated team details
   const updatedTeamDoc = await TeamModel.findById(teamId)
     .populate("createdby", "name email")
     .populate("members.user", "name email roleInTeam");
 
-  // Send success response
   return res
     .status(200)
     .json(new ApiResponse(200, "Team updated successfully", updatedTeamDoc));
 });
 
 const deleteTeamById = asyncHandler(async (req, res) => {
-  // Extract team ID from request parameters
   const teamId = req.params.teamId;
 
-  // Validate team ID
   if (!teamId) {
     throw new ApiError(400, "Team ID is required");
   }
 
-  // Check if the team exists
   const teamDoc = await TeamModel.findById(teamId);
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
   }
 
-  // Delete the team
   const deletedTeamDoc = await TeamModel.findByIdAndDelete(teamId)
     .populate("createdby", "name email")
     .populate("members.user", "name email roleInTeam");
 
-  // Respond based on deletion result
   if (!deletedTeamDoc) {
     throw new ApiError(
       500,
@@ -256,7 +237,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const { email, roleInTeam, status } = req.body;
 
-  // Validate inputs
   if (!email || !roleInTeam) {
     throw new ApiError(400, "All fields are required");
   }
@@ -264,19 +244,14 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Team ID is missing");
   }
 
-  // Find the team
   const teamDoc = await TeamModel.findById(teamId);
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
   }
-  if (
-    teamDoc.status === "ARCHIVED" ||
-    teamDoc.isActive === false
-  ) {
+  if (teamDoc.status === "ARCHIVED" || teamDoc.isActive === false) {
     throw new ApiError(400, "This team is archived");
   }
 
-  // Find user
   const userDoc = await UserModel.findOne({ email });
   if (!userDoc || userDoc.isTempMember) {
     throw new ApiError(404, "User not found or has not registered yet");
@@ -284,7 +259,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
 
   const userId = userDoc._id;
 
-  // Check duplicate membership
   const isMemberAlreadyPresent = teamDoc.members.find(
     (member) => member.user.toString() === userId.toString(),
   );
@@ -292,7 +266,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(409, "This member is already part of the team");
   }
 
-  // TEAMLEAD CHECK HERE — only 1 allowed
   const isTeamLeadAlreadyPresent = teamDoc.members.find(
     (member) => member.roleInTeam === "team lead",
   );
@@ -304,7 +277,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
     );
   }
 
-  // Create new member
   const newTeamMember = {
     user: userId,
     roleInTeam: roleInTeam || "developer",
@@ -315,7 +287,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
   teamDoc.members.push(newTeamMember);
   await teamDoc.save();
 
-  // Populate new member
   const populatedTeamDoc = await TeamModel.findById(teamId)
     .populate("createdby", "name email")
     .populate("members.user", "name email");
@@ -328,7 +299,6 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Newly added member not found after populate");
   }
 
-  // Send welcome email
   try {
     const teamLink = `${process.env.CLIENT_URL}/`;
     const htmlMessage = team_member_added_email_template(
@@ -363,22 +333,18 @@ const addTeamMember = asyncHandler(async (req, res) => {
 const getTeamMembers = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
 
-  // Validate team ID
   if (!teamId) {
     throw new ApiError(400, "Team ID is required");
   }
 
-  // Fetch team details with members
   const teamDoc = await TeamModel.findById(teamId)
     .select("teamName description members")
     .populate("members.user", "name email roleInTeam");
 
-  // Check if team exists
   if (!teamDoc) {
     throw new ApiError(404, "Team not found");
   }
 
-  // Send response
   return res
     .status(200)
     .json(
@@ -424,7 +390,6 @@ const updateTeamMember = asyncHandler(async (req, res) => {
     }
   }
 
-  // Update values
   existingMember.roleInTeam = roleInTeam;
   existingMember.status = status;
 
@@ -462,7 +427,7 @@ const updateTeamStatus = asyncHandler(async (req, res) => {
   if (!TEAM_STATUS_VALUES.includes(normalized)) {
     throw new ApiError(
       400,
-      `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`
+      `Invalid status. Allowed: ${TEAM_STATUS_VALUES.join(", ")}`,
     );
   }
 
@@ -479,16 +444,21 @@ const updateTeamStatus = asyncHandler(async (req, res) => {
     .populate("createdby", "name email")
     .populate("members.user", "name email roleInTeam");
 
-  return res.status(200).json(
-    new ApiResponse(200, `Team status updated to ${normalized}`, updatedTeamDoc)
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        `Team status updated to ${normalized}`,
+        updatedTeamDoc,
+      ),
+    );
 });
 
 const removeTeamMember = asyncHandler(async (req, res) => {
   const teamId = req.params.teamId;
   const memberId = req.params.memberId;
 
-  // Validate input params
   if (!teamId) {
     throw new ApiError(400, "Team ID is required");
   }
@@ -497,7 +467,6 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Member ID is required");
   }
 
-  // Find the team
   const teamDoc = await TeamModel.findById(teamId)
     .populate("createdby", "name email")
     .populate("members.user", "name email");
@@ -506,7 +475,6 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Team not found");
   }
 
-  // Check if member exists in the team
   const existingMember = teamDoc.members.find(
     (member) => member.user._id.toString() === memberId.toString(),
   );
@@ -515,7 +483,6 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Member not found in this team");
   }
 
-  // Capture removed member details before deletion
   const removedMemberDetails = {
     userId: existingMember.user._id,
     name: existingMember.user.name,
@@ -523,7 +490,6 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     roleInTeam: existingMember.roleInTeam,
   };
 
-  // Remove member using MongoDB $pull
   const removeResult = await TeamModel.updateOne(
     { _id: teamId },
     { $pull: { members: { user: memberId } } },
@@ -533,19 +499,16 @@ const removeTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Internal server error while removing member");
   }
 
-  // Optional: fetch updated team members
   const updatedTeamDoc = await TeamModel.findById(teamId).populate(
     "members.user",
     "name email",
   );
 
-  // Build response payload
   const responsePayload = {
     removedMember: removedMemberDetails,
     allMembers: updatedTeamDoc.members,
   };
 
-  // Return response
   return res
     .status(200)
     .json(

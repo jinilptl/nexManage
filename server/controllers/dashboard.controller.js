@@ -8,50 +8,46 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const isAdmin = ["admin", "super_admin"].includes(req.user.role);
 
-  /* -------------------- PROJECT FILTER -------------------- */
   const projectFilter = isAdmin
     ? {}
     : {
-      "projectMembers.user": userId,
-      "projectMembers.status": "active",
-    };
+        "projectMembers.user": userId,
+        "projectMembers.status": "active",
+      };
 
   const projects = await Project.find(projectFilter).select(
-    "_id status projectName taskStatuses"
+    "_id status projectName taskStatuses",
   );
 
   const allProjectIds = projects.map((p) => p._id);
 
-  /* -------------------- TEAM COUNT -------------------- */
   const totalTeams = isAdmin
     ? await Team.countDocuments()
     : await Team.countDocuments({ "members.user": userId });
 
-  /* -------------------- PROJECT COUNTS -------------------- */
   const totalProjects = projects.length;
 
   const activeProjectsCount = projects.filter(
-    (p) => p.status === "ACTIVE"
+    (p) => p.status === "ACTIVE",
   ).length;
 
   const completedProjectsCount = projects.filter(
-    (p) => p.status === "COMPLETED"
+    (p) => p.status === "COMPLETED",
   ).length;
 
   const onHoldProjectsCount = projects.filter(
-    (p) => p.status === "ON_HOLD"
+    (p) => p.status === "ON_HOLD",
   ).length;
 
   const archivedProjectsCount = projects.filter(
-    (p) => p.status === "ARCHIVED"
+    (p) => p.status === "ARCHIVED",
   ).length;
 
-  /* -------------------- TASK FILTER -------------------- */
   const taskFilter = isAdmin
     ? {}
     : {
-      assignees: userId,
-    };
+        assignees: userId,
+      };
 
   const totalTasksCount = await Task.countDocuments(taskFilter);
 
@@ -62,7 +58,6 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     },
   });
 
-  /* -------------------- TASK STATUS COUNTS -------------------- */
   const statusIdsMap = {
     todo: [],
     in_progress: [],
@@ -81,40 +76,38 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const baseTaskFilter = isAdmin
     ? {}
     : {
-      assignees: userId,
-    };
+        assignees: userId,
+      };
 
   const [todoCount, inProgressCount, pendingReviews] = await Promise.all([
     statusIdsMap.todo.length
       ? Task.countDocuments({
-        ...baseTaskFilter,
-        status: { $in: statusIdsMap.todo },
-      })
+          ...baseTaskFilter,
+          status: { $in: statusIdsMap.todo },
+        })
       : 0,
 
     statusIdsMap.in_progress.length
       ? Task.countDocuments({
-        ...baseTaskFilter,
-        status: { $in: statusIdsMap.in_progress },
-      })
+          ...baseTaskFilter,
+          status: { $in: statusIdsMap.in_progress },
+        })
       : 0,
 
     statusIdsMap.review.length
       ? Task.countDocuments({
-        ...baseTaskFilter,
-        status: { $in: statusIdsMap.review },
-      })
+          ...baseTaskFilter,
+          status: { $in: statusIdsMap.review },
+        })
       : 0,
   ]);
 
-  /* -------------------- RECENT ACTIVITY -------------------- */
   const recentActivity = await Task.find(baseTaskFilter)
     .sort({ updatedAt: -1 })
     .limit(10)
     .populate("updatedBy", "name")
     .lean();
 
-  /* -------------------- UPCOMING DEADLINES -------------------- */
   const now = new Date();
   const next7Days = new Date();
   next7Days.setDate(now.getDate() + 7);
@@ -128,15 +121,12 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     .select("title dueDate priority")
     .lean();
 
-  /* -------------------- PROJECT PROGRESS -------------------- */
   const projectProgress = [];
 
   for (const project of projects) {
     if (project.status === "ARCHIVED") continue;
 
-    const doneStatus = project.taskStatuses?.find(
-      (s) => s.key === "done"
-    );
+    const doneStatus = project.taskStatuses?.find((s) => s.key === "done");
 
     const totalTasks = await Task.countDocuments({
       project: project._id,
@@ -144,15 +134,13 @@ export const getDashboardData = asyncHandler(async (req, res) => {
 
     const doneTasks = doneStatus
       ? await Task.countDocuments({
-        project: project._id,
-        status: doneStatus._id,
-      })
+          project: project._id,
+          status: doneStatus._id,
+        })
       : 0;
 
     const progress =
-      totalTasks === 0
-        ? 0
-        : Math.round((doneTasks / totalTasks) * 100);
+      totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
 
     projectProgress.push({
       id: project._id,
@@ -160,7 +148,7 @@ export const getDashboardData = asyncHandler(async (req, res) => {
       progress,
       stats: {
         totalTasks,
-        completedTasks: doneTasks, // Mapping doneTasks to completedTasks for frontend consistency
+        completedTasks: doneTasks,
       },
     });
   }
@@ -181,6 +169,6 @@ export const getDashboardData = asyncHandler(async (req, res) => {
       recentActivity,
       upcomingDeadlines,
       projectProgress,
-    })
+    }),
   );
 });

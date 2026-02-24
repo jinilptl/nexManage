@@ -6,7 +6,6 @@ import { Team as TeamModel } from "../../models/team.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import generateRandomHexColor from "../../utils/generateColor.js";
 
-
 const createProject = asyncHandler(async (req, res) => {
   const { projectName, description, projectType, teams } = req.body;
 
@@ -18,38 +17,33 @@ const createProject = asyncHandler(async (req, res) => {
   if (!projectType || !validTypes.includes(projectType)) {
     throw new ApiError(
       400,
-      "Invalid projectType. Allowed: team, personal, mixed"
+      "Invalid projectType. Allowed: team, personal, mixed",
     );
   }
 
   if (projectType === "team") {
-    // Team projects require at least 1 team
     if (!teams || !Array.isArray(teams) || teams.length === 0) {
       throw new ApiError(400, "Team projects must include at least one team");
     }
   }
 
   if (projectType === "personal") {
-    // Personal must NOT have teams
     if (teams && teams.length > 0) {
       throw new ApiError(400, "Personal projects cannot include teams");
     }
   }
 
   if (projectType === "mixed") {
-    // Mixed MAY have zero or more teams
     if (teams && !Array.isArray(teams)) {
       throw new ApiError(400, "Teams must be an array");
     }
   }
 
-  // VALIDATE TEAMS (ONLY IF PROVIDED)
-
   let selectedTeams = [];
   if (teams && teams.length > 0) {
     selectedTeams = await TeamModel.find({ _id: { $in: teams } }).populate(
       "members.user",
-      "name email"
+      "name email",
     );
 
     if (selectedTeams.length !== teams.length) {
@@ -66,7 +60,6 @@ const createProject = asyncHandler(async (req, res) => {
 
   selectedTeams.forEach((team) => {
     team.members.forEach((member) => {
-
       if (!member.user) return;
 
       autoMembers.push({
@@ -77,7 +70,6 @@ const createProject = asyncHandler(async (req, res) => {
       });
     });
   });
-
 
   const uniqueMembersMap = new Map();
 
@@ -91,7 +83,7 @@ const createProject = asyncHandler(async (req, res) => {
   autoMembers = Array.from(uniqueMembersMap.values());
 
   const existingCreator = autoMembers.find(
-    (m) => m.user.toString() === createdBy.toString()
+    (m) => m.user.toString() === createdBy.toString(),
   );
 
   if (existingCreator) {
@@ -112,8 +104,6 @@ const createProject = asyncHandler(async (req, res) => {
     { key: "review", label: "Review", order: 3 },
     { key: "done", label: "Done", order: 4 },
   ];
-
-  // CREATE PROJECT
 
   const newProject = await ProjectModel.create({
     projectName,
@@ -146,7 +136,7 @@ const getAllProjects = asyncHandler(async (req, res) => {
     if (!PROJECT_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`,
       );
     }
     filter.status = normalized;
@@ -186,7 +176,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
     if (!PROJECT_STATUS_VALUES.includes(normalized)) {
       throw new ApiError(
         400,
-        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}, ALL`,
       );
     }
     filter.status = normalized;
@@ -227,7 +217,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Project details fetched successfully", project)
+      new ApiResponse(200, "Project details fetched successfully", project),
     );
 });
 
@@ -241,13 +231,11 @@ const updateProject = asyncHandler(async (req, res) => {
 
   const project = await ProjectModel.findById(projectId).populate(
     "projectMembers.user",
-    "name email role"
+    "name email role",
   );
   if (!project) {
     throw new ApiError(404, "Project not found");
   }
-
-  // VALIDATE PROJECT TYPE
 
   if (projectType) {
     const validTypes = ["team", "personal", "mixed"];
@@ -256,8 +244,6 @@ const updateProject = asyncHandler(async (req, res) => {
     }
     project.projectType = projectType;
   }
-
-  // VALIDATE TEAMS BASED ON TYPE
 
   if (project.projectType === "team") {
     if (!teams || !Array.isArray(teams) || teams.length === 0) {
@@ -272,17 +258,15 @@ const updateProject = asyncHandler(async (req, res) => {
   }
 
   if (teams && teams.length > 0) {
-    // validate teams
     const validTeams = await TeamModel.find({ _id: { $in: teams } }).populate(
       "members.user",
-      "name email"
+      "name email",
     );
 
     if (validTeams.length !== teams.length) {
       throw new ApiError(400, "One or more team IDs are invalid");
     }
 
-    // auto import team members again (reset logic)
     let autoMembers = [];
 
     validTeams.forEach((team) => {
@@ -296,17 +280,15 @@ const updateProject = asyncHandler(async (req, res) => {
       });
     });
 
-    // de-duplicate
     const memberMap = new Map();
     autoMembers.forEach((m) => memberMap.set(m.user.toString(), m));
 
     autoMembers = Array.from(memberMap.values());
 
-    // keep creator as PM
     const creator = project.createdBy.toString();
 
     const creatorAlready = autoMembers.find(
-      (m) => m.user.toString() === creator
+      (m) => m.user.toString() === creator,
     );
 
     if (creatorAlready) {
@@ -324,14 +306,15 @@ const updateProject = asyncHandler(async (req, res) => {
     project.teams = teams;
   }
 
-  // BASIC FIELD UPDATES
-
   if (projectName) project.projectName = projectName;
   if (description) project.description = description;
   if (status) {
     const normalized = String(status).toUpperCase();
     if (!PROJECT_STATUS_VALUES.includes(normalized)) {
-      throw new ApiError(400, `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`);
+      throw new ApiError(
+        400,
+        `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`,
+      );
     }
     project.status = normalized;
   }
@@ -387,7 +370,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
   if (!PROJECT_STATUS_VALUES.includes(normalized)) {
     throw new ApiError(
       400,
-      `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`
+      `Invalid status. Allowed: ${PROJECT_STATUS_VALUES.join(", ")}`,
     );
   }
 
@@ -413,8 +396,8 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         `Project status updated to ${normalized}`,
-        updatedProjectData
-      )
+        updatedProjectData,
+      ),
     );
 });
 
@@ -472,7 +455,7 @@ const deleteProjectTaskStatus = async (req, res) => {
     }
 
     const statusIndex = project.taskStatuses.findIndex(
-      (s) => s._id.toString() === statusId
+      (s) => s._id.toString() === statusId,
     );
 
     if (statusIndex === -1) {
@@ -488,10 +471,9 @@ const deleteProjectTaskStatus = async (req, res) => {
       throw new ApiError(500, "Default To Do status not found in project");
     }
 
-    // Move tasks to To Do instead of leaving them orphaned
     await TaskModel.updateMany(
       { project: projectId, status: statusId },
-      { $set: { status: todoStatus._id } }
+      { $set: { status: todoStatus._id } },
     );
 
     project.taskStatuses.splice(statusIndex, 1);
@@ -499,14 +481,17 @@ const deleteProjectTaskStatus = async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, "Task status deleted successfully", { statusId, todoStatusId: todoStatus._id }));
+      .json(
+        new ApiResponse(200, "Task status deleted successfully", {
+          statusId,
+          todoStatusId: todoStatus._id,
+        }),
+      );
   } catch (error) {
     console.error("Delete Task Status Error:", error);
     throw new ApiError(500, "Internal server error");
   }
 };
-
-//extra controllers.... no need right now...
 
 const updateProjectManager = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -524,11 +509,9 @@ const updateProjectManager = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Project not found");
   }
 
-  // STEP 1: REMOVE OLD MANAGER ROLE
-
   if (project.projectManager) {
     const oldManager = project.projectMembers.find(
-      (m) => m.user._id.toString() === project.projectManager.toString()
+      (m) => m.user._id.toString() === project.projectManager.toString(),
     );
 
     if (oldManager) {
@@ -536,21 +519,16 @@ const updateProjectManager = asyncHandler(async (req, res) => {
     }
   }
 
-  // STEP 2: CHECK IF NEW MANAGER ALREADY MEMBER
-
   let newManager = project.projectMembers.find(
-    (m) => m.user._id.toString() === newManagerId.toString()
+    (m) => m.user._id.toString() === newManagerId.toString(),
   );
 
   if (!newManager) {
-    // USER IS NOT PROJECT MEMBER → AUTO ADD
-
-    // Find if user belongs to any project team
     let addedFromTeam = null;
 
     for (const team of project.teams) {
       const isMember = team.members?.some(
-        (tm) => tm.user?.toString() === newManagerId.toString()
+        (tm) => tm.user?.toString() === newManagerId.toString(),
       );
       if (isMember) {
         addedFromTeam = team._id;
@@ -567,15 +545,9 @@ const updateProjectManager = asyncHandler(async (req, res) => {
 
     project.projectMembers.push(newManager);
   } else {
-    // USER ALREADY MEMBER → JUST UPDATE ROLE
-
     newManager.roleInProject = "project-manager";
     newManager.status = "active";
-
-    // keep addedFromTeam same
   }
-
-  // STEP 3: UPDATE MAIN PM FIELD
 
   project.projectManager = newManagerId;
 
@@ -584,7 +556,7 @@ const updateProjectManager = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Project manager updated successfully", project)
+      new ApiResponse(200, "Project manager updated successfully", project),
     );
 });
 
@@ -598,5 +570,5 @@ export {
   getUserProjects,
   updateProjectManager,
   addProjectTaskStatus,
-  deleteProjectTaskStatus
+  deleteProjectTaskStatus,
 };

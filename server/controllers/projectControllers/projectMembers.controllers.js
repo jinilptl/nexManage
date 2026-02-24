@@ -1,9 +1,9 @@
 import { Project as ProjectModel } from "../../models/project.models.js";
-import { User as UserModel } from "../../models/user.models.js"
+import { User as UserModel } from "../../models/user.models.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Team as TeamModel } from "../../models/team.models.js"
+import { Team as TeamModel } from "../../models/team.models.js";
 import sendEmail from "../../utils/sendMail.js";
 import { project_invite_email_template } from "../../templates/projectInviteMail.js";
 import crypto from "crypto";
@@ -23,7 +23,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
     "qa",
     "reviewer",
     "contributor",
-    "observer"
+    "observer",
   ];
 
   if (roleInProject && !validRoles.includes(roleInProject)) {
@@ -40,7 +40,10 @@ const addProjectMember = asyncHandler(async (req, res) => {
     isNewUser = true;
 
     const rawToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
 
     userDoc = await UserModel.create({
       name: email.split("@")[0],
@@ -56,7 +59,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
     const userId = userDoc._id;
 
     const exists = project.projectMembers.find(
-      (m) => m.user.toString() === userId.toString()
+      (m) => m.user.toString() === userId.toString(),
     );
     if (exists) {
       throw new ApiError(409, "This user is already a member of this project");
@@ -67,7 +70,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
       roleInProject: "observer",
       status: "active",
       addedFromTeam: null,
-      addedAt: Date.now()
+      addedAt: Date.now(),
     };
 
     project.projectMembers.push(newMember);
@@ -79,7 +82,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
         project.projectName,
         email,
         setPasswordLink,
-        false
+        false,
       );
 
       await sendEmail({
@@ -91,23 +94,30 @@ const addProjectMember = asyncHandler(async (req, res) => {
       console.error("Failed to send project invite email:", err);
     }
 
-    const populatedProject = await ProjectModel.findById(projectId)
-      .populate("projectMembers.user", "name email");
+    const populatedProject = await ProjectModel.findById(projectId).populate(
+      "projectMembers.user",
+      "name email",
+    );
 
     const populatedNewMember = populatedProject.projectMembers.find(
-      (m) => m.user && m.user._id.toString() === userId.toString()
+      (m) => m.user && m.user._id.toString() === userId.toString(),
     );
 
-    return res.status(201).json(
-      new ApiResponse(201, "Observer added to project successfully", populatedNewMember)
-    );
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(
+          201,
+          "Observer added to project successfully",
+          populatedNewMember,
+        ),
+      );
   }
 
-  // Existing user flow
   const userId = userDoc._id;
 
   const exists = project.projectMembers.find(
-    (m) => m.user.toString() === userId.toString()
+    (m) => m.user.toString() === userId.toString(),
   );
   if (exists) {
     throw new ApiError(409, "This user is already a member of this project");
@@ -118,7 +128,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
     roleInProject: "observer",
     status: "active",
     addedFromTeam: null,
-    addedAt: Date.now()
+    addedAt: Date.now(),
   };
 
   project.projectMembers.push(newMember);
@@ -130,7 +140,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
       project.projectName,
       email,
       loginLink,
-      true
+      true,
     );
 
     await sendEmail({
@@ -142,18 +152,25 @@ const addProjectMember = asyncHandler(async (req, res) => {
     console.error("Failed to send project invite email:", err);
   }
 
-  const populatedProject = await ProjectModel.findById(projectId)
-    .populate("projectMembers.user", "name email");
+  const populatedProject = await ProjectModel.findById(projectId).populate(
+    "projectMembers.user",
+    "name email",
+  );
 
   const populatedNewMember = populatedProject.projectMembers.find(
-    (m) => m.user && m.user._id.toString() === userId.toString()
+    (m) => m.user && m.user._id.toString() === userId.toString(),
   );
 
-  return res.status(201).json(
-    new ApiResponse(201, "Observer added to project successfully", populatedNewMember)
-  );
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        "Observer added to project successfully",
+        populatedNewMember,
+      ),
+    );
 });
-
 
 const getAllProjectMembers = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -173,15 +190,16 @@ const getAllProjectMembers = asyncHandler(async (req, res) => {
 
   if (!project) throw new ApiError(404, "Project not found");
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      "Project members fetched successfully",
-      project.projectMembers
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Project members fetched successfully",
+        project.projectMembers,
+      ),
+    );
 });
-
 
 const updateProjectMember = asyncHandler(async (req, res) => {
   const { projectId, memberId } = req.params;
@@ -191,7 +209,6 @@ const updateProjectMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Project ID and Member ID are required");
   }
 
-  // Valid role options
   const validRoles = [
     "project-manager",
     "developer",
@@ -199,62 +216,53 @@ const updateProjectMember = asyncHandler(async (req, res) => {
     "designer",
     "qa",
     "reviewer",
-    "contributor"
+    "contributor",
   ];
 
-  // Valid status options
   const validStatus = ["active", "removed"];
 
-  // Validate role if provided
   if (roleInProject && !validRoles.includes(roleInProject)) {
     throw new ApiError(400, "Invalid roleInProject value");
   }
 
-  // Validate status if provided
   if (status && !validStatus.includes(status)) {
     throw new ApiError(400, "Invalid status value");
   }
 
-  // Fetch project
   const project = await ProjectModel.findById(projectId);
   if (!project) {
     throw new ApiError(404, "Project not found");
   }
 
-  // Find member inside project.members[]
   const member = project.projectMembers.find(
-    (m) => m.user.toString() === memberId.toString()
+    (m) => m.user.toString() === memberId.toString(),
   );
 
   if (!member) {
     throw new ApiError(404, "Member not found in this project");
   }
 
-  // Update fields
   if (roleInProject) member.roleInProject = roleInProject;
   if (status) member.status = status;
 
   await project.save();
 
-  const populatedProject = await ProjectModel.findById(projectId)
-    .populate("projectMembers.user", "name email");
-
-  const updatedMember = populatedProject.projectMembers.find(
-    (m) => m.user._id.toString() === memberId.toString()
+  const populatedProject = await ProjectModel.findById(projectId).populate(
+    "projectMembers.user",
+    "name email",
   );
 
-
+  const updatedMember = populatedProject.projectMembers.find(
+    (m) => m.user._id.toString() === memberId.toString(),
+  );
 
   return res.status(200).json(
     new ApiResponse(200, "Member updated successfully", {
       updatedMember,
       allMembers: populatedProject.projectMembers,
-    })
+    }),
   );
 });
-
-
-
 
 const removeProjectMember = asyncHandler(async (req, res) => {
   const { projectId, memberId } = req.params;
@@ -266,18 +274,17 @@ const removeProjectMember = asyncHandler(async (req, res) => {
   if (!project) throw new ApiError(404, "Project not found");
 
   const member = project.projectMembers.find(
-    m => m.user.toString() === memberId.toString()
+    (m) => m.user.toString() === memberId.toString(),
   );
 
   if (!member) {
     throw new ApiError(404, "Member not found");
   }
 
-  // Prevent removing project manager
   if (member.user.toString() === project.projectManager?.toString()) {
     throw new ApiError(
       400,
-      "Cannot remove project manager. Assign a new manager first."
+      "Cannot remove project manager. Assign a new manager first.",
     );
   }
 
@@ -285,9 +292,9 @@ const removeProjectMember = asyncHandler(async (req, res) => {
 
   await project.save();
 
-  return res.status(200).json(
-    new ApiResponse(200, "Member removed successfully", member)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Member removed successfully", member));
 });
 
 const activateProjectMember = asyncHandler(async (req, res) => {
@@ -300,7 +307,7 @@ const activateProjectMember = asyncHandler(async (req, res) => {
   if (!project) throw new ApiError(404, "Project not found");
 
   const member = project.projectMembers.find(
-    (m) => m.user.toString() === memberId.toString()
+    (m) => m.user.toString() === memberId.toString(),
   );
 
   if (!member) throw new ApiError(404, "Member not found");
@@ -309,16 +316,14 @@ const activateProjectMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Member is already active");
   }
 
-  // Reactivate user
   member.status = "active";
 
   await project.save();
 
-  return res.status(200).json(
-    new ApiResponse(200, "Member reactivated successfully", member)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Member reactivated successfully", member));
 });
-
 
 const syncProjectMembers = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -340,20 +345,18 @@ const syncProjectMembers = asyncHandler(async (req, res) => {
         user: tMember.user.toString(),
         addedFromTeam: team._id.toString(),
         roleInProject: "contributor",
-        status: "active"
+        status: "active",
       });
     }
   }
 
-  // Remove duplicates
   const map = new Map();
-  autoMembers.forEach(m => map.set(m.user, m));
+  autoMembers.forEach((m) => map.set(m.user, m));
   autoMembers = Array.from(map.values());
 
-  // Merge into projectMembers
-  autoMembers.forEach(auto => {
+  autoMembers.forEach((auto) => {
     const exists = project.projectMembers.find(
-      m => m.user.toString() === auto.user.toString()
+      (m) => m.user.toString() === auto.user.toString(),
     );
 
     if (!exists) {
@@ -363,10 +366,16 @@ const syncProjectMembers = asyncHandler(async (req, res) => {
 
   await project.save();
 
-  return res.status(200).json(
-    new ApiResponse(200, "Project members synced with teams", project)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Project members synced with teams", project));
 });
 
-
-export { addProjectMember, updateProjectMember, removeProjectMember, activateProjectMember, syncProjectMembers, getAllProjectMembers }
+export {
+  addProjectMember,
+  updateProjectMember,
+  removeProjectMember,
+  activateProjectMember,
+  syncProjectMembers,
+  getAllProjectMembers,
+};

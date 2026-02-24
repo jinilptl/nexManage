@@ -24,7 +24,7 @@ const addTaskAttachment = asyncHandler(async (req, res) => {
 
     const uploadResult = await uploadOnCloudinary(
       req.file.path,
-      `nexmanage/tasks/${taskId}/attachments`
+      `nexmanage/tasks/${taskId}/attachments`,
     );
     if (!uploadResult) {
       throw new ApiError(500, "File upload failed");
@@ -74,7 +74,7 @@ const getTaskAttachments = asyncHandler(async (req, res) => {
   }
 
   const attachments = await TaskAttachmentModel.find({ task: taskId })
-    .sort({ createdAt: -1 }) // latest first
+    .sort({ createdAt: -1 })
     .populate({
       path: "uploadedBy",
       select: "name email avatar",
@@ -83,10 +83,13 @@ const getTaskAttachments = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Task attachments fetched successfully", attachments)
+      new ApiResponse(
+        200,
+        "Task attachments fetched successfully",
+        attachments,
+      ),
     );
 });
-
 
 const deleteTaskAttachment = asyncHandler(async (req, res) => {
   const userId = req.user._id;
@@ -103,26 +106,25 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Attachment not found");
   }
 
-  // for activity log we keep data before delete
   const taskId = attachment.task;
   const type = attachment.attachmentType;
   const fileName = attachment.fileName;
   const fileUrl = attachment.fileUrl;
 
-  // how to find public id fix it
   if (type === "file" && attachment.publicId) {
     try {
       const resourceType = req.query.resource_type || "raw";
 
-      // Cloudinary destroy does not accept 'auto'.
-      const validResourceType =
-        resourceType === "auto" ? "raw" : resourceType;
+      const validResourceType = resourceType === "auto" ? "raw" : resourceType;
 
       await cloudinary.uploader.destroy(attachment.publicId, {
         resource_type: validResourceType,
       });
     } catch (error) {
-      console.error("Cloudinary destroy failed (non-fatal):", error.message || error);
+      console.error(
+        "Cloudinary destroy failed (non-fatal):",
+        error.message || error,
+      );
     }
   }
 
@@ -158,9 +160,4 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Attachment deleted successfully"));
 });
 
-export {
-  addTaskAttachment,
-  getTaskAttachments,
-  deleteTaskAttachment,
-
-};
+export { addTaskAttachment, getTaskAttachments, deleteTaskAttachment };

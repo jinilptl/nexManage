@@ -90,9 +90,8 @@ const createTask = asyncHandler(async (req, res) => {
 
     io.to(`project:${projectId}`).emit("TASK:CREATE", {
       taskId: newTask._id,
-      createdBy: userId, // optional but useful
+      createdBy: userId,
     });
-
   } catch (error) {
     console.error("Socket emit failed (TASK:CREATE):", error.message);
   }
@@ -149,8 +148,6 @@ const getTaskDetails = asyncHandler(async (req, res) => {
   if (!taskId) {
     throw new ApiError(400, "Task id is required");
   }
-
-  // let task = req.task;
 
   let task = await TaskModel.findById(taskId)
     .populate("assignees", "name email")
@@ -276,7 +273,6 @@ const deleteTask = asyncHandler(async (req, res) => {
 
   await TaskModel.findByIdAndDelete(task._id);
 
-  // REORDER TASKS IN THE SAME COLUMN
   await TaskModel.updateMany(
     {
       project,
@@ -285,8 +281,6 @@ const deleteTask = asyncHandler(async (req, res) => {
     },
     { $inc: { order: -1 } },
   );
-
-  // ACTIVITY LOG
 
   await createTaskActivityLog({
     taskId: task._id,
@@ -316,8 +310,6 @@ const deleteTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Task deleted successfully"));
 });
 
-//updateTaskAssignees
-
 const updateTaskAssignees = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const task = req.task;
@@ -334,13 +326,13 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
     .map((member) => member.user.toString());
 
   const areAssigneesValid = assignees.every((assigneeId) =>
-    activeProjectMemberIds.includes(assigneeId.toString())
+    activeProjectMemberIds.includes(assigneeId.toString()),
   );
 
   if (!areAssigneesValid) {
     throw new ApiError(
       400,
-      "One or more assignees are not active project members"
+      "One or more assignees are not active project members",
     );
   }
 
@@ -348,11 +340,11 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   const newAssignees = assignees.map((id) => id.toString());
 
   const addedAssignees = newAssignees.filter(
-    (id) => !previousAssignees.includes(id)
+    (id) => !previousAssignees.includes(id),
   );
 
   const removedAssignees = previousAssignees.filter(
-    (id) => !newAssignees.includes(id)
+    (id) => !newAssignees.includes(id),
   );
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
@@ -361,7 +353,7 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
       assignees: newAssignees,
       updatedBy: userId,
     },
-    { new: true }
+    { new: true },
   )
     .populate("assignees", "name email")
     .populate("createdBy", "name email")
@@ -383,7 +375,7 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
 
     io.to(`project:${task.project}`).emit("TASK_ASSIGNEES_UPDATED", {
       taskId: task._id,
-      updatedTask, 
+      updatedTask,
     });
   } catch (error) {
     console.error("Socket emit failed (TASK_ASSIGNEES_UPDATED)", error.message);
@@ -392,12 +384,10 @@ const updateTaskAssignees = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Task assignees updated successfully", updatedTask)
+      new ApiResponse(200, "Task assignees updated successfully", updatedTask),
     );
 });
 
-
-// one column to another column
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const { taskId, projectId } = req.params;
   const userId = req.user._id;
@@ -431,7 +421,6 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   const oldStatusId = task.status;
   const oldOrder = task.order;
 
-  // FIX SOURCE COLUMN GAP
   await TaskModel.updateMany(
     {
       project: task.project,
@@ -496,7 +485,6 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Task status updated", updatedTask));
 });
 
-//in same column reorder
 const updateTaskOrder = asyncHandler(async (req, res) => {
   const { order: newOrder } = req.body;
   const userId = req.user._id;
@@ -510,14 +498,9 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
   const oldOrder = task.order;
   const status = task.status;
 
-  // No movement
   if (newOrder === oldOrder) {
     return res.status(200).json(new ApiResponse(200, "Order unchanged", task));
   }
-
-  // CASE 1: Task moves UP from down
-  //  oldOrder = 4 → newOrder = 1
-  //  Tasks [1 → 3] move DOWN (+1)
 
   if (newOrder < oldOrder) {
     await TaskModel.updateMany(
@@ -530,10 +513,6 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
-  // CASE 2: Task moves DOWN from up
-  // oldOrder = 1 → newOrder = 4
-  // Tasks [2 → 4] move UP (-1)
-
   if (newOrder > oldOrder) {
     await TaskModel.updateMany(
       {
@@ -545,8 +524,6 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     );
   }
 
-  // UPDATE MOVED TASK
-
   const updatedTask = await TaskModel.findByIdAndUpdate(
     task._id,
     {
@@ -555,8 +532,6 @@ const updateTaskOrder = asyncHandler(async (req, res) => {
     },
     { new: true },
   );
-
-  // ACTIVITY LOG
 
   await createTaskActivityLog({
     taskId: task._id,

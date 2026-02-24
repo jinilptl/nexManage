@@ -14,10 +14,10 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     "projectMembers.status": "active",
   }).select("_id status projectName taskStatuses");
 
-  const allProjectIds = userProjects.map(p => p._id);
+  const allProjectIds = userProjects.map((p) => p._id);
   const activeProjectIds = userProjects
-    .filter(p => ["ACTIVE", "active"].includes(p.status))
-    .map(p => p._id);
+    .filter((p) => ["ACTIVE", "active"].includes(p.status))
+    .map((p) => p._id);
 
   const baseTaskMatch = {
     project: { $in: allProjectIds },
@@ -26,11 +26,10 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
 
   const now = new Date();
 
-  // Helper function to get status IDs for specific keys across projects
   const getStatusIdsByKey = (projects, keys) => {
     let ids = [];
-    projects.forEach(p => {
-      p.taskStatuses?.forEach(s => {
+    projects.forEach((p) => {
+      p.taskStatuses?.forEach((s) => {
         if (keys.includes(s.key?.toLowerCase())) {
           ids.push(s._id);
         }
@@ -44,18 +43,26 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
 
   const totalTasks = await Task.countDocuments(baseTaskMatch);
 
-  const completedTasks = doneStatusIds.length > 0
-    ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: doneStatusIds } })
-    : 0;
+  const completedTasks =
+    doneStatusIds.length > 0
+      ? await Task.countDocuments({
+          ...baseTaskMatch,
+          status: { $in: doneStatusIds },
+        })
+      : 0;
 
-  const inProgressTasks = inProgressStatusIds.length > 0
-    ? await Task.countDocuments({ ...baseTaskMatch, status: { $in: inProgressStatusIds } })
-    : 0;
+  const inProgressTasks =
+    inProgressStatusIds.length > 0
+      ? await Task.countDocuments({
+          ...baseTaskMatch,
+          status: { $in: inProgressStatusIds },
+        })
+      : 0;
 
   const overdueTasks = await Task.countDocuments({
     ...baseTaskMatch,
     status: { $nin: doneStatusIds },
-    dueDate: { $lt: now }
+    dueDate: { $lt: now },
   });
 
   const completionRate =
@@ -145,13 +152,16 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   for (const p of userProjects) {
     if (p.status === "ARCHIVED") continue;
 
-    const doneStatusId = p.taskStatuses?.find(s => s.key === "done")?._id;
+    const doneStatusId = p.taskStatuses?.find((s) => s.key === "done")?._id;
     const projectTotalTasks = await Task.countDocuments({ project: p._id });
     const projectDoneTasks = doneStatusId
       ? await Task.countDocuments({ project: p._id, status: doneStatusId })
       : 0;
 
-    const progress = projectTotalTasks === 0 ? 0 : Math.round((projectDoneTasks / projectTotalTasks) * 100);
+    const progress =
+      projectTotalTasks === 0
+        ? 0
+        : Math.round((projectDoneTasks / projectTotalTasks) * 100);
 
     activeProjectsData.push({
       id: p._id,
@@ -175,7 +185,6 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
       statusData,
       priorityData,
       velocityData,
-
       activeProjects: activeProjectsData,
     }),
   );

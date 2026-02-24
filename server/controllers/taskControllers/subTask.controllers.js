@@ -8,14 +8,11 @@ import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { SubTask as SubTaskModel } from "../../models/Task models/subTask.models.js";
 import { getIO } from "../../socket/index.js";
 
-
 const addSubTask = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
   const { title } = req.body;
   const userId = req.user?._id;
-  const projectId=req.params.projectId
-
-  // Validations
+  const projectId = req.params.projectId;
 
   if (!taskId) {
     throw new ApiError(400, "Task ID is required");
@@ -29,8 +26,6 @@ const addSubTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Subtask title is required");
   }
 
-  // Task context (from middleware or fallback)
-
   let task = req.task;
 
   if (!task) {
@@ -40,8 +35,6 @@ const addSubTask = asyncHandler(async (req, res) => {
     }
   }
 
-  // Create SubTask
-
   const subTask = await SubTaskModel.create({
     task: task._id,
     title: title.trim(),
@@ -50,11 +43,9 @@ const addSubTask = asyncHandler(async (req, res) => {
     completedBy: null,
   });
 
-  // Activity Log
-
   await createTaskActivityLog({
     taskId: task._id,
-    projectId:projectId,
+    projectId: projectId,
     action: "SUBTASK_CREATED",
     performedBy: userId,
     meta: {
@@ -87,7 +78,7 @@ const addSubTask = asyncHandler(async (req, res) => {
   return res.status(201).json(
     new ApiResponse(201, "Subtask added successfully", {
       subTask: populatedSubTask,
-    })
+    }),
   );
 });
 
@@ -95,7 +86,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
   const { title, description } = req.body;
-  const projectId=req.params.projectId
+  const projectId = req.params.projectId;
 
   let subTask = req.subTask;
 
@@ -113,8 +104,6 @@ const updateSubTask = asyncHandler(async (req, res) => {
   const updates = {};
   const meta = {};
 
-  // Title update
-
   if (title !== undefined) {
     if (!title || title.trim() === "") {
       throw new ApiError(400, "Subtask title cannot be empty");
@@ -122,8 +111,6 @@ const updateSubTask = asyncHandler(async (req, res) => {
     updates.title = title.trim();
     meta.title = updates.title;
   }
-
-  // Description update
 
   if (description !== undefined) {
     updates.description = description ? description.trim() : "";
@@ -133,7 +120,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
   const updatedSubTask = await SubTaskModel.findByIdAndUpdate(
     subTaskId,
     { $set: updates },
-    { new: true }
+    { new: true },
   ).populate({
     path: "task",
     select: "title status priority",
@@ -141,7 +128,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: subTask.task,
-    projectId:projectId,
+    projectId: projectId,
     action: "SUBTASK_UPDATED",
     performedBy: userId,
     meta,
@@ -167,7 +154,7 @@ const updateSubTask = asyncHandler(async (req, res) => {
 const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
-  const projectId=req.params.projectId
+  const projectId = req.params.projectId;
 
   const { isCompleted } = req.body;
 
@@ -198,7 +185,7 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   const updatedSubTask = await SubTaskModel.findByIdAndUpdate(
     subTask._id,
     { $set: updates },
-    { new: true }
+    { new: true },
   ).populate({
     path: "task",
     select: "title status priority",
@@ -206,7 +193,7 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
 
   await createTaskActivityLog({
     taskId: subTask.task,
-    projectId:projectId,
+    projectId: projectId,
     action: targetState ? "SUBTASK_COMPLETED" : "SUBTASK_UNCOMPLETED",
     performedBy: userId,
     meta: {
@@ -234,15 +221,15 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
         targetState
           ? "Subtask marked as completed"
           : "Subtask marked as uncompleted",
-        updatedSubTask
-      )
+        updatedSubTask,
+      ),
     );
 });
 
 const deleteSubTask = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { subTaskId } = req.params;
-  const projectId=req.params.projectId
+  const projectId = req.params.projectId;
 
   let subTask = req.subTask;
 
@@ -258,11 +245,9 @@ const deleteSubTask = asyncHandler(async (req, res) => {
 
   await SubTaskModel.findByIdAndDelete(subTask._id);
 
-
-  // Activity log
   await createTaskActivityLog({
     taskId,
-    projectId:projectId,
+    projectId: projectId,
     action: "SUBTASK_DELETED",
     performedBy: userId,
     meta: {
@@ -300,15 +285,21 @@ const getAllSubtask = asyncHandler(async (req, res) => {
   }
 
   const subtasks = await SubTaskModel.find({ task: taskId })
-    .sort({ createdAt: 1 }) 
+    .sort({ createdAt: 1 })
     .populate({
       path: "completedBy",
       select: "name email",
     });
 
-  return res.status(200).json(
-    new ApiResponse(200, "Subtasks fetched successfully", subtasks)
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Subtasks fetched successfully", subtasks));
 });
 
-export { addSubTask, updateSubTask, toggleSubTaskCompletion, deleteSubTask ,getAllSubtask};
+export {
+  addSubTask,
+  updateSubTask,
+  toggleSubTaskCompletion,
+  deleteSubTask,
+  getAllSubtask,
+};
