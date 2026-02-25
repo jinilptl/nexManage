@@ -32,7 +32,12 @@ router.get(
   roleChecker(["admin", "super_admin"]),
   allUsers,
 );
-router.put("/update-user/:userId", verifyToken, updateUser);
+router.put(
+  "/update-user/:userId",
+  verifyToken,
+  roleChecker(["admin", "super_admin"]),
+  updateUser,
+);
 router.delete(
   "/delete-user/:userId",
   verifyToken,

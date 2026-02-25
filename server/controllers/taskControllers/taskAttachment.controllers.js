@@ -2,13 +2,10 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { createTaskActivityLog } from "../../utils/CreateActivityLog.js";
 import asyncHandler from "../../utils/asyncHandler.js";
-import { User as UserModel } from "../../models/user.models.js";
-import { Project as ProjectModel } from "../../models/project.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { TaskAttachment as TaskAttachmentModel } from "../../models/Task models/taskAttachment.models.js";
 import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { getIO } from "../../socket/index.js";
-import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 
 const addTaskAttachment = asyncHandler(async (req, res) => {
@@ -145,7 +142,7 @@ const deleteTaskAttachment = asyncHandler(async (req, res) => {
   try {
     const io = getIO();
 
-    io.to(`project:${taskId}`).emit("ATTACHMENT_DELETED", {
+    io.to(`project:${projectId}`).emit("ATTACHMENT_DELETED", {
       taskId,
       attachmentId: attachment._id,
       attachmentType: type,

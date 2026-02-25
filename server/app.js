@@ -18,11 +18,13 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:4173",
-];
+  "http://192.168.1.105:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(
   cors({
-    origin: true, // Allow any origin (for development/network access)
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
@@ -43,7 +45,11 @@ app.use("/api/v1/project/task", activityTaskRouter);
 app.use("/api/v1/analytics", analyticsRouter);
 app.use("/api/v1/users", userRouter);
 
-// error handler global formate
+app.get("/", (req, res) => {
+  res.send("default route .. welcome to the server of nexmanage");
+});
+
+// error handler global format
 
 app.use((err, req, res, next) => {
   console.log(err);
@@ -57,10 +63,6 @@ app.use((err, req, res, next) => {
     message,
     errors,
   });
-});
-
-app.get("/", (req, res) => {
-  res.send("default route .. welcome to the server of nexmanage");
 });
 
 export default app;

@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 //sub schema for members details
 
@@ -53,7 +53,7 @@ const teamSchema = new mongoose.Schema({
     enum: ["ACTIVE", "ARCHIVED"],
     default: "ACTIVE",
   },
-},{timestamps:true});
+}, { timestamps: true });
 
 const Team = mongoose.model("Team", teamSchema);
 

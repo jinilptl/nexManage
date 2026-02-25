@@ -115,7 +115,6 @@ export default function Dashboard() {
       </div>
 
       {/* Project Status Breakdown */}
-      {/* Project Status Breakdown */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
           <div className="p-2 bg-blue-50 rounded-lg">

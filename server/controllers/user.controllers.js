@@ -446,7 +446,7 @@ const getMyProfile = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .cookie("token", "", { httponly: true, secure: true })
+    .cookie("token", "", { httpOnly: true, secure: false, expires: new Date(0) })
     .json(new ApiResponse(200, "User logged out successfully"));
 });
 

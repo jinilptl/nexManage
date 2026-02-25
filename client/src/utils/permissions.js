@@ -16,7 +16,7 @@ export const canManageTask = (user, projectMembers) => {
   // 2. Check project-specific role
   if (projectMembers && Array.isArray(projectMembers)) {
     const currentMember = projectMembers.find(
-      (m) => (m.user?._id || m.user) === user._id,
+      (m) => (m.user?._id || m.user)?.toString() === user._id?.toString(),
     );
 
     if (currentMember?.roleInProject === "project-manager") {

@@ -401,97 +401,87 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
     );
 });
 
-const addProjectTaskStatus = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-    const { key, label } = req.body;
+const addProjectTaskStatus = asyncHandler(async (req, res) => {
+  const { projectId } = req.params;
+  const { key, label } = req.body;
 
-    if (!key || !label) {
-      throw new ApiError(400, "key and label are required");
-    }
-
-    const project = await ProjectModel.findById(projectId);
-    if (!project) {
-      throw new ApiError(404, "Project not found");
-    }
-
-    const alreadyExists = project.taskStatuses.some((s) => s.key === key);
-
-    if (alreadyExists) {
-      throw new ApiError(400, "Status key already exists");
-    }
-
-    const nextOrder =
-      project.taskStatuses.length > 0
-        ? Math.max(...project.taskStatuses.map((s) => s.order)) + 1
-        : 1;
-
-    const newStatus = {
-      key,
-      label,
-      order: nextOrder,
-      color: generateRandomHexColor(),
-    };
-
-    project.taskStatuses.push(newStatus);
-    await project.save();
-
-    return res
-      .status(201)
-      .json(new ApiResponse(200, "Task status added successfully", newStatus));
-  } catch (error) {
-    console.error("Add Task Status Error:", error);
-    throw new ApiError(500, "Internal server error");
+  if (!key || !label) {
+    throw new ApiError(400, "key and label are required");
   }
-};
 
-const deleteProjectTaskStatus = async (req, res) => {
-  try {
-    const { projectId, statusId } = req.params;
-
-    const project = await ProjectModel.findById(projectId);
-    if (!project) {
-      throw new ApiError(404, "Project not found");
-    }
-
-    const statusIndex = project.taskStatuses.findIndex(
-      (s) => s._id.toString() === statusId,
-    );
-
-    if (statusIndex === -1) {
-      throw new ApiError(404, "Task status not found");
-    }
-
-    if (project.taskStatuses[statusIndex].isDefault) {
-      throw new ApiError(400, "Cannot delete default task status");
-    }
-
-    const todoStatus = project.taskStatuses.find((s) => s.key === "todo");
-    if (!todoStatus) {
-      throw new ApiError(500, "Default To Do status not found in project");
-    }
-
-    await TaskModel.updateMany(
-      { project: projectId, status: statusId },
-      { $set: { status: todoStatus._id } },
-    );
-
-    project.taskStatuses.splice(statusIndex, 1);
-    await project.save();
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, "Task status deleted successfully", {
-          statusId,
-          todoStatusId: todoStatus._id,
-        }),
-      );
-  } catch (error) {
-    console.error("Delete Task Status Error:", error);
-    throw new ApiError(500, "Internal server error");
+  const project = await ProjectModel.findById(projectId);
+  if (!project) {
+    throw new ApiError(404, "Project not found");
   }
-};
+
+  const alreadyExists = project.taskStatuses.some((s) => s.key === key);
+
+  if (alreadyExists) {
+    throw new ApiError(400, "Status key already exists");
+  }
+
+  const nextOrder =
+    project.taskStatuses.length > 0
+      ? Math.max(...project.taskStatuses.map((s) => s.order)) + 1
+      : 1;
+
+  const newStatus = {
+    key,
+    label,
+    order: nextOrder,
+    color: generateRandomHexColor(),
+  };
+
+  project.taskStatuses.push(newStatus);
+  await project.save();
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, "Task status added successfully", newStatus));
+});
+
+const deleteProjectTaskStatus = asyncHandler(async (req, res) => {
+  const { projectId, statusId } = req.params;
+
+  const project = await ProjectModel.findById(projectId);
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  const statusIndex = project.taskStatuses.findIndex(
+    (s) => s._id.toString() === statusId,
+  );
+
+  if (statusIndex === -1) {
+    throw new ApiError(404, "Task status not found");
+  }
+
+  if (project.taskStatuses[statusIndex].isDefault) {
+    throw new ApiError(400, "Cannot delete default task status");
+  }
+
+  const todoStatus = project.taskStatuses.find((s) => s.key === "todo");
+  if (!todoStatus) {
+    throw new ApiError(500, "Default To Do status not found in project");
+  }
+
+  await TaskModel.updateMany(
+    { project: projectId, status: statusId },
+    { $set: { status: todoStatus._id } },
+  );
+
+  project.taskStatuses.splice(statusIndex, 1);
+  await project.save();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, "Task status deleted successfully", {
+        statusId,
+        todoStatusId: todoStatus._id,
+      }),
+    );
+});
 
 const updateProjectManager = asyncHandler(async (req, res) => {
   const { projectId } = req.params;

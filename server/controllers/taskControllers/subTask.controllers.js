@@ -2,8 +2,6 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { createTaskActivityLog } from "../../utils/CreateActivityLog.js";
 import asyncHandler from "../../utils/asyncHandler.js";
-import { User as UserModel } from "../../models/user.models.js";
-import { Project as ProjectModel } from "../../models/project.models.js";
 import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { SubTask as SubTaskModel } from "../../models/Task models/subTask.models.js";
 import { getIO } from "../../socket/index.js";
@@ -168,7 +166,7 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   }
 
   const targetState =
-    typeof isCompleted === Boolean ? isCompleted : !subTask.completed;
+    typeof isCompleted === "boolean" ? isCompleted : !subTask.completed;
 
   if (subTask.completed === targetState) {
     return res
@@ -205,12 +203,13 @@ const toggleSubTaskCompletion = asyncHandler(async (req, res) => {
   try {
     const io = getIO();
 
-    io.to(`project:${taskId}`).emit("SUBTASK_DELETED", {
-      taskId,
+    io.to(`project:${projectId}`).emit("SUBTASK_COMPLETION_CHANGED", {
+      taskId: subTask.task,
       subTaskId,
+      isCompleted: targetState,
     });
   } catch (error) {
-    console.error("Socket emit failed (SUBTASK_DELETED)", error.message);
+    console.error("Socket emit failed (SUBTASK_COMPLETION_CHANGED)", error.message);
   }
 
   return res
@@ -259,7 +258,7 @@ const deleteSubTask = asyncHandler(async (req, res) => {
   try {
     const io = getIO();
 
-    io.to(`project:${taskId}`).emit("SUBTASK_DELETED", {
+    io.to(`project:${projectId}`).emit("SUBTASK_DELETED", {
       taskId,
       subTaskId,
     });

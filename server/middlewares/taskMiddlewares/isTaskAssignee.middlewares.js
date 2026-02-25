@@ -1,6 +1,6 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Task as TaskModel } from "../../models/task.models.js";
+import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { Project as ProjectModel } from "../../models/project.models.js";
 
 const isTaskAssignee = asyncHandler(async (req, res, next) => {

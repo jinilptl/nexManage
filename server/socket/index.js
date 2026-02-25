@@ -2,13 +2,18 @@ import { Server } from "socket.io";
 import { socketAuth } from "../middlewares/socketMiddlewares/socketAuth.js";
 import { ApiError } from "../utils/ApiError.js";
 import { registerRoomHandlers } from "./socketRooms.js";
-import { log } from "console";
 let io;
 
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "http://192.168.1.105:5173",
+        process.env.CLIENT_URL,
+      ].filter(Boolean),
       methods: ["GET", "POST"],
     },
   });

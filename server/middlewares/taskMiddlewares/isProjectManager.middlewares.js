@@ -12,7 +12,7 @@ const isProjectManager = asyncHandler(async (req, res, next) => {
 
   const project = req.project || (await Project.findById(projectId));
 
-  if(req.role==='admin' || req.role==='super_admin'){
+  if (req.user.role === 'admin' || req.user.role === 'super_admin') {
     req.project = project;
     return next();
   }
@@ -27,7 +27,7 @@ const isProjectManager = asyncHandler(async (req, res, next) => {
   ) {
     throw new ApiError(403, "Only project manager can perform this action");
   }
-req.project = project;
+  req.project = project;
   next();
 });
 

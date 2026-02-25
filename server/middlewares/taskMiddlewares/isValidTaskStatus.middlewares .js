@@ -1,6 +1,6 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Task as TaskModel } from "../../models/task.models.js";
+import { Task as TaskModel } from "../../models/Task models/task.models.js";
 import { Project as ProjectModel } from "../../models/project.models.js";
 
 const isValidTaskStatus = asyncHandler(async (req, res, next) => {
@@ -18,7 +18,10 @@ const isValidTaskStatus = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Task status is required");
   }
 
-  if (!project?.taskStatuses?.includes(status)) {
+  const validStatus = project?.taskStatuses?.some(
+    (s) => s._id.toString() === status || s.key === status
+  );
+  if (!validStatus) {
     throw new ApiError(400, "Invalid task status for this project");
   }
 
