@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, Mail, Loader2, Eye, UserPlus, Send, UserCheck } from "lucide-react";
+import { X, Mail, Loader2, Eye, UserPlus, Send, UserCheck, Users } from "lucide-react";
 
 export default function InviteProjectMemberModal({
     isOpen,
@@ -11,14 +11,14 @@ export default function InviteProjectMemberModal({
 }) {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [selectedRole, setSelectedRole] = useState("observer");
 
-    // Check if this email matches a removed observer in the project
+    // Check if this email matches a removed member in the project
     const removedMatch = useMemo(() => {
         if (!email.trim()) return null;
         return projectMembers.find(
             (m) =>
                 m.user?.email?.toLowerCase() === email.trim().toLowerCase() &&
-                m.roleInProject === "observer" &&
                 m.status === "removed"
         );
     }, [email, projectMembers]);
@@ -55,14 +55,14 @@ export default function InviteProjectMemberModal({
             return;
         }
 
-        // If it's a removed observer, re-add them directly
+        // If it's a removed member, re-add them directly
         if (removedMatch && onReAdd) {
             onReAdd(removedMatch.user?._id);
             return;
         }
 
-        // Otherwise, send a new invitation
-        onSubmit({ email: email.trim(), inviteType: "observer" });
+        // Otherwise, send a new invitation with selected role
+        onSubmit({ email: email.trim(), roleInProject: selectedRole });
     };
 
     // Determine button label and style
@@ -78,7 +78,7 @@ export default function InviteProjectMemberModal({
         }
         if (removedMatch) {
             return {
-                label: "Re-add Observer",
+                label: `Re-add as ${selectedRole === "observer" ? "Observer" : "Member"}`,
                 icon: UserPlus,
                 className:
                     "flex-1 px-4 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20",
@@ -89,13 +89,44 @@ export default function InviteProjectMemberModal({
             label: "Send Invitation",
             icon: Send,
             className:
-                "flex-1 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20",
+                selectedRole === "observer"
+                    ? "flex-1 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                    : "flex-1 px-4 py-2.5 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20",
             disabled: false,
         };
     };
 
     const btnConfig = getButtonConfig();
     const BtnIcon = btnConfig.icon;
+
+    const roleOptions = [
+        {
+            value: "observer",
+            label: "Observer",
+            icon: Eye,
+            description: "Temporary/Guest Access (Read-Only)",
+            hint: "Observers are added as temp members with read-only access and hidden from team selection.",
+            borderColor: "border-blue-500",
+            bgColor: "bg-blue-50/50",
+            textColor: "text-blue-700",
+            iconColor: "text-blue-600",
+            ringColor: "ring-blue-500/20",
+        },
+        {
+            value: "contributor",
+            label: "Member",
+            icon: Users,
+            description: "Full Project Access (Can edit & manage tasks)",
+            hint: "Members are added with full access to create, edit, and manage tasks in the project.",
+            borderColor: "border-violet-500",
+            bgColor: "bg-violet-50/50",
+            textColor: "text-violet-700",
+            iconColor: "text-violet-600",
+            ringColor: "ring-violet-500/20",
+        },
+    ];
+
+    const activeRole = roleOptions.find((r) => r.value === selectedRole);
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
@@ -105,7 +136,7 @@ export default function InviteProjectMemberModal({
             >
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                     <h3 className="text-lg font-semibold text-gray-900">
-                        Invite Observer
+                        Invite to Project
                     </h3>
                     <button
                         onClick={() => onClose(false)}
@@ -116,7 +147,7 @@ export default function InviteProjectMemberModal({
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6">
-                    <div className="mb-6">
+                    <div className="mb-5">
                         <label
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-700 mb-2"
@@ -157,25 +188,48 @@ export default function InviteProjectMemberModal({
                                 {removedMatch && (
                                     <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
                                         <UserPlus className="w-3.5 h-3.5" />
-                                        This observer already has an account — you can add them directly
+                                        This user already has an account — you can add them directly
                                     </div>
                                 )}
                             </div>
                         )}
                     </div>
 
-                    <div className="mb-6">
-                        <div className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-blue-500 bg-blue-50/50 text-blue-700">
-                            <Eye className="w-6 h-6 mb-2 text-blue-600" />
-                            <span className="text-sm font-semibold">Observer</span>
-                            <span className="text-[10px] opacity-70 mt-1 text-center leading-tight">
-                                Temporary/Guest Access (Read-Only)
-                            </span>
+                    {/* Role Selection */}
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Select Role
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            {roleOptions.map((role) => {
+                                const RoleIcon = role.icon;
+                                const isSelected = selectedRole === role.value;
+                                return (
+                                    <button
+                                        key={role.value}
+                                        type="button"
+                                        onClick={() => setSelectedRole(role.value)}
+                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${isSelected
+                                            ? `${role.borderColor} ${role.bgColor} ${role.textColor} shadow-sm ring-2 ${role.ringColor}`
+                                            : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100"
+                                            }`}
+                                    >
+                                        <RoleIcon className={`w-6 h-6 mb-2 ${isSelected ? role.iconColor : "text-gray-400"}`} />
+                                        <span className={`text-sm font-semibold ${isSelected ? "" : "text-gray-600"}`}>
+                                            {role.label}
+                                        </span>
+                                        <span className={`text-[10px] mt-1 text-center leading-tight ${isSelected ? "opacity-70" : "opacity-50"}`}>
+                                            {role.description}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
-                        <p className="mt-3 text-[11px] text-gray-500 leading-relaxed italic">
-                            Observers are added as temp members with read-only access and
-                            hidden from team selection.
-                        </p>
+                        {activeRole && (
+                            <p className="mt-3 text-[11px] text-gray-500 leading-relaxed italic">
+                                {activeRole.hint}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex gap-3 mt-8">

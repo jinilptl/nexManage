@@ -205,7 +205,6 @@ export default function ProjectDetails() {
         </nav>
 
         <div className="flex items-center gap-3 mr-6">
-          {/* Observer badge for observer users */}
           {isObserver && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs font-medium">
               <Eye className="w-3.5 h-3.5" />
@@ -213,7 +212,6 @@ export default function ProjectDetails() {
             </div>
           )}
 
-          {/* Observers list toggle — visible to admin/super_admin/PM only */}
           {isProjectManagerOrAdmin && observers.length > 0 && (
             <button
               onClick={() => setShowObserversList(!showObserversList)}
@@ -224,7 +222,6 @@ export default function ProjectDetails() {
             </button>
           )}
 
-          {/* Invite Observer button — NOT shown to observers or members */}
           {!isObserver && UserRole !== "member" && (
             <button
               onClick={() => {
@@ -232,13 +229,12 @@ export default function ProjectDetails() {
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer flex items-center gap-2 text-sm hover:bg-blue-700"
             >
-              <Plus className="w-4 h-4" /> Invite Observer
+              <Plus className="w-4 h-4" /> Invite Member
             </button>
           )}
         </div>
       </div>
 
-      {/* Observers List Panel — only for admin/super_admin/PM */}
       {isProjectManagerOrAdmin && showObserversList && observers.length > 0 && (
         <div className="mx-6 mb-4 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
@@ -332,15 +328,13 @@ export default function ProjectDetails() {
         />
       )}
 
-      {/* Remove Observer Confirmation Modal */}
       {observerToRemove && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div
             className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-sm mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Red accent bar */}
-            <div className="h-1 bg-gradient-to-r from-red-500 to-rose-500" />
+            <div className="h-1 bg-linear-to-r from-red-500 to-rose-500" />
 
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">

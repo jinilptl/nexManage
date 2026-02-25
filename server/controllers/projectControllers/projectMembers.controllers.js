@@ -8,9 +8,24 @@ import sendEmail from "../../utils/sendMail.js";
 import { project_invite_email_template } from "../../templates/projectInviteMail.js";
 import crypto from "crypto";
 
+const getRoleDisplayName = (role) => {
+  const roleMap = {
+    "observer": "Observer",
+    "contributor": "Member",
+    "developer": "Developer",
+    "tester": "Tester",
+    "designer": "Designer",
+    "qa": "QA",
+    "reviewer": "Reviewer",
+    "project-manager": "Project Manager",
+  };
+  return roleMap[role] || "Member";
+};
+
 const addProjectMember = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const { email, roleInProject } = req.body;
+  const { email, roleInProject: requestedRole } = req.body;
+  const roleInProject = requestedRole || "observer";
 
   if (!projectId) throw new ApiError(400, "Project ID is required");
   if (!email) throw new ApiError(400, "Email is required");
@@ -45,12 +60,13 @@ const addProjectMember = asyncHandler(async (req, res) => {
       .update(rawToken)
       .digest("hex");
 
+    const isObserverRole = roleInProject === "observer";
     userDoc = await UserModel.create({
       name: email.split("@")[0],
       email,
       role: "member",
-      isTempMember: true,
-      isObserver: true,
+      isTempMember: isObserverRole,
+      isObserver: isObserverRole,
       isInvited: true,
       inviteToken: hashedToken,
       inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000,
@@ -68,7 +84,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
 
     // If previously removed, reactivate
     if (exists && exists.status === "removed") {
-      exists.roleInProject = "observer";
+      exists.roleInProject = roleInProject;
       exists.status = "active";
       exists.addedAt = Date.now();
       await project.save();
@@ -80,6 +96,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
           email,
           setPasswordLink,
           false,
+          getRoleDisplayName(roleInProject),
         );
         await sendEmail({
           email,
@@ -100,13 +117,13 @@ const addProjectMember = asyncHandler(async (req, res) => {
       return res
         .status(201)
         .json(
-          new ApiResponse(201, "Observer re-added to project successfully", populatedMember),
+          new ApiResponse(201, "Member re-added to project successfully", populatedMember),
         );
     }
 
     const newMember = {
       user: userId,
-      roleInProject: "observer",
+      roleInProject: roleInProject,
       status: "active",
       addedFromTeam: null,
       addedAt: Date.now(),
@@ -122,6 +139,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
         email,
         setPasswordLink,
         false,
+        getRoleDisplayName(roleInProject),
       );
 
       await sendEmail({
@@ -147,7 +165,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           201,
-          "Observer added to project successfully",
+          "Member added to project successfully",
           populatedNewMember,
         ),
       );
@@ -164,7 +182,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
 
   // If previously removed, reactivate
   if (exists && exists.status === "removed") {
-    exists.roleInProject = "observer";
+    exists.roleInProject = roleInProject;
     exists.status = "active";
     exists.addedAt = Date.now();
     await project.save();
@@ -176,6 +194,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
         email,
         loginLink,
         true,
+        getRoleDisplayName(roleInProject),
       );
       await sendEmail({
         email,
@@ -196,13 +215,13 @@ const addProjectMember = asyncHandler(async (req, res) => {
     return res
       .status(201)
       .json(
-        new ApiResponse(201, "Observer re-added to project successfully", populatedMember),
+        new ApiResponse(201, "Member re-added to project successfully", populatedMember),
       );
   }
 
   const newMember = {
     user: userId,
-    roleInProject: "observer",
+    roleInProject: roleInProject,
     status: "active",
     addedFromTeam: null,
     addedAt: Date.now(),
@@ -218,6 +237,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
       email,
       loginLink,
       true,
+      getRoleDisplayName(roleInProject),
     );
 
     await sendEmail({
@@ -243,7 +263,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         201,
-        "Observer added to project successfully",
+        "Member added to project successfully",
         populatedNewMember,
       ),
     );

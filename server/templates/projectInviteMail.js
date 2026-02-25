@@ -2,7 +2,8 @@ const project_invite_email_template = (
   projectName,
   email,
   actionLink,
-  isExistingUser = false
+  isExistingUser = false,
+  roleName = "Observer"
 ) => {
   return `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; padding: 30px; color: #333;">
@@ -20,7 +21,7 @@ const project_invite_email_template = (
         </h2>
 
         <p style="line-height: 1.6; margin: 10px 0; font-size: 15px; color: #555;">
-          You've been invited to join the project <strong>${projectName}</strong> on <strong>NexManage</strong> as an <strong>Observer</strong>.
+          You've been invited to join the project <strong>${projectName}</strong> on <strong>NexManage</strong> as a <strong>${roleName}</strong>.
         </p>
 
         ${!isExistingUser ? `
@@ -76,3 +77,4 @@ const project_invite_email_template = (
 };
 
 export { project_invite_email_template };
+

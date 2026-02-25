@@ -34,7 +34,7 @@ const inviteUser = asyncHandler(async (req, res) => {
     existingUser.role = role || "member";
     existingUser.isTempMember = isTempMember || false;
     existingUser.inviteToken = hashedToken;
-    existingUser.inviteTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    existingUser.inviteTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
     existingUser.isInvited = true;
     existingUser.password = undefined;
     existingUser.createdby = req.user?._id;
@@ -138,6 +138,7 @@ const setPassword = asyncHandler(async (req, res) => {
   user.inviteTokenExpire = undefined;
   user.isInvited = false;
   user.isTempMember = false;
+  user.isObserver = false;
 
   await user.save();
 
