@@ -8,11 +8,9 @@ const socket = io("http://localhost:5000", {
 });
 
 socket.on("connect", () => {
-
   socket.emit("join-project", {
     projectId: "6944efefbaf665ac4b3debef",
   });
-
 });
 
 socket.on("connect_error", (err) => {

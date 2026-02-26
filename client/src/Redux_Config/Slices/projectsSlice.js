@@ -38,7 +38,6 @@ const projectsSlice = createSlice({
   },
 
   reducers: {
-    /* ---------------------- ALL PROJECTS ---------------------- */
     setProjects(state, action) {
       state.allProjects = action.payload;
     },
@@ -46,7 +45,6 @@ const projectsSlice = createSlice({
       state.loading = action.payload;
     },
 
-    /* ----------------------- MY PROJECTS ---------------------- */
     setMyProjects(state, action) {
       state.myProjects = action.payload;
     },
@@ -76,7 +74,6 @@ const projectsSlice = createSlice({
       state.projectMembers.loading = action.payload;
     },
 
-    /* ---------------------- ACTION LOADERS ---------------------- */
     setCreateProjectLoading(state, action) {
       state.actions.creating = action.payload;
     },
@@ -136,25 +133,20 @@ const projectsSlice = createSlice({
 });
 
 export const {
-  // Projects
   setProjects,
   setProjectsLoading,
 
-  // My projects
   setMyProjects,
   setMyProjectsLoading,
 
-  // Selected project
   setSelectedProjectId,
   setSelectedProjectData,
   addTaskStatusIntoProject,
   setSelectedProjectLoading,
 
-  // Members
   setProjectMembers,
   setProjectMembersLoading,
 
-  // Action loaders
   setCreateProjectLoading,
   setUpdateProjectLoading,
   setDeleteProjectLoading,
@@ -166,7 +158,6 @@ export const {
   setRemoveMemberLoading,
   setActiveMemberLoading,
 
-  // Clear all
   clearProjects,
 } = projectsSlice.actions;
 

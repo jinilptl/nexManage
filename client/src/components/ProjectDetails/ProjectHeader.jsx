@@ -45,7 +45,6 @@ export default function ProjectHeader({ project }) {
   const statusStyle = getStatusStyle(project.status);
   const StatusIcon = statusStyle.icon;
 
-  // Format date if available
   const formattedDate = project.createdAt
     ? new Date(project.createdAt).toLocaleDateString("en-US", {
       month: "short",
@@ -54,7 +53,6 @@ export default function ProjectHeader({ project }) {
     })
     : null;
 
-  // Filter out observers (shown separately) and temp/invited users
   const confirmedMembers = (project.projectMembers || []).filter(
     (m) => m.user && !m.user.isTempMember && m.roleInProject !== "observer"
   );
@@ -63,14 +61,12 @@ export default function ProjectHeader({ project }) {
     <div className="bg-white rounded-2xl p-6 mb-8 border border-gray-100 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div className="flex gap-5 min-w-0 flex-1">
-          {/* Project Icon */}
           <div className="shrink-0">
             <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
               <Layout className="w-8 h-8" />
             </div>
           </div>
 
-          {/* Project Details */}
           <div className="flex-1 min-w-0 pt-1">
             <div className="flex flex-wrap items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight truncate">
@@ -88,7 +84,6 @@ export default function ProjectHeader({ project }) {
               {project.description || "No description provided for this project."}
             </p>
 
-            {/* Meta Info */}
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-gray-400" />
@@ -107,7 +102,6 @@ export default function ProjectHeader({ project }) {
           </div>
         </div>
 
-        {/* Members Avatars */}
         {confirmedMembers.length > 0 && (
           <div className="flex flex-col items-end gap-2 md:self-center shrink-0">
             <div className="flex -space-x-3">

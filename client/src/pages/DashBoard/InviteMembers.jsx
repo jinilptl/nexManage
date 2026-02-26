@@ -15,7 +15,6 @@ import toast from "react-hot-toast";
 import { inviteMemberService } from "../../services/authOperations/authServices";
 import { useNavigate } from "react-router-dom";
 
-
 const InviteMembers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,35 +39,32 @@ const InviteMembers = () => {
 
     try {
       const success = await dispatch(
-        inviteMemberService({ name, email, role }, token)
+        inviteMemberService({ name, email, role }, token),
       );
       if (success) {
         setName("");
         setEmail("");
         setRole("member");
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (
     <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-gray-900 text-2xl font-bold">Invite New Member</h1>
         <p className="text-gray-600">
-          Send a secure invitation link — the member will set their own password.
+          Send a secure invitation link — the member will set their own
+          password.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* ================= LEFT : FORM ================= */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-8">
               <form onSubmit={handleInvite} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name Input */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
                       Full Name
@@ -87,7 +83,6 @@ const InviteMembers = () => {
                     </div>
                   </div>
 
-                  {/* Role Select */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
                       Assign Role
@@ -123,7 +118,6 @@ const InviteMembers = () => {
                   </div>
                 </div>
 
-                {/* Email Input */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
                     Email Address
@@ -164,7 +158,6 @@ const InviteMembers = () => {
           </div>
         </div>
 
-        {/* ================= RIGHT : INFO PANEL ================= */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-6">
             <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
@@ -197,7 +190,8 @@ const InviteMembers = () => {
                     <Send className="w-3.5 h-3.5" /> Secure Link Sent
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    A secure invitation link is emailed — no passwords are shared.
+                    A secure invitation link is emailed — no passwords are
+                    shared.
                   </p>
                 </div>
               </li>

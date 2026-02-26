@@ -19,7 +19,7 @@ const isValidTaskStatus = asyncHandler(async (req, res, next) => {
   }
 
   const validStatus = project?.taskStatuses?.some(
-    (s) => s._id.toString() === status || s.key === status
+    (s) => s._id.toString() === status || s.key === status,
   );
   if (!validStatus) {
     throw new ApiError(400, "Invalid task status for this project");

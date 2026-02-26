@@ -62,7 +62,11 @@ export default function TaskSubtasks({ subtasks, task, canManage = false }) {
                   handleCheckBox(e, sub);
                 }}
                 checked={sub.completed}
-                className={canManage ? "cursor-pointer" : "pointer-events-none opacity-60"}
+                className={
+                  canManage
+                    ? "cursor-pointer"
+                    : "pointer-events-none opacity-60"
+                }
                 disabled={!canManage}
               />
               <span

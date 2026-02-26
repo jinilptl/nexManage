@@ -13,16 +13,13 @@ export default function NotFoundPage() {
   };
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 relative overflow-hidden">
-      {/* Blurry Background Balls */}
       <div className="absolute w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -top-10 -left-16 animate-pulse"></div>
       <div className="absolute w-72 h-72 bg-purple-600/20 rounded-full blur-3xl bottom-10 -right-16 animate-pulse delay-200"></div>
 
-      {/* Floating 404 Text */}
       <h1 className="text-[120px] sm:text-[160px] font-extrabold text-white/10 select-none tracking-widest absolute top-10 animate-fadeIn">
         404
       </h1>
 
-      {/* Main Card */}
       <div className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/20 flex flex-col items-center max-w-md text-center animate-slideUp">
         <div className="w-24 h-24 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-4 animate-floating">
           <span className="text-4xl">🧭</span>
@@ -34,7 +31,6 @@ export default function NotFoundPage() {
           Let’s get you back to safety.
         </p>
 
-        {/* Button */}
         <button
           onClick={() => {
             handlenavigate();

@@ -80,8 +80,8 @@ export function inviteMemberService(memberData, token) {
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-        error.message ||
-        "Failed to send invitation",
+          error.message ||
+          "Failed to send invitation",
       );
       return false;
     } finally {
@@ -100,14 +100,16 @@ export async function setPasswordService(token, password) {
 
     if (response.data.success) {
       toast.success(
-        response.data.message || "Password set successfully. You can now log in."
+        response.data.message ||
+          "Password set successfully. You can now log in.",
       );
       return true;
     }
     return false;
   } catch (error) {
     toast.error(
-      error?.response?.data?.message || "Failed to set password. The link may have expired."
+      error?.response?.data?.message ||
+        "Failed to set password. The link may have expired.",
     );
     return false;
   }

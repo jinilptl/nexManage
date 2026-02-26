@@ -4,7 +4,6 @@ export default function ModalSmallLoader() {
   return (
     <div className="w-full flex justify-center py-3 ">
       <div className="flex items-center gap-2">
-        {/* Small Spinner */}
         <div
           className="
           w-4 h-4 

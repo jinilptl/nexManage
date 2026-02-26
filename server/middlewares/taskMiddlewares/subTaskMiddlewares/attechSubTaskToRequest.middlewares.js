@@ -1,7 +1,7 @@
 import asyncHandler from "../../../utils/asyncHandler.js";
 import { ApiError } from "../../../utils/ApiError.js";
-import { SubTask } from "../../../models/Task models/subTask.models.js"
-const  attachSubTaskToRequest = asyncHandler(async (req, res, next) => {
+import { SubTask } from "../../../models/Task models/subTask.models.js";
+const attachSubTaskToRequest = asyncHandler(async (req, res, next) => {
   const { subTaskId } = req.params;
 
   if (!subTaskId) {
@@ -18,4 +18,4 @@ const  attachSubTaskToRequest = asyncHandler(async (req, res, next) => {
   next();
 });
 
-export {  attachSubTaskToRequest };
+export { attachSubTaskToRequest };

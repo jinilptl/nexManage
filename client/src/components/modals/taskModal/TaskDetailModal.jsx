@@ -44,8 +44,6 @@ export default function TaskDetailModal({ task, onClose }) {
     (state) => state.tasks.selectedTask?.data?.assignees || [],
   );
 
-  /* ---------------- SAFE PROJECT ID ---------------- */
-
   const projectId = useMemo(() => {
     if (project?.data?._id) return project.data._id;
 
@@ -56,14 +54,10 @@ export default function TaskDetailModal({ task, onClose }) {
     return task?.project;
   }, [project, task]);
 
-  /* ---------------- PERMISSIONS ---------------- */
-
   const canManage = useMemo(
     () => canManageTask(user, projectMembers),
     [user, projectMembers],
   );
-
-  /* ---------------- BODY SCROLL LOCK ---------------- */
 
   useEffect(() => {
     document.body.classList.add("modal-open");
@@ -72,25 +66,18 @@ export default function TaskDetailModal({ task, onClose }) {
     };
   }, []);
 
-  /* ---------------- DERIVED STATE ---------------- */
-
   const assignees = useMemo(() => {
     if (!task?.assignees) return [];
 
     return task.assignees.map((a) => {
-      // If a is an object with name, it's likely populated
       if (typeof a === "object" && a.name) return a;
 
-      // If unpopulated ID or partial object, find in projectMembers
       const id = typeof a === "object" ? a._id : a;
       const member = projectMembers.find((m) => m.user?._id === id);
       return member?.user || { _id: id, name: "Unknown" };
     });
   }, [task?.assignees, projectMembers]);
 
-  /* ---------------- LOCAL STATE ---------------- */
-
-  // assignees state removed - using derived assignees above
   const [isAssignMode, setIsAssignMode] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const [isSavingAssignees, setIsSavingAssignees] = useState(false);
@@ -98,8 +85,6 @@ export default function TaskDetailModal({ task, onClose }) {
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState(null);
-
-  /* ---------------- FETCH SUBTASKS ---------------- */
 
   useEffect(() => {
     if (!projectId || !task?._id || !token) return;
@@ -111,8 +96,6 @@ export default function TaskDetailModal({ task, onClose }) {
     };
   }, [projectId, task?._id, token, dispatch]);
 
-  /* ---------------- FETCH ATTACHMENTS ---------------- */
-
   useEffect(() => {
     if (!projectId || !task?._id || !token) return;
 
@@ -123,15 +106,11 @@ export default function TaskDetailModal({ task, onClose }) {
     };
   }, [projectId, task?._id, token, dispatch]);
 
-  /* ---------------- FETCH ACTIVITY ---------------- */
-
   useEffect(() => {
     if (!projectId || !task?._id || !token) return;
 
     dispatch(fetchTaskActivityService(task._id, projectId, token));
   }, [projectId, task?._id, token, dispatch]);
-
-  /* ---------------- DELETE TASK ---------------- */
 
   const handleDeleteTask = () => {
     setConfirmType("deleteTask");
@@ -150,8 +129,6 @@ export default function TaskDetailModal({ task, onClose }) {
     setConfirmType(null);
   };
 
-  /* ---------------- UPDATE TASK ---------------- */
-
   const handleUpdateTask = (formData) => {
     if (!projectId) return;
 
@@ -166,8 +143,6 @@ export default function TaskDetailModal({ task, onClose }) {
     );
   };
 
-  /* ---------------- UPDATE ASSIGNEES ---------------- */
-
   const handleSaveAssignees = async () => {
     if (!projectId) return;
 
@@ -177,12 +152,9 @@ export default function TaskDetailModal({ task, onClose }) {
       updateAssigneesTaskService(selectedAssignees, projectId, task._id, token),
     );
 
-    // No need to manually set assignees - Redux update propagates to props
     setIsAssignMode(false);
     setIsSavingAssignees(false);
   };
-
-  /* ---------------- LOADING ---------------- */
 
   if (subtaskLoading) {
     return (
@@ -197,21 +169,15 @@ export default function TaskDetailModal({ task, onClose }) {
     );
   }
 
-  /* ---------------- UI ---------------- */
-
   return (
     <ModalPortal>
       <div className="fixed inset-0 z-3000 flex justify-end items-stretch overflow-hidden">
-        {/* BACKDROP */}
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
           onClick={onClose}
         />
 
-        {/* SIDE DRAWER MODAL - FLEX COLUMN */}
         <div className="relative z-10 w-full h-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
-
-          {/* 1. HEADER (Sticky on Mobile, Static on Desktop) */}
           <div className="flex-none bg-white z-20 border-b border-gray-100 px-4 py-3 sm:px-6 sm:py-5 sticky top-0 md:static">
             <TaskHeader
               task={task}
@@ -222,10 +188,7 @@ export default function TaskDetailModal({ task, onClose }) {
             />
           </div>
 
-          {/* 2. CONTENT BODY (Flex Row for Desktop Side-by-Side) */}
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-white">
-
-            {/* LEFT: Main Content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 scrollbar-hide bg-white">
               <div className="space-y-8 pb-10">
                 <TaskDescription description={task.description} />
@@ -236,7 +199,6 @@ export default function TaskDetailModal({ task, onClose }) {
                 />
                 <TaskAttachments task={task} canManage={canManage} />
 
-                {/* Mobile Only: Meta & Activity */}
                 <div className="md:hidden space-y-8 pt-6 border-t border-gray-100">
                   <TaskAssignees
                     assignees={assignees}
@@ -254,7 +216,6 @@ export default function TaskDetailModal({ task, onClose }) {
               </div>
             </div>
 
-            {/* RIGHT: Sidebar (Desktop Only) */}
             <div className="hidden md:block w-96 border-l border-gray-100 bg-gray-50/80 p-6 overflow-y-auto scrollbar-hide">
               <TaskAssignees
                 assignees={assignees}
@@ -272,11 +233,9 @@ export default function TaskDetailModal({ task, onClose }) {
                 <TaskActivity activities={allTaskActivity?.list || []} />
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* EDIT TASK MODAL */}
         <CreateTaskModal
           isOpen={updateTaskModalOpen}
           onClose={setUpdateTaskModalOpen}
@@ -285,7 +244,6 @@ export default function TaskDetailModal({ task, onClose }) {
           editableData={task}
         />
 
-        {/* CONFIRM MODAL */}
         <ConfirmModal
           open={confirmOpen}
           title="Delete Task"

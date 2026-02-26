@@ -52,9 +52,8 @@ export default function ListRow({
   };
 
   const handleStatusChange = async (newStatusId) => {
-    setShowActions(false); // Close immediately
+    setShowActions(false);
 
-    // 1. Optimistic Update or Immediate Callback
     if (onMoveTask) {
       onMoveTask(task._id, newStatusId);
     }
@@ -79,34 +78,20 @@ export default function ListRow({
     ${isSelected ? "bg-blue-100/40" : ""}
   `}
       >
-        {/* Checkbox */}
-        {/* <div className="col-span-1 flex justify-center">
-                    <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => onToggleSelect(task._id)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-transform transform group-hover:scale-110"
-                    />
-                </div> */}
-
-        {/* Task Name */}
         <div className="col-span-4 font-medium text-gray-900 truncate">
           {task.title}
         </div>
 
-        {/* Status */}
         <div className="col-span-2 sm:flex">
           <span className="px-2.5 py-0.5 rounded-full text-xs bg-gray-200 truncate">
             {statusLabel}
           </span>
         </div>
 
-        {/* Priority */}
         <div className="col-span-2 md:block">
           <TaskPriorityBadge priority={task.priority} />
         </div>
 
-        {/* Assignee */}
         <div className="col-span-2 lg:flex -space-x-2">
           {task.assignees?.length ? (
             task.assignees.map((a, i) => (
@@ -121,7 +106,6 @@ export default function ListRow({
           )}
         </div>
 
-        {/* Due Date */}
         <div className="col-span-1 xl:flex justify-start text-sm">
           <span
             className={isOverdue ? "text-red-600 font-medium" : "text-gray-500"}
@@ -130,7 +114,6 @@ export default function ListRow({
           </span>
         </div>
 
-        {/* Actions */}
         <div
           className="col-span-1 sm:flex justify-center relative actions-container"
           ref={actionsRef}
@@ -145,18 +128,15 @@ export default function ListRow({
             <MoreHorizontal size={18} />
           </button>
 
-          {/* Dropdown Menu */}
           {showActions && (
             <div
               className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden text-left"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100">
                 Actions
               </div>
 
-              {/* View Option */}
               <button
                 onClick={handleViewTask}
                 className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2 transition-colors border-b border-gray-50"
@@ -165,7 +145,6 @@ export default function ListRow({
                 <span>View Task</span>
               </button>
 
-              {/* Status change — hidden for observers */}
               {!isObserver && (
                 <>
                   <div className="px-3 py-2 text-2xs font-semibold text-gray-500 bg-gray-50 border-t border-b border-gray-100">
@@ -199,14 +178,12 @@ export default function ListRow({
         </div>
       </div>
 
-      {
-        openTaskDetailesModal && (
-          <TaskDetailModal
-            task={task}
-            onClose={() => setOpenTaskDetailesModal(false)}
-          />
-        )
-      }
+      {openTaskDetailesModal && (
+        <TaskDetailModal
+          task={task}
+          onClose={() => setOpenTaskDetailesModal(false)}
+        />
+      )}
     </>
   );
 }

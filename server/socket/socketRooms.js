@@ -8,17 +8,19 @@ const registerRoomHandlers = (io, socket) => {
       const userId = socket.user._id;
       const userRole = socket.user.role;
 
-      console.log(`🔌 Join Request: User ${userId} (${userRole}) -> Project ${projectId}`);
+      console.log(
+        `🔌 Join Request: User ${userId} (${userRole}) -> Project ${projectId}`,
+      );
 
-      // 1. Super Admin & Admin Bypass
       if (userRole === "super_admin" || userRole === "admin") {
         const roomName = `project:${projectId}`;
         socket.join(roomName);
-        console.log(`✅ ${userRole} ${userId} JOINED room ${roomName} (Admin Bypass)`);
+        console.log(
+          `✅ ${userRole} ${userId} JOINED room ${roomName} (Admin Bypass)`,
+        );
         return;
       }
 
-      // Fetch project without population first to check raw IDs
       const project = await Project.findById(projectId);
 
       if (!project) {
@@ -26,7 +28,6 @@ const registerRoomHandlers = (io, socket) => {
         return;
       }
 
-      // 2. Project Manager Check
       if (
         project.projectManager &&
         project.projectManager.toString() === userId.toString()
@@ -37,10 +38,8 @@ const registerRoomHandlers = (io, socket) => {
         return;
       }
 
-      // 3. Active Member Check
-      // Ensure we compare strings to avoid ObjectId issues
       const memberMatch = project.projectMembers.find((member) => {
-        const memberUserId = member.user?._id || member.user; // Handle populated or raw ID
+        const memberUserId = member.user?._id || member.user;
         if (!memberUserId) return false;
 
         return (
@@ -50,13 +49,14 @@ const registerRoomHandlers = (io, socket) => {
       });
 
       if (!memberMatch) {
-        console.log(`⛔ Access Denied: User ${userId} is NOT an active member of Project ${projectId}`);
+        console.log(
+          `⛔ Access Denied: User ${userId} is NOT an active member of Project ${projectId}`,
+        );
 
         socket.emit("error", { message: "Access denied to project room" });
         return;
       }
 
-      // Join room
       const roomName = `project:${projectId}`;
       socket.join(roomName);
 
@@ -65,8 +65,6 @@ const registerRoomHandlers = (io, socket) => {
       console.error("join-project error:", error.message);
     }
   });
-
-  // Leave Project Room
 
   socket.on("leave-project", ({ projectId }) => {
     if (!projectId) return;

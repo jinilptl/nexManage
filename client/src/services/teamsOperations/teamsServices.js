@@ -34,8 +34,6 @@ const {
 
 let logger = console.log;
 
-//   CREATE TEAM
-
 export const createTeamService = (teamData, token, onClose) => {
   return async (dispatch, getState) => {
     dispatch(setCreateTeamLoading(true));
@@ -61,8 +59,6 @@ export const createTeamService = (teamData, token, onClose) => {
     }
   };
 };
-
-//   FETCH ALL TEAMS (optional status: ACTIVE | ARCHIVED)
 
 export const fetchTeamsService = (token, role, status = "") => {
   return async (dispatch) => {
@@ -93,8 +89,6 @@ export const fetchTeamsService = (token, role, status = "") => {
   };
 };
 
-//  FETCH SINGLE TEAM (VIEW MOD
-
 export const fetchSingleTeamService = (teamId, token) => {
   return async (dispatch) => {
     dispatch(setSelectedTeamLoading(true));
@@ -115,8 +109,6 @@ export const fetchSingleTeamService = (teamId, token) => {
     }
   };
 };
-
-//  DELETE TEAM
 
 export const deleteTeamService = (teamId, token) => {
   return async (dispatch, getState) => {
@@ -147,8 +139,6 @@ export const deleteTeamService = (teamId, token) => {
     }
   };
 };
-
-//   UPDATE TEAM STATUS (e.g. archive)
 
 export const updateTeamStatusService = (
   teamId,
@@ -183,8 +173,6 @@ export const updateTeamStatusService = (
   };
 };
 
-//   UPDATE TEAM
-
 export const updateTeamService = (teamId, updatedData, token, onClose) => {
   return async (dispatch, getState) => {
     dispatch(setUpdateTeamLoading(true));
@@ -216,8 +204,6 @@ export const updateTeamService = (teamId, updatedData, token, onClose) => {
   };
 };
 
-//  FETCH TEAM MEMBERS
-
 export const fetchTeamMembersService = (teamId, token) => {
   return async (dispatch) => {
     dispatch(setTeamMembersLoading(true));
@@ -238,8 +224,6 @@ export const fetchTeamMembersService = (teamId, token) => {
     }
   };
 };
-
-//   ADD TEAM MEMBER
 
 export const addTeamMemberService = (teamId, memberData, token, onClose) => {
   return async (dispatch, getState) => {
@@ -267,8 +251,6 @@ export const addTeamMemberService = (teamId, memberData, token, onClose) => {
     }
   };
 };
-
-//   UPDATE MEMBER
 
 export const updateTeamMemberService = (
   teamId,
@@ -302,8 +284,6 @@ export const updateTeamMemberService = (
     }
   };
 };
-
-//  REMOVE MEMBER
 
 export const removeTeamMemberService = (teamId, memberId, token) => {
   return async (dispatch) => {

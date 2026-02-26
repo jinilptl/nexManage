@@ -1,52 +1,55 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
+      type: String,
     },
     role: {
-        type: String,
-        enum: ['super_admin', 'admin', 'member'],
-        default: 'member'
+      type: String,
+      enum: ["super_admin", "admin", "member"],
+      default: "member",
     },
     createdby: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     resetPasswordToken: {
-        type: String
+      type: String,
     },
     resetPasswordExpire: {
-        type: Date
+      type: Date,
     },
     isTempMember: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isObserver: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isInvited: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     inviteToken: {
-        type: String
+      type: String,
     },
     inviteTokenExpire: {
-        type: Date
-    }
-}, { timestamps: true })
+      type: Date,
+    },
+  },
+  { timestamps: true },
+);
 
 const User = mongoose.model("User", userSchema);
 

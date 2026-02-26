@@ -58,11 +58,13 @@ CLIENT_URL=http://localhost:5173
 ### 3. Run the Server
 
 **Development (with nodemon):**
+
 ```bash
 npm run dev
 ```
 
 **Production:**
+
 ```bash
 npm start
 ```
@@ -112,10 +114,12 @@ server/
 **Files:** `controllers/user.controllers.js`, `models/user.models.js`, `routes/auth.routes.js`
 
 **User Model Fields:**
+
 - `name`, `email`, `password` (hashed), `role`, `createdby`
 - `resetPasswordToken`, `resetPasswordExpire`
 
 **Features:**
+
 - User registration (super_admin protected)
 - Login/Logout
 - List all users (super_admin only)
@@ -128,10 +132,12 @@ server/
 **Files:** `controllers/team.controllers.js`, `models/team.models.js`, `routes/team.routes.js`
 
 **Team Model Fields:**
+
 - `teamName`, `description`, `createdby`, `isActive`
 - `members[]` (subdocument: `user`, `roleInTeam`, `joinedAt`, `status`)
 
 **Features:**
+
 - Create, read, update, delete teams
 - Add members to teams
 - Get all team members
@@ -143,11 +149,13 @@ server/
 ## Middleware
 
 ### verifyToken
+
 **Location:** `middlewares/authMiddlewares/varifyToken.middlewares.js`
 
 Extracts JWT token from cookie or Authorization header and sets `req.user`.
 
 ### roleChecker
+
 **Location:** `middlewares/authMiddlewares/roleChecker.middlewares.js`
 
 Restricts route access based on user roles (accepts array of allowed roles).

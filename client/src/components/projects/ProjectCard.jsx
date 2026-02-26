@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { MoreVertical, Users, Calendar, Eye, Archive, RotateCcw } from "lucide-react";
+import {
+  MoreVertical,
+  Users,
+  Calendar,
+  Eye,
+  Archive,
+  RotateCcw,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import { useNavigate } from "react-router-dom";
@@ -91,15 +98,19 @@ export default function ProjectCard({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
-                style={{ boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)' }}
+              <div
+                className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
+                style={{
+                  boxShadow:
+                    "0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)",
+                }}
               >
-                {/* Accent top border */}
-                <div className="h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                <div className="h-2px bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-                {/* Header */}
                 <div className="px-3 pt-2.5 pb-1.5">
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Actions</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                    Actions
+                  </p>
                 </div>
 
                 <div className="px-1.5 pb-1.5 space-y-0.5">
@@ -116,10 +127,11 @@ export default function ProjectCard({
 
                   {UserRole !== "member" && (
                     <button
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 cursor-pointer ${(project.status || "").toUpperCase() === "ARCHIVED"
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 cursor-pointer ${
+                        (project.status || "").toUpperCase() === "ARCHIVED"
                           ? "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                           : "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
-                        }`}
+                      }`}
                       onClick={() => {
                         const newStatus =
                           (project.status || "").toUpperCase() === "ARCHIVED"
@@ -146,7 +158,9 @@ export default function ProjectCard({
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">{project.projectName}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">
+          {project.projectName}
+        </h2>
 
         <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed grow">
           {project.description || "No description provided"}
@@ -156,7 +170,11 @@ export default function ProjectCard({
           <div className="flex items-center text-gray-500 gap-2 text-sm font-medium">
             <Calendar className="w-4 h-4 text-gray-400" />
             <span>
-              {new Date(project.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
+              {new Date(project.createdAt).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </span>
           </div>
 
@@ -169,16 +187,17 @@ export default function ProjectCard({
             </div>
 
             <span
-              className={`px-3 py-1 text-xs font-bold rounded-full border ${(project.status || "").toUpperCase() === "ACTIVE"
-                ? "bg-green-50 text-green-700 border-green-200"
-                : (project.status || "").toUpperCase() === "ON_HOLD"
-                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                  : (project.status || "").toUpperCase() === "COMPLETED"
-                    ? "bg-blue-50 text-blue-700 border-blue-200"
-                    : (project.status || "").toUpperCase() === "ARCHIVED"
-                      ? "bg-gray-50 text-gray-600 border-gray-200"
-                      : "bg-gray-50 text-gray-600 border-gray-200"
-                }`}
+              className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                (project.status || "").toUpperCase() === "ACTIVE"
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : (project.status || "").toUpperCase() === "ON_HOLD"
+                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                    : (project.status || "").toUpperCase() === "COMPLETED"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : (project.status || "").toUpperCase() === "ARCHIVED"
+                        ? "bg-gray-50 text-gray-600 border-gray-200"
+                        : "bg-gray-50 text-gray-600 border-gray-200"
+              }`}
             >
               {{
                 ACTIVE: "Active",
@@ -192,13 +211,18 @@ export default function ProjectCard({
           </div>
 
           <div className="pt-2 flex items-center justify-between">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Created By</span>
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              Created By
+            </span>
             <div className="flex items-center gap-2">
-              <Avatar user={project.createdBy} className="w-6 h-6 text-[10px] shadow-sm border md:border-white" />
+              <Avatar
+                user={project.createdBy}
+                className="w-6 h-6 text-[10px] shadow-sm border md:border-white"
+              />
               <span className="text-xs font-bold text-gray-700">
                 {project.createdBy?.name
                   ? project.createdBy.name[0].toUpperCase() +
-                  project.createdBy.name.slice(1)
+                    project.createdBy.name.slice(1)
                   : "Unknown"}
               </span>
             </div>

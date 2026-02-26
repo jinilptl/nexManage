@@ -63,9 +63,6 @@ export const deleteTaskAttachmentService = (
         .replace(":taskId", taskId)
         .replace(":attachmentId", attachmentId);
 
-      // Append resource_type query param
-      // Cloudinary needs to know if it's 'image', 'video', or 'raw' to delete properly.
-      // 'auto' is not valid for delete.
       endpoint += `?resource_type=${resourceType}`;
 
       const response = await axiosInstance.delete(endpoint, {
@@ -280,7 +277,6 @@ export const updateAssigneesTaskService = (
   };
 };
 
-// order and chnage status
 export const updateTaskStatusService = (projectId, taskId, statusId, token) => {
   return async (dispatch) => {
     try {
@@ -345,8 +341,6 @@ export const updateTaskOrderService = (projectId, taskId, newOrder, token) => {
     }
   };
 };
-
-// sub task services
 
 export const createSubTaskService = (title, projectId, taskId, token) => {
   return async (dispatch) => {
@@ -466,7 +460,6 @@ export const toggleSubtaskCompleteService = (
         );
       }
     } catch (error) {
-
       toast.error(GenerateErrorMessage(error));
     }
   };
@@ -499,13 +492,10 @@ export const deleteSubtaskService = (subtaskId, taskId, projectId, token) => {
         );
       }
     } catch (error) {
-
       toast.error(GenerateErrorMessage(error));
     }
   };
 };
-
-//ATTECHMENT SERVICES
 
 export const addTaskAttachmentService = (
   projectId,
@@ -529,7 +519,6 @@ export const addTaskAttachmentService = (
       });
 
       if (response.data.success) {
-
         dispatch(
           addAttachment({
             taskId: taskId,
@@ -574,8 +563,6 @@ export const fetchTaskAttachmentsService = (projectId, taskId, token) => {
     }
   };
 };
-
-// activity services
 
 export const fetchTaskActivityService = (taskId, projectId, token) => {
   return async (dispatch) => {

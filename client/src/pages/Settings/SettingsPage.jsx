@@ -13,12 +13,7 @@ import DangerZoneSettings from "../../components/Settings/DangerZoneSettings";
 export default function SettingsPage() {
   const tabs = [
     { key: "account", label: "Account Settings" },
-    // { key: "admin", label: "Admin Settings" },
     { key: "security", label: "Security" },
-    // { key: "notifications", label: "Notifications" },
-    // { key: "appearance", label: "Appearance" },
-    // { key: "billing", label: "Billing" },
-    // { key: "danger", label: "Danger Zone" },
   ];
 
   const [activeTab, setActiveTab] = useState("account");
@@ -40,12 +35,7 @@ export default function SettingsPage() {
 
         <div className="lg:col-span-9 space-y-6">
           {activeTab === "account" && <AccountSettings />}
-          {/* {activeTab === "admin" && <AdminSettings />} */}
           {activeTab === "security" && <SecuritySettings />}
-          {/* {activeTab === "notifications" && <NotificationSettings />} */}
-          {/* {activeTab === "appearance" && <AppearanceSettings />} */}
-          {/* {activeTab === "billing" && <BillingSettings />} */}
-          {/* {activeTab === "danger" && <DangerZoneSettings />} */}
         </div>
       </div>
     </SettingsLayout>

@@ -14,13 +14,11 @@ const taskAttachmentSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Cloudinary
     fileUrl: {
       type: String,
       required: true,
     },
 
-    // Original filename
     fileName: {
       type: String,
       default: null,
@@ -36,7 +34,7 @@ const taskAttachmentSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const TaskAttachment = mongoose.model("TaskAttachment", taskAttachmentSchema);

@@ -11,7 +11,6 @@ export default function CreateTaskModal({
   mode = "create",
   editableData = null,
 }) {
-
   const isEditMode = mode === "edit";
 
   const [form, setForm] = useState({
@@ -66,15 +65,12 @@ export default function CreateTaskModal({
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => onClose(false)}
       />
 
-      {/* MODAL BOX */}
       <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden modal-content-enter">
-        {/* HEADER */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             {isEditMode ? "Edit Task" : "Create New Task"}
@@ -89,9 +85,7 @@ export default function CreateTaskModal({
           </button>
         </div>
 
-        {/* BODY */}
         <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-5 max-h-[70vh] overflow-y-auto">
-          {/* TITLE */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Task Title <span className="text-red-500">*</span>
@@ -105,7 +99,6 @@ export default function CreateTaskModal({
             />
           </div>
 
-          {/* DESCRIPTION */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Description
@@ -120,7 +113,6 @@ export default function CreateTaskModal({
             />
           </div>
 
-          {/* PRIORITY + DUE DATE */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -153,7 +145,6 @@ export default function CreateTaskModal({
             </div>
           </div>
 
-          {/* ASSIGNEES */}
           {!isEditMode && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -162,7 +153,12 @@ export default function CreateTaskModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {projectMembers
-                  .filter((member) => member.user && member.roleInProject !== "observer" && !member.user.isTempMember)
+                  .filter(
+                    (member) =>
+                      member.user &&
+                      member.roleInProject !== "observer" &&
+                      !member.user.isTempMember,
+                  )
                   .map((member) => (
                     <label
                       key={member.user._id}
@@ -173,11 +169,6 @@ export default function CreateTaskModal({
                         checked={form.assignees.includes(member.user._id)}
                         onChange={() => toggleAssignee(member.user._id)}
                       />
-                      {/* <img
-                    src={member.avatar}
-                    alt={member.name}
-                    className="w-6 h-6 rounded-full"
-                  /> */}
                       <span className="text-sm text-gray-700">
                         {member.user.name}
                       </span>
@@ -188,7 +179,6 @@ export default function CreateTaskModal({
           )}
         </div>
 
-        {/* FOOTER */}
         <div className="flex justify-end gap-3 px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
           <button
             type="button"

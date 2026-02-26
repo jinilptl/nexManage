@@ -21,7 +21,6 @@ export default function NexManageLoader() {
         
       "
     >
-      {/* Animated Circle */}
       <div
         className="
         w-20 h-20 mb-6 
@@ -31,13 +30,11 @@ export default function NexManageLoader() {
       "
       ></div>
 
-      {/* Logo Text */}
       <h1 className="text-2xl font-semibold tracking-wide flex items-center gap-2">
         <span className="animate-pulse text-blue-400">●</span>
         <span className="loaderText">NexManage</span>
       </h1>
 
-      {/* Subtitle */}
       <p className="mt-2 text-slate-300 text-sm animate-fadeInSlow">
         Loading your workspace...
       </p>

@@ -23,13 +23,11 @@ export default function LogoutModal({ open, onClose }) {
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={onClose}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl p-4 sm:p-6 w-full max-w-sm modal-content-enter">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
           Are you sure you want to logout?

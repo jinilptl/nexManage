@@ -24,7 +24,10 @@ const isAssigneeOrProjectManager = asyncHandler(async (req, res, next) => {
     project.projectManager.toString() === userId.toString();
 
   const member = project.projectMembers.find(
-    (m) => m.user && m.user.toString() === userId.toString() && m.status === "active"
+    (m) =>
+      m.user &&
+      m.user.toString() === userId.toString() &&
+      m.status === "active",
   );
 
   const isRoleManager = member?.roleInProject === "project-manager";
@@ -33,18 +36,18 @@ const isAssigneeOrProjectManager = asyncHandler(async (req, res, next) => {
   if (isObserverRole) {
     throw new ApiError(
       403,
-      "Observers have read-only access and cannot perform this action"
+      "Observers have read-only access and cannot perform this action",
     );
   }
 
   const isAssignee = task.assignees.some(
-    (id) => id.toString() === userId.toString()
+    (id) => id.toString() === userId.toString(),
   );
 
   if (!isMainManager && !isRoleManager && !isAssignee) {
     throw new ApiError(
       403,
-      "Only task assignee or project manager can perform this action"
+      "Only task assignee or project manager can perform this action",
     );
   }
 

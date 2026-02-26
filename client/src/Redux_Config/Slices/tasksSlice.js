@@ -37,8 +37,6 @@ const taskSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    // TASK LIST
-
     setLoading(state, action) {
       state.loading = action.payload;
     },
@@ -84,8 +82,6 @@ const taskSlice = createSlice({
       }
     },
 
-    // SELECTED TASK
-
     setSelectedTaskId(state, action) {
       state.selectedTaskId = action.payload;
     },
@@ -99,8 +95,6 @@ const taskSlice = createSlice({
     setSelectedTask(state, action) {
       state.selectedTask.data = action.payload;
     },
-
-    // KANBAN ORDER / STATUS
 
     setReorderTasksInColumn(state, action) {
       const { columnId, reorderedTasks } = action.payload;
@@ -177,8 +171,6 @@ const taskSlice = createSlice({
       }
     },
 
-    // SUBTASKS
-
     setSubtasks(state, action) {
       const { taskId, subtasks } = action.payload;
 
@@ -227,8 +219,6 @@ const taskSlice = createSlice({
       state.selectedTaskSubtasks.loading = action.payload;
     },
 
-    // ATTACHMENTS
-
     setAttachments(state, action) {
       const { taskId, attachments } = action.payload;
 
@@ -262,7 +252,6 @@ const taskSlice = createSlice({
         loading: false,
       };
     },
-    // ACTIVITY LOGS
 
     setActivityLogs(state, action) {
       state.activityLogs.list = action.payload;

@@ -3,7 +3,12 @@ import { useSelector } from "react-redux";
 import ListHeader from "./ListHeader";
 import ListRow from "./ListRow";
 
-export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = false }) {
+export default function ListView({
+  tasks,
+  onTaskClick,
+  onMoveTask,
+  isObserver = false,
+}) {
   const project = useSelector((state) => state.projects.selectedProject);
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
@@ -13,11 +18,9 @@ export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
 
-  // Get project data
   const statuses = project?.data?.taskStatuses || [];
   const members = project?.data?.projectMembers || [];
 
-  // Create status map for easy lookup
   const statusMap = useMemo(() => {
     return statuses.reduce((acc, status) => {
       acc[status._id] = status;
@@ -41,10 +44,8 @@ export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = 
     return false;
   }, [user, project, isObserver]);
 
-  // Handle Filtering
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
-      // 0. Permission Check
       if (!canViewAllTasks) {
         const isAssigned = task.assignees?.some(
           (a) => (a._id || a) === user?._id,
@@ -52,13 +53,10 @@ export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = 
         if (!isAssigned) return false;
       }
 
-      // 1. Status Filter
       if (statusFilter && task.status !== statusFilter) return false;
 
-      // 2. Priority Filter
       if (priorityFilter && task.priority !== priorityFilter) return false;
 
-      // 3. Assignee Filter
       if (assigneeFilter) {
         const hasAssignee = task.assignees?.some(
           (a) => (a._id || a) === assigneeFilter,
@@ -66,7 +64,6 @@ export default function ListView({ tasks, onTaskClick, onMoveTask, isObserver = 
         if (!hasAssignee) return false;
       }
 
-      // 4. Search Query (Title)
       if (searchQuery) {
         const titleMatch = task.title
           .toLowerCase()

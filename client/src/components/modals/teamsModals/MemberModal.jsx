@@ -88,25 +88,22 @@ export default function MemberModal({
   if (!open) return null;
 
   if (!selectedTeamId) {
-    // Should generally be checked before opening modal, but safegaurd here
     return null;
   }
 
-  const availableUsers = allUsers?.filter((u) =>
-    !teamMembers.some((tm) => tm.user?._id === u._id)
-  ) || [];
+  const availableUsers =
+    allUsers?.filter(
+      (u) => !teamMembers.some((tm) => tm.user?._id === u._id),
+    ) || [];
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => !loading && onClose(false)}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 modal-content-enter">
-        {/* HEADER */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-800">
             {mode === "add" ? "Add Member" : "Update Member"}
@@ -115,8 +112,9 @@ export default function MemberModal({
           <button
             disabled={loading}
             onClick={() => !loading && onClose(false)}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${loading && "opacity-40 cursor-not-allowed"
-              }`}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${
+              loading && "opacity-40 cursor-not-allowed"
+            }`}
           >
             <svg
               className="w-5 h-5 text-gray-600"
@@ -134,7 +132,6 @@ export default function MemberModal({
           </button>
         </div>
 
-        {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
           {mode === "add" && (
             <div>
@@ -157,7 +154,6 @@ export default function MemberModal({
             </div>
           )}
 
-          {/* ROLE */}
           <div>
             <label className="text-sm text-gray-600">Role in Team</label>
             <select
@@ -178,7 +174,6 @@ export default function MemberModal({
             </select>
           </div>
 
-          {/* STATUS */}
           <div>
             <label className="text-sm text-gray-600">Member Status</label>
             <select
@@ -194,7 +189,6 @@ export default function MemberModal({
             </select>
           </div>
 
-          {/* FOOTER BUTTONS */}
           <div className="mt-6 flex items-center justify-end gap-3">
             <button
               type="button"
@@ -210,9 +204,10 @@ export default function MemberModal({
               type="submit"
               disabled={loading}
               className={`px-4 py-2 text-sm font-medium cursor-pointer rounded-lg text-white flex items-center gap-2 transition-colors
-                ${loading
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                ${
+                  loading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
                 }`}
             >
               {loading ? (

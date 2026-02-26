@@ -58,16 +58,19 @@ export default function KanbanBoard({
     const handleDragOver = (e) => {
       if (!scrollContainerRef.current) return;
 
-      const { left, right } = scrollContainerRef.current.getBoundingClientRect();
+      const { left, right } =
+        scrollContainerRef.current.getBoundingClientRect();
       const edgeThreshold = 100;
       const clientX = e.clientX;
 
       if (clientX < left + edgeThreshold) {
-        const intensity = Math.max(0, left + edgeThreshold - clientX) / edgeThreshold;
+        const intensity =
+          Math.max(0, left + edgeThreshold - clientX) / edgeThreshold;
         scrollSpeedRef.current = -(10 + intensity * 15);
         startScrolling();
       } else if (clientX > right - edgeThreshold) {
-        const intensity = Math.max(0, clientX - (right - edgeThreshold)) / edgeThreshold;
+        const intensity =
+          Math.max(0, clientX - (right - edgeThreshold)) / edgeThreshold;
         scrollSpeedRef.current = 10 + intensity * 15;
         startScrolling();
       } else {
@@ -192,7 +195,9 @@ export default function KanbanBoard({
 
   const handleDeleteColumn = (statusId) => {
     if (isObserver) return;
-    dispatch(deleteTaskStatusFromProjectService(project.data._id, statusId, token));
+    dispatch(
+      deleteTaskStatusFromProjectService(project.data._id, statusId, token),
+    );
   };
 
   return (
@@ -211,9 +216,7 @@ export default function KanbanBoard({
                   const isStatus = t.status === column._id;
                   if (!isStatus) return false;
                   if (canViewAllTasks) return true;
-                  return t.assignees?.some(
-                    (a) => (a._id || a) === user?._id,
-                  );
+                  return t.assignees?.some((a) => (a._id || a) === user?._id);
                 })}
                 onMoveTaskToColumn={moveTaskToColumn}
                 onReorderTask={reorderTask}

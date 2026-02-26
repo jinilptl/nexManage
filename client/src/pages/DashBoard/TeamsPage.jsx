@@ -48,12 +48,10 @@ export default function TeamsPage() {
   const [statusFilter, setStatusFilter] = useState("ACTIVE");
   const [openMenuId, setOpenMenuId] = useState(null);
 
-  /* ---------------- SET DOCUMENT TITLE ---------------- */
   useEffect(() => {
     document.title = "Teams | NexManage";
   }, []);
 
-  /* ---------------- FETCH ALL TEAMS ---------------- */
   useEffect(() => {
     if (token && role) {
       dispatch(fetchTeamsService(token, role, statusFilter));
@@ -64,7 +62,6 @@ export default function TeamsPage() {
     setFilterTeams(list);
   }, [list]);
 
-  /* ---------------- SEARCH FILTER ---------------- */
   useEffect(() => {
     const filtered = list.filter((team) =>
       team.teamName.toLowerCase().includes(searchInput.toLowerCase()),
@@ -72,14 +69,12 @@ export default function TeamsPage() {
     setFilterTeams(filtered);
   }, [searchInput]);
 
-  /* ---------------- CLOSE DROPDOWN ---------------- */
   useEffect(() => {
     const handler = () => setOpenMenuId(null);
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  /* ---------------- OPEN TEAM MODAL AFTER FETCH ---------------- */
   useEffect(() => {
     if (!teamLoading && !membersLoading && selectedTeamId) {
       setOpenTeamModal(true);
@@ -138,8 +133,9 @@ export default function TeamsPage() {
 
   return (
     <div
-      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
-        }`}
+      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
+        openTeamModal && "overflow-y-hidden"
+      }`}
     >
       {(teamLoading || membersLoading) && (
         <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
@@ -147,7 +143,6 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-gray-900  text-2xl font-bold">Teams</h1>
@@ -159,10 +154,11 @@ export default function TeamsPage() {
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
             className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
-             ${loading
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
+             ${
+               loading
+                 ? "bg-blue-300 cursor-not-allowed"
+                 : "bg-blue-600 hover:bg-blue-700 text-white"
+             }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -170,7 +166,6 @@ export default function TeamsPage() {
         )}
       </div>
 
-      {/* FILTERS */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-md">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1 group">
@@ -190,13 +185,29 @@ export default function TeamsPage() {
               disabled={loading}
               className={`w-full appearance-none bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 cursor-pointer focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <option value="ACTIVE" className="font-medium">Active Teams</option>
-              <option value="ARCHIVED" className="font-medium">Archived Teams</option>
-              <option value="ALL" className="font-medium">All Teams</option>
+              <option value="ACTIVE" className="font-medium">
+                Active Teams
+              </option>
+              <option value="ARCHIVED" className="font-medium">
+                Archived Teams
+              </option>
+              <option value="ALL" className="font-medium">
+                All Teams
+              </option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -224,9 +235,10 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-700"
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-blue-700"
                     }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
@@ -258,10 +270,11 @@ export default function TeamsPage() {
                   >
                     <button
                       disabled={loading}
-                      className={`p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 ${loading
-                        ? "opacity-40 cursor-not-allowed"
-                        : "cursor-pointer"
-                        }`}
+                      className={`p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 ${
+                        loading
+                          ? "opacity-40 cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!loading)
@@ -274,15 +287,19 @@ export default function TeamsPage() {
                     </button>
 
                     {openMenuId === team._id && !loading && (
-                      <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
-                        style={{ boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)' }}
+                      <div
+                        className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
+                        style={{
+                          boxShadow:
+                            "0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)",
+                        }}
                       >
-                        {/* Accent top border */}
-                        <div className="h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                        <div className="h-2px bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-                        {/* Header */}
                         <div className="px-3 pt-2.5 pb-1.5">
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Actions</p>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                            Actions
+                          </p>
                         </div>
 
                         <div className="px-1.5 pb-1.5 space-y-0.5">
@@ -291,7 +308,9 @@ export default function TeamsPage() {
                             onClick={() => {
                               if (!loading) {
                                 dispatch(setSelectedTeamId(team._id));
-                                dispatch(fetchSingleTeamService(team._id, token));
+                                dispatch(
+                                  fetchSingleTeamService(team._id, token),
+                                );
                                 dispatch(
                                   fetchTeamMembersService(team._id, token),
                                 );
@@ -304,58 +323,64 @@ export default function TeamsPage() {
                             View Team
                           </button>
 
-                          {role !== "member" && (team.status || "").toUpperCase() !== "ARCHIVED" && (
-                            <button
-                              disabled={loading}
-                              onClick={() => {
-                                if (!loading) {
-                                  dispatch(
-                                    updateTeamStatusService(
-                                      team._id,
-                                      "ARCHIVED",
-                                      token,
-                                      statusFilter,
-                                    ),
-                                  );
-                                  setOpenMenuId(null);
-                                }
-                              }}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-colors duration-150 cursor-pointer"
-                            >
-                              <Archive className="w-4 h-4" />
-                              Archive Team
-                            </button>
-                          )}
+                          {role !== "member" &&
+                            (team.status || "").toUpperCase() !==
+                              "ARCHIVED" && (
+                              <button
+                                disabled={loading}
+                                onClick={() => {
+                                  if (!loading) {
+                                    dispatch(
+                                      updateTeamStatusService(
+                                        team._id,
+                                        "ARCHIVED",
+                                        token,
+                                        statusFilter,
+                                      ),
+                                    );
+                                    setOpenMenuId(null);
+                                  }
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-colors duration-150 cursor-pointer"
+                              >
+                                <Archive className="w-4 h-4" />
+                                Archive Team
+                              </button>
+                            )}
 
-                          {role !== "member" && (team.status || "").toUpperCase() === "ARCHIVED" && (
-                            <button
-                              disabled={loading}
-                              onClick={() => {
-                                if (!loading) {
-                                  dispatch(
-                                    updateTeamStatusService(
-                                      team._id,
-                                      "ACTIVE",
-                                      token,
-                                      statusFilter,
-                                    ),
-                                  );
-                                  setOpenMenuId(null);
-                                }
-                              }}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150 cursor-pointer"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                              Activate Team
-                            </button>
-                          )}
+                          {role !== "member" &&
+                            (team.status || "").toUpperCase() ===
+                              "ARCHIVED" && (
+                              <button
+                                disabled={loading}
+                                onClick={() => {
+                                  if (!loading) {
+                                    dispatch(
+                                      updateTeamStatusService(
+                                        team._id,
+                                        "ACTIVE",
+                                        token,
+                                        statusFilter,
+                                      ),
+                                    );
+                                    setOpenMenuId(null);
+                                  }
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150 cursor-pointer"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                                Activate Team
+                              </button>
+                            )}
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">{team.teamName}</h2>
+                <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">
+                  {team.teamName}
+                </h2>
                 <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed grow">
                   {team.description || "No description provided"}
                 </p>
@@ -367,7 +392,10 @@ export default function TeamsPage() {
                     </p>
                     {findTeamLeadName(team) ? (
                       <div className="flex items-center gap-2">
-                        <Avatar user={findTeamLeadUser(team)} className="w-6 h-6 text-[10px] shadow-sm border md:border-white" />
+                        <Avatar
+                          user={findTeamLeadUser(team)}
+                          className="w-6 h-6 text-[10px] shadow-sm border md:border-white"
+                        />
                         <span className="text-sm font-bold text-gray-700">
                           {findTeamLeadName(team)}
                         </span>
@@ -382,24 +410,32 @@ export default function TeamsPage() {
                   <div className="flex items-center gap-4 text-sm pt-5 border-t border-gray-100">
                     <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
                       <UsersIcon className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs font-bold text-gray-700">{team.members.length}</span>
-                      <span className="text-xs font-medium text-gray-500">Members</span>
+                      <span className="text-xs font-bold text-gray-700">
+                        {team.members.length}
+                      </span>
+                      <span className="text-xs font-medium text-gray-500">
+                        Members
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
                       <FolderKanban className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs font-bold text-gray-700">{team.projectsCount ?? 0}</span>
-                      <span className="text-xs font-medium text-gray-500">Projects</span>
+                      <span className="text-xs font-bold text-gray-700">
+                        {team.projectsCount ?? 0}
+                      </span>
+                      <span className="text-xs font-medium text-gray-500">
+                        Projects
+                      </span>
                     </div>
                   </div>
 
-                  {/* FOOTER */}
                   <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
                     <span
-                      className={`px-3 py-1 text-xs font-bold rounded-full border ${(team.status || "").toUpperCase() === "ACTIVE"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-gray-50 text-gray-600 border-gray-200"
-                        }`}
+                      className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                        (team.status || "").toUpperCase() === "ACTIVE"
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-gray-50 text-gray-600 border-gray-200"
+                      }`}
                     >
                       {(team.status || "").toUpperCase() === "ACTIVE"
                         ? "Active"
@@ -407,12 +443,19 @@ export default function TeamsPage() {
                     </span>
 
                     <span className="text-[11px] font-medium text-gray-400">
-                      Created {new Date(team.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
+                      Created{" "}
+                      {new Date(team.createdAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
 
                   <div className="pt-2 flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Created By</span>
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      Created By
+                    </span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-gray-700">
                         {findCreatedBy(team) || "Unknown"}
@@ -426,7 +469,6 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {/* MODALS */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} />
 
       <TeamDetailModal

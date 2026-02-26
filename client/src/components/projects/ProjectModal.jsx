@@ -80,23 +80,21 @@ export default function ProjectModal({
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => !isBusy && onClose()}
       />
 
-      {/* MODAL BOX */}
       <div
         className="relative bg-white w-full max-w-lg rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* CLOSE */}
         <button
           onClick={onClose}
           disabled={isBusy}
-          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
-            }`}
+          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${
+            isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
+          }`}
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
@@ -163,7 +161,6 @@ export default function ProjectModal({
             </select>
           </div>
 
-          {/* TEAM CHECKBOXES */}
           {formData.projectType !== "personal" && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -175,7 +172,10 @@ export default function ProjectModal({
                 )}
 
                 {teamsList.map((team) => (
-                  <label key={team._id} className="flex items-center gap-2 mb-1">
+                  <label
+                    key={team._id}
+                    className="flex items-center gap-2 mb-1"
+                  >
                     <input
                       disabled={isBusy}
                       type="checkbox"
@@ -200,7 +200,6 @@ export default function ProjectModal({
             </div>
           )}
 
-          {/* FOOTER */}
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"

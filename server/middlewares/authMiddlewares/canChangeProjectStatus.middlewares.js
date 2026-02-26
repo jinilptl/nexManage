@@ -2,9 +2,6 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { Project } from "../../models/project.models.js";
 
-/**
- * Allows project creator, project manager, or admin/super_admin to change project status (e.g. archive).
- */
 const canChangeProjectStatus = asyncHandler(async (req, res, next) => {
   const userId = req.user?._id;
   const projectId = req.params.projectId || req.params.id;
@@ -33,7 +30,7 @@ const canChangeProjectStatus = asyncHandler(async (req, res, next) => {
 
   throw new ApiError(
     403,
-    "Only project creator, project manager, or admin can change project status"
+    "Only project creator, project manager, or admin can change project status",
   );
 });
 

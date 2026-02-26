@@ -18,7 +18,7 @@ const isTaskAssignee = asyncHandler(async (req, res, next) => {
   }
 
   const isAssignee = task.assignees.some(
-    (id) => id.toString() === userId.toString()
+    (id) => id.toString() === userId.toString(),
   );
 
   if (!isAssignee) {

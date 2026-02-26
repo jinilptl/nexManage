@@ -81,8 +81,6 @@ const teamsSlice = createSlice({
       state.actions.removingMember = action.payload;
     },
 
-    // after logout
-
     clearTeams(state) {
       state.list = [];
       state.selectedTeam = { id: null, data: null };
@@ -92,20 +90,16 @@ const teamsSlice = createSlice({
 });
 
 export const {
-  // Teams
   setTeams,
   setTeamsLoading,
 
-  // Selected team
   setSelectedTeamId,
   setSelectedTeamData,
   setSelectedTeamLoading,
 
-  // Members
   setTeamMembers,
   setTeamMembersLoading,
 
-  // Action loaders
   setCreateTeamLoading,
   setUpdateTeamLoading,
   setDeleteTeamLoading,
@@ -114,7 +108,6 @@ export const {
   setUpdateMemberLoading,
   setRemoveMemberLoading,
 
-  // Clear teams on logout
   clearTeams,
 } = teamsSlice.actions;
 

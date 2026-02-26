@@ -31,9 +31,8 @@ fileUploadRouter.route("/attachments/:projectId/:taskId").post(
   attachTaskToRequest,
   isProjectMember,
   isAssigneeOrProjectManager,
-  addTaskAttachment
+  addTaskAttachment,
 );
-
 
 fileUploadRouter
   .route("/attachments/:projectId/:taskId")

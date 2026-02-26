@@ -17,7 +17,7 @@ export default function DashboardPage() {
     useSelector((state) => state.auth.token) ||
     localStorage.getItem("token") ||
     sessionStorage.getItem("token");
-    
+
   useEffect(() => {
     if (token) {
       dispatch(getMyProfileService(token));
@@ -40,7 +40,6 @@ export default function DashboardPage() {
         setMobileOpen={setMobileOpen}
       />
 
-      {/* Main Content */}
       <main
         id="main-content"
         className={`flex-1 min-w-0 ${mobileOpen ? "ml-0" : collapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-300`}

@@ -1,16 +1,30 @@
 import React from "react";
-import { User, ShieldCheck, Bell, Palette, CreditCard, AlertTriangle } from "lucide-react";
+import {
+  User,
+  ShieldCheck,
+  Bell,
+  Palette,
+  CreditCard,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function SettingsSidebar({ tabs, activeTab, onChangeTab }) {
   const getIcon = (key) => {
     switch (key) {
-      case "account": return <User size={18} />;
-      case "security": return <ShieldCheck size={18} />;
-      case "notifications": return <Bell size={18} />;
-      case "appearance": return <Palette size={18} />;
-      case "billing": return <CreditCard size={18} />;
-      case "danger": return <AlertTriangle size={18} />;
-      default: return <User size={18} />;
+      case "account":
+        return <User size={18} />;
+      case "security":
+        return <ShieldCheck size={18} />;
+      case "notifications":
+        return <Bell size={18} />;
+      case "appearance":
+        return <Palette size={18} />;
+      case "billing":
+        return <CreditCard size={18} />;
+      case "danger":
+        return <AlertTriangle size={18} />;
+      default:
+        return <User size={18} />;
     }
   };
 
@@ -24,10 +38,11 @@ export default function SettingsSidebar({ tabs, activeTab, onChangeTab }) {
           <button
             key={tab.key}
             onClick={() => onChangeTab(tab.key)}
-            className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-3 ${activeTab === tab.key
+            className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-3 ${
+              activeTab === tab.key
                 ? "bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100"
                 : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+            }`}
           >
             {getIcon(tab.key)}
             {tab.label}

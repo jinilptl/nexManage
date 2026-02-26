@@ -34,14 +34,12 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 space-y-6">
-        {/* App Icon */}
         <div className="flex justify-center mb-4">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
             <FolderKanban className="w-7 h-7 text-white" />
           </div>
         </div>
 
-        {/* Heading */}
         <div className="text-center">
           <h2 className="text-2xl font-semibold">Reset Password</h2>
           <p className="text-gray-500 text-sm mt-1">
@@ -49,7 +47,6 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm font-medium block mb-1">
@@ -80,7 +77,6 @@ export default function ResetPasswordPage() {
             </div>
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label className="text-sm font-medium block mb-1">
               Confirm Password
@@ -110,7 +106,6 @@ export default function ResetPasswordPage() {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${
@@ -121,7 +116,6 @@ export default function ResetPasswordPage() {
             {loading ? "Resetting..." : "Reset Password"}
           </button>
 
-          {/* Back to login */}
           <p className="text-sm text-gray-600 text-center pt-4 border-t">
             Back to{" "}
             <Link to="/" className="text-blue-600 font-medium">

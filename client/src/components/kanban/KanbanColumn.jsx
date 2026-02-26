@@ -36,13 +36,13 @@ export default function KanbanColumn({
       className={`
         min-w-[300px] max-w-[300px]
         shrink-0 rounded-2xl p-4 transition
-        ${isOver
-          ? "bg-blue-50 border-2 border-dashed border-blue-400"
-          : "bg-gray-50"
+        ${
+          isOver
+            ? "bg-blue-50 border-2 border-dashed border-blue-400"
+            : "bg-gray-50"
         }
       `}
     >
-      {/* Header */}
       <div className="flex justify-between items-center mb-4 sticky top-0 bg-inherit z-10">
         <div className="flex gap-2 items-center">
           <h3 className="text-sm font-semibold">{column.label}</h3>
@@ -62,16 +62,17 @@ export default function KanbanColumn({
           />
         )}
 
-        {!isObserver && !["todo", "in_progress", "review", "done"].includes(column.key) && userRole !== "member" && (
-          <Trash2
-            size={16}
-            className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors"
-            onClick={onDeleteColumn}
-          />
-        )}
+        {!isObserver &&
+          !["todo", "in_progress", "review", "done"].includes(column.key) &&
+          userRole !== "member" && (
+            <Trash2
+              size={16}
+              className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors"
+              onClick={onDeleteColumn}
+            />
+          )}
       </div>
 
-      {/* Tasks */}
       <div className="min-h-[150px] space-y-3">
         {tasks.map((task, index) => (
           <KanbanTaskCard

@@ -67,16 +67,22 @@ export default function AccountSettings() {
 
   return (
     <div className="space-y-6">
-      {/* Profile Header */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative group">
             {user?.avatar ? (
               <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden">
-                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                <img
+                  src={user.avatar}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </div>
             ) : (
-              <Avatar user={user} className="w-20 h-20 text-3xl border-4 border-white shadow-sm" />
+              <Avatar
+                user={user}
+                className="w-20 h-20 text-3xl border-4 border-white shadow-sm"
+              />
             )}
           </div>
           <div>
@@ -99,14 +105,19 @@ export default function AccountSettings() {
         </div>
       </div>
 
-      <SettingsCard title="Personal Information" subtitle="Manage your personal details">
+      <SettingsCard
+        title="Personal Information"
+        subtitle="Manage your personal details"
+      >
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InputField
               label="Full Name"
               value={formData.name}
               disabled={!isEditing || loading}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               icon={<User size={18} />}
             />
 
@@ -114,12 +125,16 @@ export default function AccountSettings() {
               label="Email Address"
               value={formData.email}
               disabled={true}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               icon={<Mail size={18} />}
             />
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Role</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
+                Role
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                   <Shield size={18} />
@@ -131,7 +146,8 @@ export default function AccountSettings() {
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1.5 ml-1">
-                Your role determines your permissions within the workspace. Contact an admin to change this.
+                Your role determines your permissions within the workspace.
+                Contact an admin to change this.
               </p>
             </div>
           </div>
@@ -169,9 +185,13 @@ export default function AccountSettings() {
 function InputField({ label, value, onChange, disabled, icon }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
+        {label}
+      </label>
       <div className="relative group">
-        <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors ${disabled ? "text-gray-400" : "text-gray-500 group-focus-within:text-blue-600"}`}>
+        <div
+          className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors ${disabled ? "text-gray-400" : "text-gray-500 group-focus-within:text-blue-600"}`}
+        >
           {icon}
         </div>
         <input
@@ -179,9 +199,10 @@ function InputField({ label, value, onChange, disabled, icon }) {
           onChange={onChange}
           disabled={disabled}
           className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border outline-none transition-all duration-200
-            ${disabled
-              ? "bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed shadow-none"
-              : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm"
+            ${
+              disabled
+                ? "bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed shadow-none"
+                : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm"
             }`}
           placeholder={`Enter ${label}`}
         />

@@ -21,7 +21,6 @@ import ButtonLoader from "../../Lodders/ButtonLoader";
 import ConfirmModal from "./ConfirmModal";
 
 export default function TeamDetailModal({ open, onClose }) {
-
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const role = useSelector((state) => state.auth.user.role);
@@ -95,7 +94,6 @@ export default function TeamDetailModal({ open, onClose }) {
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => {
@@ -107,9 +105,7 @@ export default function TeamDetailModal({ open, onClose }) {
         }}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-3xl rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        {/* Close Button */}
         <button
           disabled={updating || deleting}
           aria-label="Close team details dialog"
@@ -124,36 +120,32 @@ export default function TeamDetailModal({ open, onClose }) {
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        {/* Loading Overlay */}
         {(fetchTeamLoading || membersLoading) && (
           <div className="absolute inset-0 z-50 bg-white/60 flex items-center justify-center">
             <ModalSmallLoader />
           </div>
         )}
 
-        {/* HEADER */}
         <h2 className="text-xl font-bold text-gray-900 mb-1">
           {team?.teamName}
         </h2>
 
         <p className="text-gray-600 text-sm">{team?.description}</p>
 
-        {/* STATUS */}
         <div className="mt-3">
           <span
-            className={`px-3 py-1 text-xs rounded-md ${team?.isActive
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-200 text-gray-700"
-              }`}
+            className={`px-3 py-1 text-xs rounded-md ${
+              team?.isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-gray-200 text-gray-700"
+            }`}
           >
             {team?.isActive ? "Active" : "Inactive"}
           </span>
         </div>
 
-        {/* ACTION BUTTONS */}
         {isAdmin && (
           <div className="mt-5 flex flex-wrap gap-2">
-            {/* Update */}
             <button
               disabled={updating}
               onClick={() => {
@@ -167,7 +159,6 @@ export default function TeamDetailModal({ open, onClose }) {
               {updating ? "Updating..." : "Edit"}
             </button>
 
-            {/* Delete */}
             <button
               disabled={deleting}
               onClick={handleDeleteTeam}
@@ -180,7 +171,6 @@ export default function TeamDetailModal({ open, onClose }) {
           </div>
         )}
 
-        {/* MEMBERS SECTION */}
         <div className="mt-8">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold">Team Members</h3>
@@ -205,7 +195,6 @@ export default function TeamDetailModal({ open, onClose }) {
             )}
           </div>
 
-          {/* MEMBERS LIST */}
           <div className="space-y-3">
             {members?.length === 0 && (
               <p className="text-gray-500">No members in this team.</p>
@@ -231,7 +220,6 @@ export default function TeamDetailModal({ open, onClose }) {
 
                 {isAdmin && (
                   <div className="flex items-center gap-2">
-                    {/* Edit */}
                     <button
                       disabled={updatingMember}
                       onClick={() => {
@@ -248,7 +236,6 @@ export default function TeamDetailModal({ open, onClose }) {
                       )}
                     </button>
 
-                    {/* Remove */}
                     <button
                       disabled={removingMember}
                       onClick={() => handleRemoveMember(m.user._id)}
@@ -267,7 +254,6 @@ export default function TeamDetailModal({ open, onClose }) {
           </div>
         </div>
 
-        {/* FOOTER */}
         <div className="mt-6 flex justify-end">
           <button
             onClick={() => {
@@ -282,7 +268,6 @@ export default function TeamDetailModal({ open, onClose }) {
         </div>
       </div>
 
-      {/* CHILD MODALS */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} mode="update" />
       <MemberModal
         open={memberModalOpen}
@@ -292,7 +277,6 @@ export default function TeamDetailModal({ open, onClose }) {
         setMember={setSelectedMember}
       />
 
-      {/* CONFIRMATION MODAL */}
       <ConfirmModal
         open={confirmOpen}
         title={confirmType === "deleteTeam" ? "Delete Team" : "Remove Member"}

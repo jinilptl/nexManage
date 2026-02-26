@@ -12,7 +12,6 @@ export default function TopContributors({ contributors }) {
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <span className="text-sm text-gray-500 w-6">{index + 1}</span>
 
-              {/* Avatar */}
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 {c.avatar ? (
                   <img

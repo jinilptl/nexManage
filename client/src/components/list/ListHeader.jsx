@@ -17,10 +17,8 @@ export default function ListHeader({
 }) {
   return (
     <div className="bg-white sticky top-0 z-10 border-b border-gray-200 shadow-sm">
-      {/* Filters Toolbar */}
       <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
         <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
-          {/* Status Filter */}
           <div className="relative group min-w-[120px]">
             <Layers className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <select
@@ -38,7 +36,6 @@ export default function ListHeader({
             <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 pointer-events-none opacity-50" />
           </div>
 
-          {/* Priority Filter */}
           <div className="relative group min-w-[120px]">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gray-300" />
             <select
@@ -53,26 +50,8 @@ export default function ListHeader({
             </select>
             <ArrowDownUp className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 pointer-events-none opacity-50" />
           </div>
-
-          {/* Assignee Filter */}
-          {/* <div className="relative group min-w-[120px]">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <select
-                            value={assigneeFilter}
-                            onChange={(e) => setAssigneeFilter(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer hover:bg-gray-100"
-                        >
-                            <option value="">All Assignees</option>
-                            {projectMembers.map((member) => (
-                                <option key={member._id} value={member._id}>
-                                    {member.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div> */}
         </div>
 
-        {/* Search */}
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -85,7 +64,6 @@ export default function ListHeader({
         </div>
       </div>
 
-      {/* Column Headers */}
       <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-200">
         <div className="col-span-4">Task</div>
         <div className="col-span-2">Status</div>

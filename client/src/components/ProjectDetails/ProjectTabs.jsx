@@ -1,6 +1,5 @@
 import React from "react";
 
-// const TABS = ["board", "list", "calendar", "files", "analytics"];
 const TABS = ["board", "list"];
 
 export default function ProjectTabs({ activeTab, setActiveTab }) {

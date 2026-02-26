@@ -9,7 +9,6 @@ export default function TaskHeader({
 }) {
   return (
     <div className="mb-6 flex items-start justify-between gap-4">
-      {/* LEFT SIDE */}
       <div className="flex-1 min-w-0">
         <h2 className="text-xl sm:text-3xl font-extrabold text-gray-900 truncate tracking-tight">
           {task.title}
@@ -24,7 +23,6 @@ export default function TaskHeader({
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="flex items-center gap-2 shrink-0">
         {canManage && (
           <>

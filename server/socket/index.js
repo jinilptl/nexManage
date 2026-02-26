@@ -26,13 +26,11 @@ const initSocket = (httpServer) => {
 
     socket.emit("server-message", "Hello from server 👋");
 
-    socket.on("client-message", (data) => {
-    });
+    socket.on("client-message", (data) => {});
 
     registerRoomHandlers(io, socket);
 
-    socket.on("disconnect", () => {
-    });
+    socket.on("disconnect", () => {});
   });
 
   return io;

@@ -26,16 +26,17 @@ export default function ConfirmModal({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      {/* BACKDROP */}
       <div
         className={`absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter ${loading ? "" : "cursor-pointer"}`}
         onClick={!loading ? onCancel : undefined}
         aria-hidden="true"
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-4 sm:p-6 modal-content-enter">
-        <h3 id="modal-title" className="text-lg font-semibold text-gray-900 mb-2">
+        <h3
+          id="modal-title"
+          className="text-lg font-semibold text-gray-900 mb-2"
+        >
           {title}
         </h3>
 

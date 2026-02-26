@@ -2,9 +2,6 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { Team } from "../../models/team.models.js";
 
-/**
- * Allows team creator or admin/super_admin to change team status (e.g. archive).
- */
 const canChangeTeamStatus = asyncHandler(async (req, res, next) => {
   const userId = req.user?._id;
   const teamId = req.params.teamId || req.params.id;
@@ -28,10 +25,7 @@ const canChangeTeamStatus = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  throw new ApiError(
-    403,
-    "Only team creator or admin can change team status"
-  );
+  throw new ApiError(403, "Only team creator or admin can change team status");
 });
 
 export { canChangeTeamStatus };

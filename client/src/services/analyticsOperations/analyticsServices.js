@@ -12,11 +12,14 @@ export const fetchDashboardAnalytics = async (token) => {
 };
 
 export const fetchMainDashboard = async (token) => {
-  const response = await axiosInstance.get(ANALYTICS_END_POINTS.MAIN_DASHBOARD, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await axiosInstance.get(
+    ANALYTICS_END_POINTS.MAIN_DASHBOARD,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
     },
-    withCredentials: true,
-  });
+  );
   return response.data;
 };

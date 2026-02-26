@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, X, Search, User, Shield, ShieldCheck } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  Search,
+  User,
+  Shield,
+  ShieldCheck,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllUsers,
@@ -87,15 +96,15 @@ export default function Members() {
     setFormData(
       member
         ? {
-          name: member.name,
-          email: member.email,
-          role: member.role,
-        }
+            name: member.name,
+            email: member.email,
+            role: member.role,
+          }
         : {
-          name: "",
-          email: "",
-          role: "member",
-        },
+            name: "",
+            email: "",
+            role: "member",
+          },
     );
     setIsModalOpen(true);
   };
@@ -105,11 +114,10 @@ export default function Members() {
     setEditingMember(null);
   };
 
-  // Filter members based on search
   const filteredMembers = members?.filter(
     (member) =>
       member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      member.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const getRoleBadgeColor = (role) => {
@@ -144,11 +152,12 @@ export default function Members() {
 
   return (
     <div className="pt-5 px-4 md:px-2 pb-10 space-y-6">
-      {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h2 className="text-gray-900  text-2xl font-bold">Team Members</h2>
-          <p className="text-gray-600">Manage your team, permissions, and roles.</p>
+          <p className="text-gray-600">
+            Manage your team, permissions, and roles.
+          </p>
         </div>
 
         <button
@@ -160,9 +169,7 @@ export default function Members() {
         </button>
       </div>
 
-      {/* Main Content Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Toolbar */}
         <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
           <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -175,11 +182,11 @@ export default function Members() {
             />
           </div>
           <div className="text-sm text-gray-500 font-medium">
-            Total Members: <span className="text-gray-900">{members?.length || 0}</span>
+            Total Members:{" "}
+            <span className="text-gray-900">{members?.length || 0}</span>
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -206,9 +213,13 @@ export default function Members() {
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
                         <User className="w-6 h-6 text-gray-400" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900">No members found</h3>
+                      <h3 className="text-lg font-medium text-gray-900">
+                        No members found
+                      </h3>
                       <p className="text-gray-500 text-sm max-w-xs mx-auto">
-                        {searchTerm ? "Try adjusting your search terms." : "Get started by inviting a new member to your team."}
+                        {searchTerm
+                          ? "Try adjusting your search terms."
+                          : "Get started by inviting a new member to your team."}
                       </p>
                     </div>
                   </td>
@@ -221,16 +232,21 @@ export default function Members() {
                   >
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <Avatar user={member} className="w-10 h-10 ring-2 ring-white shadow-sm" />
+                        <Avatar
+                          user={member}
+                          className="w-10 h-10 ring-2 ring-white shadow-sm"
+                        />
                         <div>
-                          <p className="font-medium text-gray-900 leading-tight">{member.name}</p>
+                          <p className="font-medium text-gray-900 leading-tight">
+                            {member.name}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(
-                          member.role
+                          member.role,
                         )} capitalize`}
                       >
                         {getRoleIcon(member.role)}
@@ -238,7 +254,9 @@ export default function Members() {
                       </span>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-gray-600 text-sm">{member.email}</span>
+                      <span className="text-gray-600 text-sm">
+                        {member.email}
+                      </span>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-100  transition-opacity">
@@ -266,7 +284,6 @@ export default function Members() {
         </div>
       </div>
 
-      {/* ================= EDIT MODAL ================= */}
       {isModalOpen && (
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
           <div
@@ -288,7 +305,9 @@ export default function Members() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
@@ -302,7 +321,9 @@ export default function Members() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   placeholder="e.g. john@example.com"
@@ -316,7 +337,9 @@ export default function Members() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Role
+                </label>
                 <div className="relative">
                   <select
                     value={formData.role}
@@ -327,10 +350,21 @@ export default function Members() {
                   >
                     <option value="member">Member</option>
                     <option value="admin">Admin</option>
-                    {/* <option value="superadmin">Super Admin</option> */}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      ></path>
+                    </svg>
                   </div>
                 </div>
               </div>
@@ -355,7 +389,6 @@ export default function Members() {
         </div>
       )}
 
-      {/* ================= DELETE CONFIRM MODAL ================= */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
           <div
@@ -370,7 +403,8 @@ export default function Members() {
               Delete User
             </h3>
             <p className="text-sm text-gray-500 text-center mb-6">
-              Are you sure you want to delete this user? This action cannot be undone and will remove their access immediately.
+              Are you sure you want to delete this user? This action cannot be
+              undone and will remove their access immediately.
             </p>
 
             <div className="flex gap-3">

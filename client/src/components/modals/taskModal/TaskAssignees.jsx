@@ -12,8 +12,6 @@ function TaskAssignees({
   isSaving = false,
   canManage = false,
 }) {
-
-  // Close on ESC key
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -31,8 +29,7 @@ function TaskAssignees({
   }, [isAssignMode, setIsAssignMode]);
 
   const openEditor = () => {
-    const safeIds =
-      assignees?.map((a) => a?._id).filter(Boolean) || [];
+    const safeIds = assignees?.map((a) => a?._id).filter(Boolean) || [];
     setSelectedAssignees(safeIds);
     setIsAssignMode(true);
   };
@@ -43,7 +40,7 @@ function TaskAssignees({
     setSelectedAssignees((prev = []) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
@@ -54,7 +51,6 @@ function TaskAssignees({
 
   return (
     <section className="mb-6 relative">
-      {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h4 className="text-xs font-semibold uppercase text-gray-500 tracking-wider">
           Assignees
@@ -71,7 +67,6 @@ function TaskAssignees({
         )}
       </div>
 
-      {/* ================= VIEW MODE ================= */}
       {!isAssignMode ? (
         <div className="flex flex-wrap gap-2">
           {Array.isArray(assignees) && assignees.length > 0 ? (
@@ -96,19 +91,13 @@ function TaskAssignees({
           )}
         </div>
       ) : (
-        /* ================= EDIT MODE ================= */
         <div className="relative z-20">
-
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-10 bg-black/10 backdrop-blur-[1px]"
             onClick={cancelEdit}
           />
 
-          {/* Modal */}
           <div className="relative z-20 w-full bg-white rounded-xl shadow-xl border border-gray-200 ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200">
-
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
               <h3 className="text-sm font-semibold text-gray-900">
                 Manage Assignees
@@ -121,33 +110,36 @@ function TaskAssignees({
               </button>
             </div>
 
-            {/* Members List */}
             <div className="max-h-64 overflow-y-auto p-2">
               {Array.isArray(projectMembers) && projectMembers.length > 0 ? (
                 <div className="space-y-1">
                   {projectMembers
-                    .filter((member) => member.roleInProject !== "observer" && !member?.user?.isTempMember)
+                    .filter(
+                      (member) =>
+                        member.roleInProject !== "observer" &&
+                        !member?.user?.isTempMember,
+                    )
                     .map((member) => {
                       const userId = member?.user?._id;
                       if (!userId) return null;
 
-                      const isSelected =
-                        selectedAssignees?.includes(userId);
+                      const isSelected = selectedAssignees?.includes(userId);
 
                       return (
                         <label
                           key={userId}
-                          className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all border ${isSelected
+                          className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all border ${
+                            isSelected
                               ? "bg-blue-50 border-blue-100"
                               : "hover:bg-gray-50 border-transparent"
-                            }`}
+                          }`}
                         >
-                          {/* Custom Checkbox */}
                           <div
-                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${isSelected
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
+                              isSelected
                                 ? "bg-blue-600 border-blue-600"
                                 : "border-gray-300 bg-white"
-                              }`}
+                            }`}
                           >
                             {isSelected && (
                               <Plus
@@ -157,7 +149,6 @@ function TaskAssignees({
                             )}
                           </div>
 
-                          {/* Hidden real checkbox */}
                           <input
                             type="checkbox"
                             className="hidden"
@@ -165,12 +156,10 @@ function TaskAssignees({
                             onChange={() => toggleAssignee(userId)}
                           />
 
-                          {/* Avatar */}
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 ring-2 ring-white">
                             {member?.user?.name?.[0]?.toUpperCase() || "U"}
                           </div>
 
-                          {/* Info */}
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-gray-900 truncate">
                               {member?.user?.name || "Unknown"}
@@ -190,7 +179,6 @@ function TaskAssignees({
               )}
             </div>
 
-            {/* Footer */}
             <div className="p-3 border-t border-gray-100 bg-gray-50/50 rounded-b-xl flex items-center justify-end gap-2">
               <button
                 onClick={cancelEdit}

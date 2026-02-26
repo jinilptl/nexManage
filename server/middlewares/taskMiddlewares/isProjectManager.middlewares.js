@@ -12,7 +12,7 @@ const isProjectManager = asyncHandler(async (req, res, next) => {
 
   const project = req.project || (await Project.findById(projectId));
 
-  if (req.user.role === 'admin' || req.user.role === 'super_admin') {
+  if (req.user.role === "admin" || req.user.role === "super_admin") {
     req.project = project;
     return next();
   }

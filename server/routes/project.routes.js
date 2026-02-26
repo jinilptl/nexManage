@@ -46,11 +46,23 @@ projectRouter
 
 projectRouter
   .route("/update-project-status/:projectId")
-  .post(verifyToken, isProjectMember, isNotObserver, canChangeProjectStatus, updateProjectStatus);
+  .post(
+    verifyToken,
+    isProjectMember,
+    isNotObserver,
+    canChangeProjectStatus,
+    updateProjectStatus,
+  );
 
 projectRouter
   .route("/:projectId/status")
-  .patch(verifyToken, isProjectMember, isNotObserver, canChangeProjectStatus, updateProjectStatus);
+  .patch(
+    verifyToken,
+    isProjectMember,
+    isNotObserver,
+    canChangeProjectStatus,
+    updateProjectStatus,
+  );
 
 projectRouter
   .route("/:projectId/status")

@@ -3,7 +3,7 @@ const project_invite_email_template = (
   email,
   actionLink,
   isExistingUser = false,
-  roleName = "Observer"
+  roleName = "Observer",
 ) => {
   return `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; padding: 30px; color: #333;">
@@ -24,7 +24,9 @@ const project_invite_email_template = (
           You've been invited to join the project <strong>${projectName}</strong> on <strong>NexManage</strong> as a <strong>${roleName}</strong>.
         </p>
 
-        ${!isExistingUser ? `
+        ${
+          !isExistingUser
+            ? `
         <p style="line-height: 1.6; margin: 15px 0; font-size: 15px; color: #555;">
           A temporary account has been created for you. Please set your password to activate your account:
         </p>
@@ -40,7 +42,8 @@ const project_invite_email_template = (
         <p style="line-height: 1.6; margin: 8px 0; font-size: 14px; color: #888;">
           This link will expire in <strong>24 hours</strong>. If the link expires, ask your admin to resend the invitation.
         </p>
-        ` : `
+        `
+            : `
         <p style="line-height: 1.6; margin: 15px 0; font-size: 15px; color: #555;">
           Since you already have a NexManage account, you can access the project immediately by logging in.
         </p>
@@ -52,7 +55,8 @@ const project_invite_email_template = (
             Login to NexManage
           </a>
         </div>
-        `}
+        `
+        }
 
         <div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 12px 16px; border-radius: 4px; margin: 20px 0;">
           <p style="margin: 0; font-size: 13px; color: #795548;">
@@ -77,4 +81,3 @@ const project_invite_email_template = (
 };
 
 export { project_invite_email_template };
-

@@ -4,17 +4,19 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Store } from "./Redux_Config/store/Store.js";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={Store}>
     <BrowserRouter>
       <App />
-      <Toaster  toastOptions={{
+      <Toaster
+        toastOptions={{
           style: {
             zIndex: 9999999,
           },
-        }}/>
+        }}
+      />
     </BrowserRouter>
-  </Provider>
+  </Provider>,
 );

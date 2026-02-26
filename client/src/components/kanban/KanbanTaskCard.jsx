@@ -32,7 +32,6 @@ export default function KanbanTaskCard({
   const ref = useRef(null);
   const [openTaskDetailesModal, setOpenTaskDetailesModal] = useState(false);
 
-  // SAME COLUMN REORDER
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
     canDrop: () => !isObserver,
@@ -47,7 +46,6 @@ export default function KanbanTaskCard({
     },
   });
 
-  // DRAG logic
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.TASK,
     canDrag: () => !isObserver,
@@ -81,7 +79,8 @@ export default function KanbanTaskCard({
           dispatch(setSelectedTask(task));
         }}
         className={`
-          group relative bg-white rounded-xl shadow-md border-t-4 ${cardConfig.border
+          group relative bg-white rounded-xl shadow-md border-t-4 ${
+            cardConfig.border
           }
           p-4 mb-3 cursor-pointer 
           transition-all duration-300 transform
@@ -138,7 +137,6 @@ export default function KanbanTaskCard({
         </div>
       </div>
 
-      {/* ===== TASK DETAILS MODAL (ONLY ADDITION) ===== */}
       {openTaskDetailesModal && (
         <TaskDetailModal
           task={task}

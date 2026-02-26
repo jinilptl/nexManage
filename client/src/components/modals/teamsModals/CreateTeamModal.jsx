@@ -57,15 +57,12 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => !modalLoading && setOpen(false)}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
-        {/* CLOSE BUTTON */}
         <button
           type="button"
           disabled={modalLoading}
@@ -77,17 +74,13 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        {/* HEADER */}
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {mode === "update" ? "Update Team" : "Create New Team"}
         </h2>
 
-        {/* SMALL MODAL LOADER */}
         {modalLoading && <ModalSmallLoader />}
 
-        {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* TEAM NAME */}
           <div>
             <label className="text-sm text-gray-700">Team Name</label>
             <input
@@ -102,7 +95,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
             />
           </div>
 
-          {/* DESCRIPTION */}
           <div>
             <label className="text-sm text-gray-700">Description</label>
             <textarea
@@ -117,7 +109,6 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
             />
           </div>
 
-          {/* FOOTER BUTTONS */}
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"

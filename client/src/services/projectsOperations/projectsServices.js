@@ -52,8 +52,6 @@ function GenerateErrorMessage(error) {
   return message;
 }
 
-// CREATE PROJECT
-
 export const createProjectService = (projectData, token, onClose) => {
   return async (dispatch, getState) => {
     dispatch(setCreateProjectLoading(true));
@@ -79,8 +77,6 @@ export const createProjectService = (projectData, token, onClose) => {
     }
   };
 };
-
-// fetch project service (optional status filter: ACTIVE | COMPLETED | ON_HOLD | ARCHIVED)
 
 export const fetchAllProjectsService = (token, role, status = "") => {
   return async (dispatch) => {
@@ -116,8 +112,6 @@ export const fetchAllProjectsService = (token, role, status = "") => {
   };
 };
 
-//fetch single project service
-
 export const fetchSingleProjectService = (projectId, token) => {
   return async (dispatch) => {
     dispatch(setSelectedProjectLoading(true));
@@ -138,8 +132,6 @@ export const fetchSingleProjectService = (projectId, token) => {
     }
   };
 };
-
-// UPDATE PROJECT
 
 export const updateProjectService = (
   projectId,
@@ -180,8 +172,6 @@ export const updateProjectService = (
   };
 };
 
-// DELETE PROJECT
-
 export const deleteProjectService = (projectId, token, onClose) => {
   return async (dispatch, getState) => {
     dispatch(setDeleteProjectLoading(true));
@@ -217,7 +207,6 @@ export const deleteProjectService = (projectId, token, onClose) => {
   };
 };
 
-// ARCHIVE / UNARCHIVE PROJECT (PATCH API, then refetch list)
 export const archiveProjectService = (
   projectId,
   status,
@@ -261,8 +250,6 @@ export const archiveProjectService = (
   };
 };
 
-//ADD TASK STATUSES INTO PROJECT FOR ADD COLUMN
-
 export const addTaskStatusesIntoProjectService = (
   formData,
   projectId,
@@ -293,10 +280,17 @@ export const addTaskStatusesIntoProjectService = (
   };
 };
 
-export const deleteTaskStatusFromProjectService = (projectId, statusId, token) => {
+export const deleteTaskStatusFromProjectService = (
+  projectId,
+  statusId,
+  token,
+) => {
   return async (dispatch, getState) => {
     try {
-      const endpoint = DELETE_TASK_STATUSES.replace(":projectId", projectId).replace(":statusId", statusId);
+      const endpoint = DELETE_TASK_STATUSES.replace(
+        ":projectId",
+        projectId,
+      ).replace(":statusId", statusId);
       const response = await axiosInstance.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -307,19 +301,24 @@ export const deleteTaskStatusFromProjectService = (projectId, statusId, token) =
         const prevProject = getState().projects.selectedProject.data;
         if (prevProject) {
           const updatedStatuses = prevProject.taskStatuses.filter(
-            (s) => s._id !== statusId
+            (s) => s._id !== statusId,
           );
           dispatch(
             setSelectedProjectData({
               ...prevProject,
               taskStatuses: updatedStatuses,
-            })
+            }),
           );
         }
 
         const todoStatusId = response.data.data?.todoStatusId;
         if (todoStatusId) {
-          dispatch(moveAllTasksToStatus({ fromStatusId: statusId, toStatusId: todoStatusId }));
+          dispatch(
+            moveAllTasksToStatus({
+              fromStatusId: statusId,
+              toStatusId: todoStatusId,
+            }),
+          );
         }
       }
     } catch (error) {
@@ -327,8 +326,6 @@ export const deleteTaskStatusFromProjectService = (projectId, statusId, token) =
     }
   };
 };
-
-// SYNC PROJECT MEMBERS
 
 export const syncProjectMembersService = (projectId, token) => {
   return async (dispatch) => {
@@ -351,8 +348,6 @@ export const syncProjectMembersService = (projectId, token) => {
     }
   };
 };
-
-//get all member
 
 export const fetchProjectMembersService = (projectId, token) => {
   return async (dispatch, getState) => {
@@ -391,7 +386,6 @@ export const fetchProjectMembersService = (projectId, token) => {
   };
 };
 
-//  ADD MEMBER TO PROJECT
 export const addProjectMemberService = (
   projectId,
   memberData,
@@ -439,8 +433,6 @@ export const addProjectMemberService = (
   };
 };
 
-//update member
-
 export const updateProjectMemberService = (
   projectId,
   memberId,
@@ -476,8 +468,6 @@ export const updateProjectMemberService = (
     }
   };
 };
-
-//remove member(only status changing )
 
 export const removeProjectMemberService = (projectId, memberId, token) => {
   return async (dispatch, getState) => {

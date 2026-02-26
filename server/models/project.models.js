@@ -25,7 +25,6 @@ const projectMembersSchema = new mongoose.Schema(
       default: "contributor",
     },
 
-    // null = directly added (NOT from any team)
     addedFromTeam: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
@@ -48,7 +47,7 @@ const projectMembersSchema = new mongoose.Schema(
       default: ["To Do", "In Progress", "Review", "Done"],
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // SUB-SCHEMA: taskStatus (for dynamic and dynamic identification)
@@ -56,13 +55,13 @@ const projectMembersSchema = new mongoose.Schema(
 const taskStatusSchema = new mongoose.Schema(
   {
     key: {
-      type: String, // todo, in_progress
+      type: String,
       required: true,
       trim: true,
     },
 
     label: {
-      type: String, // To Do, In Progress
+      type: String,
       required: true,
       trim: true,
     },
@@ -78,10 +77,9 @@ const taskStatusSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      // required: true,
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 // MAIN PROJECT SCHEMA
@@ -119,7 +117,6 @@ const projectSchema = new mongoose.Schema(
       },
     ],
 
-    // project manager (optional but usually creator)
     projectManager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -139,10 +136,10 @@ const projectSchema = new mongoose.Schema(
 
     taskStatuses: {
       type: [taskStatusSchema],
-      default: undefined
+      default: undefined,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Project = mongoose.model("Project", projectSchema);

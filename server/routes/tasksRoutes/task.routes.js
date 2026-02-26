@@ -20,8 +20,6 @@ import {
 
 const taskRouter = express.Router();
 
-// task routes
-
 // Create Task
 taskRouter
   .route("/create-task/:projectId")

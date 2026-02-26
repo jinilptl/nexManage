@@ -12,7 +12,11 @@ import {
   getSingleTasksService,
   updateTaskService,
 } from "../../services/taskOperations/taskServices";
-import { addProjectMemberService, removeProjectMemberService, activeProjectMemberService } from "../../services/projectsOperations/projectsServices";
+import {
+  addProjectMemberService,
+  removeProjectMemberService,
+  activeProjectMemberService,
+} from "../../services/projectsOperations/projectsServices";
 import { Link, useParams } from "react-router-dom";
 import { fetchSingleProjectService } from "../../services/projectsOperations/projectsServices";
 import { connectWs } from "../../sockets/socket";
@@ -37,7 +41,9 @@ export default function ProjectDetails() {
   const [showObserversList, setShowObserversList] = useState(false);
   const [observerToRemove, setObserverToRemove] = useState(null);
   const projectData = useSelector((state) => state.projects.selectedProject);
-  const addMemberLoading = useSelector((state) => state.projects.projectMembers.addMemberLoading);
+  const addMemberLoading = useSelector(
+    (state) => state.projects.projectMembers.addMemberLoading,
+  );
   const taskList = useSelector((state) => state.tasks.list);
   const { token, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -48,7 +54,7 @@ export default function ProjectDetails() {
     if (user.isTempMember) return true;
     const members = projectData.data.projectMembers || [];
     const currentMember = members.find(
-      (m) => (m.user?._id || m.user) === user._id
+      (m) => (m.user?._id || m.user) === user._id,
     );
     return currentMember?.roleInProject === "observer";
   }, [user, projectData]);
@@ -60,7 +66,7 @@ export default function ProjectDetails() {
     if (pm && (pm.toString() === user._id || pm._id === user._id)) return true;
     const members = projectData.data.projectMembers || [];
     const currentMember = members.find(
-      (m) => (m.user?._id || m.user) === user._id
+      (m) => (m.user?._id || m.user) === user._id,
     );
     return currentMember?.roleInProject === "project-manager";
   }, [user, projectData]);
@@ -68,11 +74,12 @@ export default function ProjectDetails() {
   const observers = useMemo(() => {
     if (!projectData?.data?.projectMembers) return [];
     return projectData.data.projectMembers.filter(
-      (m) => m.roleInProject === "observer" && m.status === "active" && !m.user?.isTempMember
+      (m) =>
+        m.roleInProject === "observer" &&
+        m.status === "active" &&
+        !m.user?.isTempMember,
     );
   }, [projectData]);
-
-
 
   const reorderTaskInColumn = (columnId, fromIndex, toIndex) => {
     setTasks((prev) => {
@@ -177,7 +184,7 @@ export default function ProjectDetails() {
 
   const onInviteSubmit = (formData) => {
     dispatch(
-      addProjectMemberService(projectId, formData, token, setInviteModalOpen)
+      addProjectMemberService(projectId, formData, token, setInviteModalOpen),
     );
   };
 
@@ -191,11 +198,12 @@ export default function ProjectDetails() {
 
   return (
     <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
-
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Breadcrumb */}
         <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 mx-6 rounded-xl border border-gray-100 shadow-sm w-fit">
-          <Link to="/dashboard/projects" className="hover:text-blue-600 transition-colors">
+          <Link
+            to="/dashboard/projects"
+            className="hover:text-blue-600 transition-colors"
+          >
             Projects
           </Link>
           <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
@@ -275,7 +283,9 @@ export default function ProjectDetails() {
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full">
                   Observer
                 </span>
-                {(UserRole === "admin" || UserRole === "super_admin" || isProjectManagerOrAdmin) && (
+                {(UserRole === "admin" ||
+                  UserRole === "super_admin" ||
+                  isProjectManagerOrAdmin) && (
                   <button
                     onClick={() => setObserverToRemove(obs)}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer"
@@ -287,7 +297,6 @@ export default function ProjectDetails() {
               </div>
             ))}
           </div>
-
         </div>
       )}
 
@@ -342,8 +351,12 @@ export default function ProjectDetails() {
                   <AlertTriangle className="w-5 h-5 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-gray-900">Remove Observer</h3>
-                  <p className="text-xs text-gray-500">This action cannot be undone</p>
+                  <h3 className="text-base font-semibold text-gray-900">
+                    Remove Observer
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    This action cannot be undone
+                  </p>
                 </div>
               </div>
 
@@ -364,7 +377,13 @@ export default function ProjectDetails() {
                 </button>
                 <button
                   onClick={() => {
-                    dispatch(removeProjectMemberService(projectId, observerToRemove.user?._id, token));
+                    dispatch(
+                      removeProjectMemberService(
+                        projectId,
+                        observerToRemove.user?._id,
+                        token,
+                      ),
+                    );
                     setObserverToRemove(null);
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-sm cursor-pointer"

@@ -30,7 +30,7 @@ const taskStatusSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const TaskStatus = mongoose.model("TaskStatus", taskStatusSchema);

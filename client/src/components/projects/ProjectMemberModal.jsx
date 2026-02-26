@@ -51,7 +51,7 @@ export default function ProjectMemberModal({
 
   const availableUsers =
     allUsers?.filter(
-      (u) => !projectMembers.some((pm) => pm.user?._id === u._id)
+      (u) => !projectMembers.some((pm) => pm.user?._id === u._id),
     ) || [];
 
   if (!open) return null;
@@ -95,15 +95,12 @@ export default function ProjectMemberModal({
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={() => !isBusy && onClose()}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter">
-        {/* Close */}
         <button
           className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={onClose}
@@ -112,7 +109,6 @@ export default function ProjectMemberModal({
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        {/* Header */}
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {mode === "add" ? "Add Member" : "Update Member"}
         </h2>
@@ -139,7 +135,6 @@ export default function ProjectMemberModal({
             </div>
           )}
 
-          {/* Email (disabled in edit) */}
           {mode === "edit" && (
             <div>
               <label className="text-sm font-medium">Email</label>
@@ -151,7 +146,6 @@ export default function ProjectMemberModal({
             </div>
           )}
 
-          {/* Role */}
           <div>
             <label className="text-sm font-medium flex items-center gap-1">
               <UserCog className="w-4 h-4" /> Role
@@ -171,7 +165,6 @@ export default function ProjectMemberModal({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="mt-6 flex justify-end gap-3">
           <button
             disabled={isBusy}

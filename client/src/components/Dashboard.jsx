@@ -19,7 +19,7 @@ import NexManageLoader from "./Lodders/NexManageLoader";
 
 export default function Dashboard() {
   const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector((state) => state.auth.token);
   const isAdmin = user?.role === "super_admin" || user?.role === "admin";
   const UserRole = user.role;
   const dispatch = useDispatch();
@@ -114,7 +114,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Project Status Breakdown */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
           <div className="p-2 bg-blue-50 rounded-lg">
@@ -186,7 +185,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Recent Activity
@@ -195,7 +193,6 @@ export default function Dashboard() {
             Latest updates across your projects
           </p>
 
-          {/* SCROLL CONTAINER */}
           <div className="space-y-4 max-h-[246px] overflow-y-auto pr-2">
             {data?.recentActivity?.map((a, i) => (
               <div key={i} className="flex gap-3">
@@ -206,7 +203,7 @@ export default function Dashboard() {
                     <span className="font-medium">{a.updatedBy?.name}</span>{" "}
                     <span className="text-gray-600">
                       {new Date(a.createdAt).getTime() ===
-                        new Date(a.updatedAt).getTime()
+                      new Date(a.updatedAt).getTime()
                         ? "created task"
                         : "updated task"}
                     </span>{" "}
@@ -223,9 +220,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* -------------------- DEADLINES + PROGRESS -------------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* -------- Upcoming Deadlines -------- */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Upcoming Deadlines
@@ -246,8 +241,9 @@ export default function Dashboard() {
             return (
               <div
                 key={i}
-                className={`p-3 rounded-lg mb-2 ${isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
-                  }`}
+                className={`p-3 rounded-lg mb-2 ${
+                  isHigh ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                }`}
               >
                 <div className="flex justify-between items-start">
                   <div>
@@ -272,7 +268,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* -------- Project Progress -------- */}
         <ProjectProgress
           projects={visibleProjects}
           gridClassName="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-2"

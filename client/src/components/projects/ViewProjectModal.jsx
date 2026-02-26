@@ -178,15 +178,12 @@ export default function ViewProjectModal({ open, onClose, project }) {
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
         onClick={onClose}
       />
 
-      {/* MODAL BOX */}
       <div className="relative bg-white w-full max-w-3xl rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -194,7 +191,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        {/* HEADER */}
         <h2 className="text-xl font-bold text-gray-900 mb-1">
           {project.projectName}
         </h2>
@@ -202,7 +198,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
           {project.description || "No description provided"}
         </p>
 
-        {/* STATUS + CHANGE STATUS */}
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <span
             className={`px-3 py-1 text-xs rounded-md ${getStatusColor(
@@ -248,7 +243,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
           )}
         </div>
 
-        {/* ACTIONS */}
         {UserRole !== "member" && (
           <div className="mt-5 flex flex-wrap gap-2">
             <button
@@ -304,9 +298,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
           </div>
         )}
 
-        {/* GRID INFO */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-          {/* CREATED AT */}
           <div className="flex items-start gap-3">
             <Calendar className="w-6 h-6 text-gray-500" />
             <div>
@@ -317,7 +309,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </div>
           </div>
 
-          {/* PROJECT MANAGER */}
           <div className="flex items-start gap-3">
             <Users className="w-6 h-6 text-gray-500" />
             <div>
@@ -328,7 +319,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </div>
           </div>
 
-          {/* MEMBERS COUNT */}
           <div className="flex items-start gap-3">
             <Users className="w-6 h-6 text-gray-500" />
             <div>
@@ -339,7 +329,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
             </div>
           </div>
 
-          {/* TEAMS COUNT */}
           <div className="flex items-start gap-3">
             <FolderKanban className="w-6 h-6 text-gray-500" />
             <div>
@@ -352,14 +341,12 @@ export default function ViewProjectModal({ open, onClose, project }) {
           </div>
         </div>
 
-        {/* MEMBERS LIST */}
         <div className="mt-8">
           <h3 className="text-lg font-semibold">Members</h3>
           <p className="text-gray-600 text-sm mb-3">
             People working on this project
           </p>
 
-          {/* Loader for Members */}
           {membersLoading ? (
             <ModalSmallLoader />
           ) : allProjectMembers?.length === 0 ? (
@@ -373,7 +360,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
                     key={index}
                     className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
                   >
-                    {/* LEFT Section */}
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
                         {member.user?.name?.[0]?.toUpperCase()}
@@ -388,9 +374,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       </div>
                     </div>
 
-                    {/* ACTIONS */}
                     <div className="flex items-center gap-2">
-                      {/* EDIT ROLE */}
                       {UserRole !== "member" && member.status === "active" && (
                         <button
                           onClick={() => {
@@ -404,7 +388,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
                         </button>
                       )}
 
-                      {/* REMOVE / ACTIVATE BUTTON WITH LOADER */}
                       {UserRole !== "member" && (
                         <button
                           onClick={() =>
@@ -426,10 +409,11 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       )}
 
                       <span
-                        className={`text-xs px-2 py-1 rounded ${member.status === "active"
+                        className={`text-xs px-2 py-1 rounded ${
+                          member.status === "active"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                          }`}
+                        }`}
                       >
                         {member.status}
                       </span>
@@ -441,7 +425,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
           )}
         </div>
 
-        {/* CLOSE BUTTON */}
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
@@ -452,7 +435,6 @@ export default function ViewProjectModal({ open, onClose, project }) {
         </div>
       </div>
 
-      {/* CHILD MODALS */}
       {addTeamModal && (
         <AddTeamToProjectModal
           open={addTeamModal}

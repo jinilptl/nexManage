@@ -19,7 +19,6 @@ export default function TaskAttachments({ task, canManage }) {
     (s) => s.tasks.selectedTaskAttachments,
   );
 
-  // States for modals
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedAttachment, setSelectedAttachment] = useState(null);
   const [attachmentToDelete, setAttachmentToDelete] = useState(null);
@@ -65,9 +64,6 @@ export default function TaskAttachments({ task, canManage }) {
     const projId =
       typeof task.project === "object" ? task.project._id : task.project;
 
-    // Use the resource_type from the attachment object, or default to "raw"
-    // Cloudinary usually returns "image", "video", or "raw".
-    // If it's "auto", we should probably try "raw" or map it, but usually the stored resource_type is correct.
     const resourceType = attachmentToDelete.resource_type || "raw";
 
     await dispatch(
@@ -104,7 +100,9 @@ export default function TaskAttachments({ task, canManage }) {
 
         {canManage && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 transition-all border border-blue-100 group">
-            <span className="group-hover:scale-110 transition-transform">+</span>{" "}
+            <span className="group-hover:scale-110 transition-transform">
+              +
+            </span>{" "}
             Add File
             <input type="file" hidden onChange={handleFileUpload} />
           </label>
@@ -187,7 +185,6 @@ export default function TaskAttachments({ task, canManage }) {
         ))}
       </div>
 
-      {/* Reusable Modals */}
       <AttachmentPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}

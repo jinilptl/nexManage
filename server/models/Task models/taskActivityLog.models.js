@@ -24,12 +24,12 @@ const taskActivityLogSchema = new mongoose.Schema(
       default: {},
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const TaskActivityLog = mongoose.model(
   "TaskActivityLog",
-  taskActivityLogSchema
+  taskActivityLogSchema,
 );
 
 export { TaskActivityLog };

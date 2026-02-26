@@ -1,5 +1,3 @@
-import React from "react";
-
 const TaskMetaInfo = ({ attachments, comments }) => (
   <div className="flex items-center gap-3">
     {attachments > 0 && (

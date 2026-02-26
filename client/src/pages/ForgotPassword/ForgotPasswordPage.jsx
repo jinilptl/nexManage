@@ -23,7 +23,6 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 space-y-6">
-        {/* NexManage Icon + Name */}
         <div className="flex flex-col items-center gap-2 mb-2">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
             <FolderKanban className="w-7 h-7 text-white" />
@@ -31,7 +30,6 @@ export default function ForgotPasswordPage() {
           <span className="text-xl font-semibold text-gray-900">NexManage</span>
         </div>
 
-        {/* Heading */}
         <div className="text-center">
           <h2 className="text-2xl font-semibold">Forgot Password</h2>
           <p className="text-gray-500 text-sm mt-1">
@@ -39,9 +37,7 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Email */}
           <div>
             <label className="text-sm font-medium block mb-1">Email</label>
             <input
@@ -55,7 +51,6 @@ export default function ForgotPasswordPage() {
             />
           </div>
 
-          {/* Button */}
           <button
             type="submit"
             className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}

@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Lock, KeyRound, ShieldCheck, Smartphone, Bell, AlertTriangle } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  KeyRound,
+  ShieldCheck,
+  Smartphone,
+  Bell,
+  AlertTriangle,
+} from "lucide-react";
 import SettingsCard from "./SettingsCard";
 import SettingToggle from "./SettingToggle";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +18,6 @@ import { updatePassword } from "../../services/usersOperations/usersServices";
 export default function SecuritySettings() {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
-
 
   const [twoFA, setTwoFA] = useState(false);
   const [loginAlerts, setLoginAlerts] = useState(true);
@@ -142,7 +150,10 @@ export default function SecuritySettings() {
       >
         <div className="border border-blue-100 bg-blue-50/50 rounded-lg p-4 mb-6 flex gap-3 text-blue-800">
           <AlertTriangle size={20} className="shrink-0 mt-0.5" />
-          <p className="text-sm">Never share your password with anyone. Use a strong password containing letters, numbers, and symbols.</p>
+          <p className="text-sm">
+            Never share your password with anyone. Use a strong password
+            containing letters, numbers, and symbols.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -163,9 +174,10 @@ export default function SecuritySettings() {
                 disabled={loading}
                 placeholder="Enter current password"
                 className={`w-full bg-white border rounded-xl pl-10 pr-10 py-2.5 text-sm outline-none transition-all duration-200
-                  ${errors.currentPassword
-                    ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                    : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                  ${
+                    errors.currentPassword
+                      ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                   }`}
               />
               <button
@@ -178,7 +190,11 @@ export default function SecuritySettings() {
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword.currentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword.currentPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
             {errors.currentPassword && (
@@ -205,9 +221,10 @@ export default function SecuritySettings() {
                 disabled={loading}
                 placeholder="Enter new password"
                 className={`w-full bg-white border rounded-xl pl-10 pr-10 py-2.5 text-sm outline-none transition-all duration-200
-                  ${errors.newPassword
-                    ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                    : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                  ${
+                    errors.newPassword
+                      ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                   }`}
               />
               <button
@@ -220,7 +237,11 @@ export default function SecuritySettings() {
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword.newPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
             {errors.newPassword && (

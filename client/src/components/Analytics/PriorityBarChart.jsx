@@ -29,7 +29,7 @@ export default function PriorityBarChart({ priorityData }) {
             <Bar dataKey="count" name="Tasks">
               {priorityData?.map((entry, index) => {
                 const name = (entry.name || "").toLowerCase();
-                let color = "#3B82F6"; // Default
+                let color = "#3B82F6"; 
                 if (name.includes("critical")) color = "#D32F2F";
                 else if (name.includes("high")) color = "#F57C00";
                 else if (name.includes("medium")) color = "#FBC02D";

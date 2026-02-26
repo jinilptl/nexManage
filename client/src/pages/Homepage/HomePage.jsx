@@ -36,7 +36,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex">
-      {/* Left Side - Branding (unchanged content) */}
       <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-blue-600 to-purple-600 p-12 flex-col justify-between text-white">
         <div>
           <div className="flex items-center gap-3 mb-8">
@@ -137,7 +136,6 @@ const HomePage = () => {
         </p>
       </div>
 
-      {/* Right Side Login */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md shadow-xl bg-white rounded-xl p-6 space-y-6">
           <div className="flex justify-center mb-4 lg:hidden">
@@ -154,7 +152,6 @@ const HomePage = () => {
           </div>
 
           <form className="space-y-4" onSubmit={submitHandler}>
-            {/* Email */}
             <div>
               <label className="text-sm font-medium block mb-1">Email</label>
               <input
@@ -169,7 +166,6 @@ const HomePage = () => {
               />
             </div>
 
-            {/* Password */}
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="text-sm font-medium">Password</label>
@@ -214,7 +210,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Remember me */}
             <div className="flex items-center gap-2 text-sm">
               <input
                 id="remember-me"
@@ -228,7 +223,6 @@ const HomePage = () => {
               </label>
             </div>
 
-            {/* Button */}
             <button
               type="submit"
               className={`w-full h-12 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-70" : ""}`}

@@ -85,15 +85,7 @@ export default function AttachmentPreviewModal({
 
   return (
     <div className="absolute inset-0 bg-black/50 z-10000 flex items-center justify-center p-4 backdrop-blur-sm modal-backdrop-enter">
-      {/* Backdrop */}
-      {/* <div
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm modal-backdrop-enter"
-                onClick={onClose}
-            /> */}
-
-      {/* Modal Content */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden modal-content-enter">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
           <div className="flex flex-col">
             <h3 className="text-lg font-bold text-gray-900 truncate max-w-md">
@@ -121,12 +113,10 @@ export default function AttachmentPreviewModal({
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 max-h-[80vh] overflow-y-auto bg-gray-50/50">
           {renderPreview()}
         </div>
 
-        {/* Footer info */}
         <div className="px-6 py-3 border-t border-gray-100 bg-white flex justify-between items-center text-xs text-gray-400 font-medium">
           <span>NexManage File Viewer</span>
           <a

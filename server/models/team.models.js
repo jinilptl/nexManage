@@ -31,29 +31,31 @@ const memberSubSchema = new mongoose.Schema(
       default: "active",
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
-
-const teamSchema = new mongoose.Schema({
-  teamName: { type: String, required: true, unique: true },
-  description: { type: String, required: true },
-  members: [memberSubSchema],
-  createdby: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const teamSchema = new mongoose.Schema(
+  {
+    teamName: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    members: [memberSubSchema],
+    createdby: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    status: {
+      type: String,
+      enum: ["ACTIVE", "ARCHIVED"],
+      default: "ACTIVE",
+    },
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  status: {
-    type: String,
-    enum: ["ACTIVE", "ARCHIVED"],
-    default: "ACTIVE",
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 const Team = mongoose.model("Team", teamSchema);
 
