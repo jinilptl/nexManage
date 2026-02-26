@@ -331,9 +331,7 @@ export const updateTaskOrderService = (projectId, taskId, newOrder, token) => {
         },
       );
       if (response.data.success) {
-        const updatedTask = response.data.data;
-
-        dispatch(updateTask(updatedTask));
+        dispatch(getAllTasksService(projectId, token));
       }
     } catch (error) {
       console.error("Order update failed", error);
