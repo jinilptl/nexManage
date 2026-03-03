@@ -193,7 +193,7 @@ export default function Dashboard() {
             Latest updates across your projects
           </p>
 
-          <div className="space-y-4 max-h-[246px] overflow-y-auto pr-2">
+          <div className="space-y-4 max-h-[246px] overflow-y-auto pr-2 recent-activity-scroll">
             {data?.recentActivity?.map((a, i) => (
               <div key={i} className="flex gap-3">
                 <Avatar user={a.updatedBy} className="w-8 h-8 text-sm" />
