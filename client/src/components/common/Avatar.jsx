@@ -5,8 +5,8 @@ import { getAvatarColor } from "../../utils/getAvatarColor";
  * Reusable Avatar Component
  *
  * @param {Object} props
- * @param {Object} props.user - The user object containing _id, email, or name.
- * @param {string} props.className - Tailwind utility classes (e.g. w-10 h-10 text-lg).
+ * @param {Object} props.user 
+ * @param {string} props.className 
  */
 export default function Avatar({ user, className = "" }) {
   // Use user id or email or name to generate a deterministic color

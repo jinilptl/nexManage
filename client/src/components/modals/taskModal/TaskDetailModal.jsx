@@ -205,7 +205,7 @@ export default function TaskDetailModal({ task, onClose }) {
           }}
         >
           {/* Top accent gradient */}
-          <div className="h-1 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 shrink-0 md:rounded-tl-2xl" />
+          <div className="h-1 bg-linear-to-r from-indigo-500 via-violet-500 to-purple-500 shrink-0 md:rounded-tl-2xl" />
 
           {/* Header */}
           <div className="flex-none bg-white z-20 px-5 py-4 sm:px-8 sm:py-5 border-b border-gray-100 sticky top-0 md:static">
@@ -231,7 +231,6 @@ export default function TaskDetailModal({ task, onClose }) {
                 />
                 <TaskAttachments task={task} canManage={canManage} />
 
-                {/* Mobile-only sidebar content */}
                 <div className="md:hidden space-y-8 pt-6 border-t border-gray-200">
                   <TaskAssignees
                     assignees={assignees}
@@ -249,8 +248,7 @@ export default function TaskDetailModal({ task, onClose }) {
               </div>
             </div>
 
-            {/* Desktop sidebar */}
-            <div className="hidden md:flex md:flex-col w-80 lg:w-96 border-l border-gray-100 bg-gradient-to-b from-gray-50/80 to-white overflow-y-auto task-detail-scroll">
+            <div className="hidden md:flex md:flex-col w-80 lg:w-96 border-l border-gray-100 bg-linear-to-b from-gray-50/80 to-white overflow-y-auto task-detail-scroll">
               <div className="p-6 space-y-8">
                 <TaskAssignees
                   assignees={assignees}

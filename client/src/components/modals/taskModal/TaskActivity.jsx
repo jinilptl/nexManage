@@ -71,19 +71,16 @@ export default function TaskActivity({ activities }) {
 
               return (
                 <div key={i} className="flex gap-3 group relative">
-                  {/* Timeline line */}
                   {i < activities.length - 1 && (
-                    <div className="absolute top-8 left-[13px] w-[2px] h-[calc(100%-8px)] bg-gray-100 group-hover:bg-gray-200 transition-colors" />
+                    <div className="absolute top-8 left-[13px] w-0.5 h-[calc(100%-8px)] bg-gray-100 group-hover:bg-gray-200 transition-colors" />
                   )}
 
-                  {/* Icon */}
                   <div className="relative z-10 shrink-0">
                     <div className={`h-7 w-7 rounded-lg flex items-center justify-center border ${colorClasses} transition-colors`}>
                       <Icon size={13} />
                     </div>
                   </div>
 
-                  {/* Content */}
                   <div className="flex-1 min-w-0 pb-5">
                     <p className="text-xs font-medium text-gray-700 leading-relaxed">
                       {a.action}

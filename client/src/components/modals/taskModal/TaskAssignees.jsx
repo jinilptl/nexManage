@@ -122,7 +122,7 @@ function TaskAssignees({
           />
 
           <div className="relative z-20 w-full bg-white rounded-xl shadow-xl border border-gray-200 ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-linear-to-r from-gray-50 to-white">
               <h3 className="text-sm font-semibold text-gray-900">
                 Manage Assignees
               </h3>
@@ -198,7 +198,7 @@ function TaskAssignees({
               )}
             </div>
 
-            <div className="p-3 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white flex items-center justify-between gap-2">
+            <div className="p-3 border-t border-gray-100 bg-linear-to-r from-gray-50 to-white flex items-center justify-between gap-2">
               <span className="text-[11px] text-gray-400 font-medium">
                 {selectedAssignees.length} selected
               </span>
