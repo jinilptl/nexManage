@@ -246,16 +246,52 @@ html.modal-open {
 /* ===== Task Detail Modal Transitions ===== */
 
 .task-detail-backdrop {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: opacity 350ms cubic-bezier(0.32, 0.72, 0, 1);
   will-change: opacity;
 }
 
 .task-detail-panel {
+  box-shadow:
+    -8px 0 32px rgba(0, 0, 0, 0.08),
+    -2px 0 8px rgba(0, 0, 0, 0.04);
   transition:
     transform 350ms cubic-bezier(0.32, 0.72, 0, 1),
     opacity 250ms ease-out;
   will-change: transform, opacity;
+}
+
+/* ===== Task Detail Custom Scrollbar ===== */
+
+.task-detail-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.task-detail-scroll:hover {
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+.task-detail-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.task-detail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-detail-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.task-detail-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.4);
+}
+
+.task-detail-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.5);
 }
