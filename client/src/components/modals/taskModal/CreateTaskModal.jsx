@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useSelector } from "react-redux";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function CreateTaskModal({
   isOpen,
@@ -54,12 +55,7 @@ export default function CreateTaskModal({
   const handleSubmit = () => {
     onSubmit(form);
   };
-  React.useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 

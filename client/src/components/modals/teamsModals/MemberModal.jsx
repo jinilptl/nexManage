@@ -6,6 +6,7 @@ import {
 } from "../../../services/teamsOperations/teamsServices";
 import { fetchAllUsers } from "../../../services/usersOperations/usersServices";
 import ButtonLoader from "../../Lodders/ButtonLoader";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function MemberModal({
   open,
@@ -78,12 +79,7 @@ export default function MemberModal({
     if (mode === "update") handleUpdateMember(inputValue);
   };
 
-  React.useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (!open) return null;
 
@@ -112,9 +108,8 @@ export default function MemberModal({
           <button
             disabled={loading}
             onClick={() => !loading && onClose(false)}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${
-              loading && "opacity-40 cursor-not-allowed"
-            }`}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer ${loading && "opacity-40 cursor-not-allowed"
+              }`}
           >
             <svg
               className="w-5 h-5 text-gray-600"
@@ -204,10 +199,9 @@ export default function MemberModal({
               type="submit"
               disabled={loading}
               className={`px-4 py-2 text-sm font-medium cursor-pointer rounded-lg text-white flex items-center gap-2 transition-colors
-                ${
-                  loading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
+                ${loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
                 }`}
             >
               {loading ? (

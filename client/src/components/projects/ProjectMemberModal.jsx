@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import { fetchAllUsers } from "../../services/usersOperations/usersServices";
+import useScrollLock from "../../hooks/useScrollLock";
 
 import {
   addProjectMemberService,
@@ -16,6 +17,7 @@ export default function ProjectMemberModal({
   mode = "add",
   member = null,
 }) {
+  useScrollLock(open);
   const dispatch = useDispatch();
   const projectId = useSelector((state) => state.projects.selectedProject.id);
   const token = useSelector((state) => state.auth.token);

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import { fetchTeamsService } from "../../services/teamsOperations/teamsServices";
 import { updateProjectService } from "../../services/projectsOperations/projectsServices";
+import useScrollLock from "../../hooks/useScrollLock";
 
 export default function AddTeamToProjectModal({ open, onClose, project }) {
   const dispatch = useDispatch();
@@ -33,12 +34,7 @@ export default function AddTeamToProjectModal({ open, onClose, project }) {
     }
   }, [project, allTeams]);
 
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   const handleSubmit = () => {
     if (selectedTeams.length === 0) return;
@@ -99,11 +95,10 @@ export default function AddTeamToProjectModal({ open, onClose, project }) {
             availableTeams.map((team) => (
               <label
                 key={team._id}
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                  selectedTeams.includes(team._id)
+                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${selectedTeams.includes(team._id)
                     ? "bg-blue-50 border-blue-200"
                     : "bg-white border-gray-200 hover:border-blue-200"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <input

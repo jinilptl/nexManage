@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addTaskStatusesIntoProjectService } from "../../../services/projectsOperations/projectsServices";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function AddColumnModal({ onClose, projectId, token }) {
   const [key, setKey] = useState("");
@@ -21,10 +22,7 @@ export default function AddColumnModal({ onClose, projectId, token }) {
     onClose();
   };
 
-  React.useEffect(() => {
-    document.body.classList.add("modal-open");
-    return () => document.body.classList.remove("modal-open");
-  }, []);
+  useScrollLock(true);
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">

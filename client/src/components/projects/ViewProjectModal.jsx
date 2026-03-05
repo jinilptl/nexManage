@@ -30,6 +30,7 @@ import ModalSmallLoader from "../Lodders/ModalSmallLoader";
 import ButtonLoader from "../Lodders/ButtonLoader";
 import ConfirmModal from "../modals/teamsModals/ConfirmModal";
 import toast from "react-hot-toast";
+import useScrollLock from "../../hooks/useScrollLock";
 
 export default function ViewProjectModal({ open, onClose, project }) {
   const dispatch = useDispatch();
@@ -156,12 +157,7 @@ export default function ViewProjectModal({ open, onClose, project }) {
     setSelectedMemberId(null);
   };
 
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (loadingProject) {
     return (
@@ -409,11 +405,10 @@ export default function ViewProjectModal({ open, onClose, project }) {
                       )}
 
                       <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          member.status === "active"
+                        className={`text-xs px-2 py-1 rounded ${member.status === "active"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {member.status}
                       </span>

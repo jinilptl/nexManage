@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import useScrollLock from "../../../hooks/useScrollLock";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -27,7 +28,7 @@ import ConfirmModal from "../teamsModals/ConfirmModal";
 import { canManageTask } from "../../../utils/permissions";
 import ModalPortal from "../../ModalPortal";
 
-const ANIMATION_DURATION = 350; // ms — keep in sync with CSS transition duration
+const ANIMATION_DURATION = 350;
 
 export default function TaskDetailModal({ task, onClose }) {
   const dispatch = useDispatch();
@@ -61,19 +62,13 @@ export default function TaskDetailModal({ task, onClose }) {
     [user, projectMembers],
   );
 
-  // ── Animation state ──────────────────────────────────────────
   const [visible, setVisible] = useState(false);
 
+  useScrollLock(true);
+
   useEffect(() => {
-    document.body.classList.add("modal-open");
-
-    // Trigger enter animation on next frame so CSS transition fires
     const raf = requestAnimationFrame(() => setVisible(true));
-
-    return () => {
-      cancelAnimationFrame(raf);
-      document.body.classList.remove("modal-open");
-    };
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -83,7 +78,6 @@ export default function TaskDetailModal({ task, onClose }) {
     }, ANIMATION_DURATION);
   }, [onClose]);
 
-  // ── Data fetching ────────────────────────────────────────────
   const assignees = useMemo(() => {
     if (!task?.assignees) return [];
 
@@ -198,6 +192,7 @@ export default function TaskDetailModal({ task, onClose }) {
           className="task-detail-backdrop absolute inset-0"
           style={{ opacity: visible ? 1 : 0 }}
           onClick={handleClose}
+          onTouchMove={(e) => e.preventDefault()}
         />
 
         {/* Panel */}

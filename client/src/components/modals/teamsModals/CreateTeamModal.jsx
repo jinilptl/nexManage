@@ -6,6 +6,7 @@ import {
 } from "../../../services/teamsOperations/teamsServices";
 import { useDispatch, useSelector } from "react-redux";
 import ModalSmallLoader from "../../Lodders/ModalSmallLoader";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function CreateTeamModal({ open, setOpen, mode }) {
   const dispatch = useDispatch();
@@ -46,12 +47,7 @@ export default function CreateTeamModal({ open, setOpen, mode }) {
     }
   };
 
-  React.useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (!open) return null;
 

@@ -8,6 +8,7 @@ import {
   updateProjectService,
 } from "../../services/projectsOperations/projectsServices";
 import { fetchTeamsService } from "../../services/teamsOperations/teamsServices";
+import useScrollLock from "../../hooks/useScrollLock";
 
 export default function ProjectModal({
   open,
@@ -69,12 +70,7 @@ export default function ProjectModal({
     }
   };
 
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (!open) return null;
 
@@ -92,9 +88,8 @@ export default function ProjectModal({
         <button
           onClick={onClose}
           disabled={isBusy}
-          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${
-            isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
-          }`}
+          className={`absolute top-4 right-4 p-2 cursor-pointer rounded-lg transition-colors ${isBusy ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"
+            }`}
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>

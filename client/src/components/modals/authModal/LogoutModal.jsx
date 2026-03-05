@@ -2,18 +2,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutService } from "../../../services/authOperations/authServices";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function LogoutModal({ open, onClose }) {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   const handleLogout = () => {
     dispatch(logoutService(token, navigate));

@@ -19,6 +19,7 @@ import MemberModal from "./MemberModal";
 import ModalSmallLoader from "../../Lodders/ModalSmallLoader";
 import ButtonLoader from "../../Lodders/ButtonLoader";
 import ConfirmModal from "./ConfirmModal";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function TeamDetailModal({ open, onClose }) {
   const dispatch = useDispatch();
@@ -83,12 +84,7 @@ export default function TeamDetailModal({ open, onClose }) {
     setSelectedMemberId(null);
   };
 
-  React.useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (!open) return null;
 
@@ -134,11 +130,10 @@ export default function TeamDetailModal({ open, onClose }) {
 
         <div className="mt-3">
           <span
-            className={`px-3 py-1 text-xs rounded-md ${
-              team?.isActive
+            className={`px-3 py-1 text-xs rounded-md ${team?.isActive
                 ? "bg-green-100 text-green-700"
                 : "bg-gray-200 text-gray-700"
-            }`}
+              }`}
           >
             {team?.isActive ? "Active" : "Inactive"}
           </span>

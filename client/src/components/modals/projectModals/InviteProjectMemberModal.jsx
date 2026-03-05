@@ -9,6 +9,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function InviteProjectMemberModal({
   isOpen,
@@ -18,6 +19,8 @@ export default function InviteProjectMemberModal({
   loading,
   projectMembers = [],
 }) {
+  useScrollLock(isOpen);
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [selectedRole, setSelectedRole] = useState("observer");
@@ -165,9 +168,8 @@ export default function InviteProjectMemberModal({
               <input
                 type="email"
                 id="email"
-                className={`block w-full pl-10 pr-3 py-2.5 bg-gray-50 border ${
-                  error ? "border-red-500" : "border-gray-200"
-                } rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all`}
+                className={`block w-full pl-10 pr-3 py-2.5 bg-gray-50 border ${error ? "border-red-500" : "border-gray-200"
+                  } rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all`}
                 placeholder="example@company.com"
                 value={email}
                 onChange={(e) => {
@@ -212,11 +214,10 @@ export default function InviteProjectMemberModal({
                     key={role.value}
                     type="button"
                     onClick={() => setSelectedRole(role.value)}
-                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                      isSelected
+                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${isSelected
                         ? `${role.borderColor} ${role.bgColor} ${role.textColor} shadow-sm ring-2 ${role.ringColor}`
                         : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     <RoleIcon
                       className={`w-6 h-6 mb-2 ${isSelected ? role.iconColor : "text-gray-400"}`}

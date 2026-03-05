@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import useScrollLock from "../../../hooks/useScrollLock";
 
 export default function ConfirmModal({
   open,
@@ -10,12 +11,7 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("modal-open");
-      return () => document.body.classList.remove("modal-open");
-    }
-  }, [open]);
+  useScrollLock(open);
 
   if (!open) return null;
 

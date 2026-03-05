@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { X, Download, FileText, ExternalLink } from "lucide-react";
+import useScrollLock from "../../hooks/useScrollLock";
 
 export default function AttachmentPreviewModal({
   isOpen,
@@ -7,17 +8,17 @@ export default function AttachmentPreviewModal({
   attachment,
   onDownload,
 }) {
+  useScrollLock(isOpen);
+
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
     if (isOpen) {
       document.addEventListener("keydown", handleEsc);
-      document.body.style.overflow = "hidden";
     }
     return () => {
       document.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 

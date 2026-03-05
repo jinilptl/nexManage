@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
+import useScrollLock from "../../hooks/useScrollLock";
 
 export default function ConfirmationModal({
   isOpen,
@@ -11,17 +12,17 @@ export default function ConfirmationModal({
   cancelText = "Cancel",
   isLoading = false,
 }) {
+  useScrollLock(isOpen);
+
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
     if (isOpen) {
       document.addEventListener("keydown", handleEsc);
-      document.body.style.overflow = "hidden";
     }
     return () => {
       document.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
