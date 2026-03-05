@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -26,6 +26,8 @@ import {
 import ConfirmModal from "../teamsModals/ConfirmModal";
 import { canManageTask } from "../../../utils/permissions";
 import ModalPortal from "../../ModalPortal";
+
+const ANIMATION_DURATION = 350; // ms — keep in sync with CSS transition duration
 
 export default function TaskDetailModal({ task, onClose }) {
   const dispatch = useDispatch();
@@ -59,13 +61,29 @@ export default function TaskDetailModal({ task, onClose }) {
     [user, projectMembers],
   );
 
+  // ── Animation state ──────────────────────────────────────────
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     document.body.classList.add("modal-open");
+
+    // Trigger enter animation on next frame so CSS transition fires
+    const raf = requestAnimationFrame(() => setVisible(true));
+
     return () => {
+      cancelAnimationFrame(raf);
       document.body.classList.remove("modal-open");
     };
   }, []);
 
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, ANIMATION_DURATION);
+  }, [onClose]);
+
+  // ── Data fetching ────────────────────────────────────────────
   const assignees = useMemo(() => {
     if (!task?.assignees) return [];
 
@@ -160,7 +178,10 @@ export default function TaskDetailModal({ task, onClose }) {
     return (
       <ModalPortal>
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div
+            className="task-detail-backdrop absolute inset-0"
+            style={{ opacity: visible ? 1 : 0 }}
+          />
           <div className="relative text-sm text-gray-400">
             Loading subtasks...
           </div>
@@ -172,19 +193,28 @@ export default function TaskDetailModal({ task, onClose }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 z-3000 flex justify-end items-stretch overflow-hidden">
+        {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-          onClick={onClose}
+          className="task-detail-backdrop absolute inset-0"
+          style={{ opacity: visible ? 1 : 0 }}
+          onClick={handleClose}
         />
 
-        <div className="relative z-10 w-full h-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:overflow-hidden animate-slide-in-right md:rounded-l-3xl border-l border-gray-100">
+        {/* Panel */}
+        <div
+          className="task-detail-panel relative z-10 w-full h-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:overflow-hidden md:rounded-l-3xl border-l border-gray-100"
+          style={{
+            transform: visible ? "translateX(0)" : "translateX(100%)",
+            opacity: visible ? 1 : 0,
+          }}
+        >
           <div className="flex-none bg-white z-20 border-b border-gray-100 px-4 py-3 sm:px-6 sm:py-5 sticky top-0 md:static">
             <TaskHeader
               task={task}
               canManage={canManage}
               onEdit={() => setUpdateTaskModalOpen(true)}
               onDelete={handleDeleteTask}
-              onClose={onClose}
+              onClose={handleClose}
             />
           </div>
 
@@ -257,3 +287,4 @@ export default function TaskDetailModal({ task, onClose }) {
     </ModalPortal>
   );
 }
+
