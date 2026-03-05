@@ -29,6 +29,7 @@ import {
 import NexManageLoader from "../../components/Lodders/NexManageLoader";
 import InviteProjectMemberModal from "../../components/modals/projectModals/InviteProjectMemberModal";
 import Avatar from "../../components/common/Avatar";
+import useScrollLock from "../../hooks/useScrollLock";
 
 import { Home, ChevronRight } from "lucide-react";
 
@@ -48,6 +49,8 @@ export default function ProjectDetails() {
   const { token, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const UserRole = user.role;
+
+  useScrollLock(!!observerToRemove);
 
   const isObserver = useMemo(() => {
     if (!user || !projectData?.data) return false;
@@ -286,14 +289,14 @@ export default function ProjectDetails() {
                 {(UserRole === "admin" ||
                   UserRole === "super_admin" ||
                   isProjectManagerOrAdmin) && (
-                  <button
-                    onClick={() => setObserverToRemove(obs)}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer"
-                    title="Remove Observer"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+                    <button
+                      onClick={() => setObserverToRemove(obs)}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer"
+                      title="Remove Observer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
               </div>
             ))}
           </div>
