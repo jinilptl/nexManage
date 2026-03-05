@@ -80,8 +80,8 @@ export function inviteMemberService(memberData, token) {
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Failed to send invitation",
+        error.message ||
+        "Failed to send invitation",
       );
       return false;
     } finally {
@@ -101,7 +101,7 @@ export async function setPasswordService(token, password) {
     if (response.data.success) {
       toast.success(
         response.data.message ||
-          "Password set successfully. You can now log in.",
+        "Password set successfully. You can now log in.",
       );
       return true;
     }
@@ -109,7 +109,7 @@ export async function setPasswordService(token, password) {
   } catch (error) {
     toast.error(
       error?.response?.data?.message ||
-        "Failed to set password. The link may have expired.",
+      "Failed to set password. The link may have expired.",
     );
     return false;
   }
@@ -128,11 +128,20 @@ export function getMyProfileService(token) {
       if (response.data.success) {
         const user = response.data.data;
         dispatch(setUser(user));
+        dispatch(setIsLogin(true));
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch profile data",
-      );
+      const status = error?.response?.status;
+
+      // If the token is invalid/expired or user no longer exists, clear auth
+      if (status === 401 || status === 404) {
+        dispatch(clearAuth());
+        toast.error("Session expired. Please log in again.");
+      } else {
+        toast.error(
+          error?.response?.data?.message || "Failed to fetch profile data",
+        );
+      }
     } finally {
       dispatch(setAuthLoading(false));
     }

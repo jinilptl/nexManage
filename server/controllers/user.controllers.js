@@ -203,7 +203,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("token", jwtToken, { httpOnly: true, secure: false })
+    .cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "lax",
+    })
     .json(new ApiResponse(200, "User login successfully", data));
 });
 
@@ -446,7 +451,12 @@ const getMyProfile = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .cookie("token", "", { httpOnly: true, secure: false, expires: new Date(0) })
+    .cookie("token", "", {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(0),
+      sameSite: "lax",
+    })
     .json(new ApiResponse(200, "User logged out successfully"));
 });
 
