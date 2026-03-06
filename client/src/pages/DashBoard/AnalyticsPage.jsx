@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, AlertTriangle, TrendingUp } from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, TrendingUp, RefreshCw } from "lucide-react";
 import useAnalyticsData from "../../hooks/useAnalyticsData";
 import PageHeader from "../../components/Analytics/PageHeader";
 import MetricCard from "../../components/Analytics/MetricCard";
@@ -42,7 +42,24 @@ export default function AnalyticsPage() {
   }
 
   if (error) {
-    return <div className="text-red-500 text-center py-4">{error}</div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+        <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center">
+          <AlertTriangle size={24} className="text-red-500" />
+        </div>
+        <div className="text-center max-w-xs">
+          <h3 className="text-base font-bold text-gray-800 mb-1">Failed to load analytics</h3>
+          <p className="text-sm text-gray-500">{error}</p>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
+        >
+          <RefreshCw size={14} />
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   return (
