@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, Columns, Hash, Tag, Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addTaskStatusesIntoProjectService } from "../../../services/projectsOperations/projectsServices";
 import useScrollLock from "../../../hooks/useScrollLock";
@@ -7,79 +7,89 @@ import useScrollLock from "../../../hooks/useScrollLock";
 export default function AddColumnModal({ onClose, projectId, token }) {
   const [key, setKey] = useState("");
   const [label, setLabel] = useState("");
+  const [busy, setBusy] = useState(false);
   const dispatch = useDispatch();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const payload = {
-      key: key.trim().toLowerCase(),
-      label,
-    };
-
-    dispatch(addTaskStatusesIntoProjectService(payload, projectId, token));
-
-    onClose();
-  };
 
   useScrollLock(true);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!key.trim() || !label.trim()) return;
+    setBusy(true);
+    const payload = { key: key.trim().toLowerCase(), label };
+    dispatch(addTaskStatusesIntoProjectService(payload, projectId, token));
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-4 sm:p-6 modal-content-enter">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Add Column</h2>
+      <div className="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-linear-to-br from-blue-600 via-blue-700 to-indigo-700 px-5 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center">
+              <Columns size={16} className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold text-sm">Add Column</h2>
+              <p className="text-blue-200 text-xs">Create a new Kanban column</p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            aria-label="Close add column dialog"
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5 text-gray-600" />
+            <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Key
+            <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+              <Hash size={13} className="text-gray-400" />
+              Key <span className="text-red-500">*</span>
             </label>
             <input
               value={key}
               onChange={(e) => setKey(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. in_review"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               required
             />
+            <p className="text-[11px] text-gray-400 mt-1">Used internally — lowercase, no spaces</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Label
+            <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+              <Tag size={13} className="text-gray-400" />
+              Label <span className="text-red-500">*</span>
             </label>
             <input
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. In Review"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               required
             />
+            <p className="text-[11px] text-gray-400 mt-1">Displayed in the Kanban board</p>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Footer */}
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={busy}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
             >
+              {busy ? <Loader2 size={14} className="animate-spin" /> : <Columns size={14} />}
               Add Column
             </button>
           </div>

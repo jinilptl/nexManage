@@ -296,107 +296,114 @@ export default function Members() {
       {isModalOpen && (
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
-          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all scale-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900">
-                {editingMember ? "Edit Member" : "Add Member"}
-              </h3>
-              <button
-                onClick={handleCloseModal}
-                className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+
+          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: "92vh" }}>
+            <div className="bg-linear-to-br from-blue-600 via-blue-700 to-indigo-700 px-5 py-4 shrink-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    user={editingMember}
+                    className="w-10 h-10 text-sm ring-2 ring-white/30 shadow-md shrink-0"
+                  />
+                  <div>
+                    <h3 className="text-white font-bold text-sm leading-tight">
+                      {editingMember ? "Edit Member" : "Add Member"}
+                    </h3>
+                    <p className="text-blue-200 text-xs mt-0.5 truncate max-w-[200px]">
+                      {editingMember?.email}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-5 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                  <User size={13} className="text-gray-400" />
                   Full Name
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                  <Shield size={13} className="text-gray-400" />
                   Email Address
+                  <span className="ml-auto text-[10px] text-gray-400 font-normal">Cannot be changed</span>
                 </label>
                 <input
                   type="email"
-                  placeholder="e.g. john@example.com"
                   disabled
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 cursor-no-drop py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-500 cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
+                  <ShieldCheck size={13} className="text-gray-400" />
                   Role
                 </label>
-                <div className="relative">
-                  <select
-                    value={formData.role}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-                  >
-                    <option value="member">Member</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: "member", label: "Member", cls: "bg-gray-100 text-gray-700 border-gray-300", icon: User },
+                    { value: "admin", label: "Admin", cls: "bg-blue-100 text-blue-700 border-blue-300", icon: ShieldCheck },
+                  ].map(({ value, label, cls, icon: Icon }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, role: value })}
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${formData.role === value
+                          ? `${cls} ring-1 ring-offset-1 ring-current/30`
+                          : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                        }`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
-                  </div>
+                      <Icon size={14} />
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-5 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
-                >
-                  {editingMember ? "Save Changes" : "Create Member"}
-                </button>
-              </div>
             </form>
+
+            <div className="shrink-0 px-5 py-4 border-t border-gray-100 bg-gray-50/60 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2 shadow-lg shadow-blue-200 active:scale-95"
+              >
+                <Edit size={14} />
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       )}
+
 
       {isDeleteModalOpen && deleteMember && (
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
@@ -496,8 +503,8 @@ export default function Members() {
                     className="sr-only"
                   />
                   <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-all ${confirmChecked
-                      ? "bg-red-600 border-red-600"
-                      : "bg-white border-gray-300 group-hover:border-red-400"
+                    ? "bg-red-600 border-red-600"
+                    : "bg-white border-gray-300 group-hover:border-red-400"
                     }`}
                     style={{ width: "18px", height: "18px" }}
                   >
@@ -524,8 +531,8 @@ export default function Members() {
                   onClick={confirmDelete}
                   disabled={!confirmChecked}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl shadow transition-all ${confirmChecked
-                      ? "bg-red-600 hover:bg-red-700 text-white active:scale-95 cursor-pointer"
-                      : "bg-red-200 text-red-400 cursor-not-allowed"
+                    ? "bg-red-600 hover:bg-red-700 text-white active:scale-95 cursor-pointer"
+                    : "bg-red-200 text-red-400 cursor-not-allowed"
                     }`}
                 >
                   <Trash2 size={16} />
