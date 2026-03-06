@@ -13,7 +13,8 @@ import { Project } from "../models/project.models.js";
 import { Task } from "../models/Task models/task.models.js";
 
 const inviteUser = asyncHandler(async (req, res) => {
-  const { name, email, role, isTempMember } = req.body;
+  const { name, role, isTempMember } = req.body;
+  const email = req.body.email?.toLowerCase().trim();
 
   if (!name || !email) {
     throw new ApiError(400, "Name and email are required");
@@ -79,7 +80,7 @@ const inviteUser = asyncHandler(async (req, res) => {
     isTempMember: isTempMember || false,
     isInvited: true,
     inviteToken: hashedToken,
-    inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000, 
+    inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000,
     createdby: req.user?._id,
   });
 
@@ -153,7 +154,8 @@ const setPassword = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = req.body.email?.toLowerCase().trim();
 
   if (!email || !password) {
     throw new ApiError(400, "All fields are required");
@@ -244,7 +246,8 @@ const allUsers = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  const { name, email, role } = req.body;
+  const { name, role } = req.body;
+  const email = req.body.email?.toLowerCase().trim();
 
   if (!userId) {
     throw new ApiError(400, "userId is required");
@@ -359,7 +362,7 @@ const changePassword = asyncHandler(async (req, res) => {
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const email = req.body.email?.toLowerCase().trim();
 
   if (!email) {
     throw new ApiError(400, "Email is required");
