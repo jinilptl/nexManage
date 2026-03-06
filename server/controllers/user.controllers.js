@@ -8,6 +8,9 @@ import { forgot_password_email_template } from "../templates/forgotPasswordMail.
 import sendEmail from "../utils/sendMail.js";
 import crypto from "crypto";
 import { invite_member_email_template } from "../templates/inviteMemberMail.js";
+import { Team } from "../models/team.models.js";
+import { Project } from "../models/project.models.js";
+import { Task } from "../models/Task models/task.models.js";
 
 const inviteUser = asyncHandler(async (req, res) => {
   const { name, email, role, isTempMember } = req.body;
@@ -290,11 +293,33 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
+  // Run all cascade removals in parallel for efficiency
+  await Promise.all([
+    // 1. Remove from all Teams (members sub-array)
+    Team.updateMany(
+      { "members.user": userId },
+      { $pull: { members: { user: userId } } }
+    ),
+
+    // 2. Remove from all Projects (projectMembers sub-array — covers observers too)
+    Project.updateMany(
+      { "projectMembers.user": userId },
+      { $pull: { projectMembers: { user: userId } } }
+    ),
+
+    // 3. Unassign from all Tasks (assignees array)
+    Task.updateMany(
+      { assignees: userId },
+      { $pull: { assignees: userId } }
+    ),
+  ]);
+
+  // Finally delete the user account itself
   await user.deleteOne();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "User deleted successfully"));
+    .json(new ApiResponse(200, "User and all associated data deleted successfully"));
 });
 
 const changePassword = asyncHandler(async (req, res) => {

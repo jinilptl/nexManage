@@ -8,6 +8,11 @@ import {
   User,
   Shield,
   ShieldCheck,
+  AlertTriangle,
+  Users,
+  FolderOpen,
+  CheckSquare,
+  LogOut,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -30,7 +35,8 @@ export default function Members() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteUserId, setDeleteUserId] = useState(null);
+  const [deleteMember, setDeleteMember] = useState(null);
+  const [confirmChecked, setConfirmChecked] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,20 +77,23 @@ export default function Members() {
     }
   };
 
-  const openDeleteModal = (userId) => {
-    setDeleteUserId(userId);
+  const openDeleteModal = (member) => {
+    setDeleteMember(member);
+    setConfirmChecked(false);
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
-    setDeleteUserId(null);
+    setDeleteMember(null);
+    setConfirmChecked(false);
     setIsDeleteModalOpen(false);
   };
 
   const confirmDelete = async () => {
+    if (!confirmChecked) return;
     try {
-      await dispatch(deleteUser({ userId: deleteUserId, token })).unwrap();
-      toast.success("User deleted successfully");
+      await dispatch(deleteUser({ userId: deleteMember._id, token })).unwrap();
+      toast.success(`${deleteMember.name} has been removed successfully.`);
       closeDeleteModal();
     } catch (error) {
       toast.error(error?.message || "Failed to delete user");
@@ -96,15 +105,15 @@ export default function Members() {
     setFormData(
       member
         ? {
-            name: member.name,
-            email: member.email,
-            role: member.role,
-          }
+          name: member.name,
+          email: member.email,
+          role: member.role,
+        }
         : {
-            name: "",
-            email: "",
-            role: "member",
-          },
+          name: "",
+          email: "",
+          role: "member",
+        },
     );
     setIsModalOpen(true);
   };
@@ -268,7 +277,7 @@ export default function Members() {
                           <Edit size={18} />
                         </button>
                         <button
-                          onClick={() => openDeleteModal(member._id)}
+                          onClick={() => openDeleteModal(member)}
                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                           title="Delete User"
                         >
@@ -389,37 +398,149 @@ export default function Members() {
         </div>
       )}
 
-      {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      {isDeleteModalOpen && deleteMember && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeDeleteModal}
           />
-          <div className="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 transform transition-all scale-100">
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 mx-auto text-red-600">
-              <Trash2 size={24} />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-              Delete User
-            </h3>
-            <p className="text-sm text-gray-500 text-center mb-6">
-              Are you sure you want to delete this user? This action cannot be
-              undone and will remove their access immediately.
-            </p>
 
-            <div className="flex gap-3">
-              <button
-                onClick={closeDeleteModal}
-                className="flex-1 px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="flex-1 px-4 py-2.5 text-sm font-medium bg-red-600 text-white hover:bg-red-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
-              >
-                Delete User
-              </button>
+          {/* Modal */}
+          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            {/* Red top bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-red-600 to-orange-500" />
+
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">
+                      Delete Member
+                    </h3>
+                    <p className="text-xs text-red-500 font-medium mt-0.5">This action is permanent and irreversible</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeDeleteModal}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Member Card */}
+              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3 mb-5">
+                <Avatar user={deleteMember} className="w-10 h-10 ring-2 ring-white shadow" />
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">{deleteMember.name}</p>
+                  <p className="text-xs text-gray-500">{deleteMember.email}</p>
+                </div>
+                <span className={`ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(deleteMember.role)} capitalize`}>
+                  {getRoleIcon(deleteMember.role)}
+                  {deleteMember.role}
+                </span>
+              </div>
+
+              {/* Warning Message */}
+              <p className="text-sm text-gray-600 mb-4">
+                Deleting <span className="font-semibold text-gray-900">{deleteMember.name}</span> will immediately and permanently:
+              </p>
+
+              {/* Consequences List */}
+              <div className="space-y-2.5 mb-5">
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 border border-red-100">
+                  <div className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <Users className="w-3.5 h-3.5 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Remove from all Teams</p>
+                    <p className="text-xs text-gray-500 mt-0.5">They will be instantly removed from every team they belong to.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-50 border border-orange-100">
+                  <div className="w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <FolderOpen className="w-3.5 h-3.5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Remove from all Projects</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Their membership in all projects will be revoked permanently.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-yellow-50 border border-yellow-100">
+                  <div className="w-7 h-7 rounded-lg bg-yellow-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckSquare className="w-3.5 h-3.5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Unassign from all Tasks</p>
+                    <p className="text-xs text-gray-500 mt-0.5">All tasks assigned to them will become unassigned.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
+                  <div className="w-7 h-7 rounded-lg bg-gray-200 flex items-center justify-center shrink-0 mt-0.5">
+                    <LogOut className="w-3.5 h-3.5 text-gray-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Revoke Account Access</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Their account and login access will be permanently removed.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Confirmation checkbox */}
+              <label className="flex items-start gap-2.5 cursor-pointer select-none mb-5 group">
+                <div className="relative mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={confirmChecked}
+                    onChange={(e) => setConfirmChecked(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-all ${confirmChecked
+                      ? "bg-red-600 border-red-600"
+                      : "bg-white border-gray-300 group-hover:border-red-400"
+                    }`}
+                    style={{ width: "18px", height: "18px" }}
+                  >
+                    {confirmChecked && (
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span className="text-sm text-gray-600">
+                  I understand this action is <span className="font-semibold text-gray-900">permanent</span> and cannot be undone.
+                </span>
+              </label>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={closeDeleteModal}
+                  className="flex-1 px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={!confirmChecked}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl shadow transition-all ${confirmChecked
+                      ? "bg-red-600 hover:bg-red-700 text-white active:scale-95 cursor-pointer"
+                      : "bg-red-200 text-red-400 cursor-not-allowed"
+                    }`}
+                >
+                  <Trash2 size={16} />
+                  Delete Member
+                </button>
+              </div>
             </div>
           </div>
         </div>
