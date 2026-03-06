@@ -5,9 +5,10 @@ import {
   Users as UsersIcon,
   FolderKanban,
   MoreVertical,
-  Eye,
   Archive,
   RotateCcw,
+  ArrowRight,
+  Crown,
 } from "lucide-react";
 
 import CreateTeamModal from "../../components/modals/teamsModals/CreateTeamModal";
@@ -133,9 +134,8 @@ export default function TeamsPage() {
 
   return (
     <div
-      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${
-        openTeamModal && "overflow-y-hidden"
-      }`}
+      className={`md:pt-5 md:px-2 lg:px-6 pb-10 space-y-6 p-4 md:p-6 ${openTeamModal && "overflow-y-hidden"
+        }`}
     >
       {(teamLoading || membersLoading) && (
         <div className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
@@ -153,12 +153,11 @@ export default function TeamsPage() {
           <button
             disabled={loading}
             onClick={() => !loading && setModalOpen(true)}
-            className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm cursor-pointer
-             ${
-               loading
-                 ? "bg-blue-300 cursor-not-allowed"
-                 : "bg-blue-600 hover:bg-blue-700 text-white"
-             }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold shadow-md transition-all cursor-pointer
+             ${loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95"
+              }`}
           >
             {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
             {loading ? "Please wait" : "Create Team"}
@@ -235,10 +234,9 @@ export default function TeamsPage() {
                   disabled={loading}
                   onClick={() => setModalOpen(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-md flex items-center mx-auto gap-2 text-sm 
-                    ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-blue-700"
+                    ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
                     }`}
                 >
                   {loading ? <ButtonLoader /> : <Plus className="w-4 h-4" />}
@@ -251,221 +249,178 @@ export default function TeamsPage() {
       )}
 
       {filterTeams.length > 0 && (
-        <div className="grid md:mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filterTeams.map((team) => (
-            <div
-              key={team._id}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group flex flex-col h-full
-                ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
-            >
-              <div className="p-6 flex flex-col h-full">
-                <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100/50 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                    <UsersIcon className="w-6 h-6 text-blue-600" />
-                  </div>
+        <div className="grid md:mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filterTeams.map((team) => {
+            const GRADIENTS = [
+              "from-violet-500 to-purple-600",
+              "from-blue-500 to-indigo-600",
+              "from-emerald-500 to-teal-600",
+              "from-rose-500 to-pink-600",
+              "from-amber-500 to-orange-600",
+              "from-cyan-500 to-sky-600",
+            ];
+            const gradient = GRADIENTS[(team.teamName || "").charCodeAt(0) % GRADIENTS.length];
+            const initial = (team.teamName || "T")[0].toUpperCase();
+            const isActive = (team.status || "").toUpperCase() === "ACTIVE";
+            const lead = findTeamLeadUser(team);
+            const leadName = findTeamLeadName(team);
 
-                  <div
-                    className="relative"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      disabled={loading}
-                      className={`p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 ${
-                        loading
-                          ? "opacity-40 cursor-not-allowed"
-                          : "cursor-pointer"
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!loading)
-                          setOpenMenuId(
-                            openMenuId === team._id ? null : team._id,
-                          );
-                      }}
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
+            const visibleMembers = (team.members || []).slice(0, 4);
+            const extraMembers = Math.max(0, (team.members || []).length - 4);
 
-                    {openMenuId === team._id && !loading && (
-                      <div
-                        className="absolute right-0 mt-2 w-52 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden"
-                        style={{
-                          boxShadow:
-                            "0 10px 40px -10px rgba(0,0,0,0.15), 0 4px 12px -2px rgba(0,0,0,0.08)",
+            return (
+              <div
+                key={team._id}
+                className={`group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden relative ${loading ? "opacity-60 pointer-events-none" : ""
+                  }`}
+              >
+                <div className={`h-1.5 w-full bg-linear-to-r ${gradient} shrink-0`} />
+
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex items-start justify-between gap-2 mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300`}>
+                      <span className="text-lg font-black text-white">{initial}</span>
+                    </div>
+
+                    <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        disabled={loading}
+                        className={`p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors ${loading ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                          }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!loading) setOpenMenuId(openMenuId === team._id ? null : team._id);
                         }}
                       >
-                        <div className="h-2px bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
 
-                        <div className="px-3 pt-2.5 pb-1.5">
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                            Actions
-                          </p>
+                      {openMenuId === team._id && !loading && (
+                        <div
+                          className="absolute right-0 mt-1 w-48 bg-white rounded-xl z-50 border border-gray-200 overflow-hidden py-1"
+                          style={{ boxShadow: "0 8px 30px -4px rgba(0,0,0,0.12), 0 4px 12px -2px rgba(0,0,0,0.07)" }}
+                        >
+                          {role !== "member" && !isActive && (
+                            <button
+                              disabled={loading}
+                              onClick={() => {
+                                if (!loading) {
+                                  dispatch(updateTeamStatusService(team._id, "ACTIVE", token, statusFilter));
+                                  setOpenMenuId(null);
+                                }
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                            >
+                              <RotateCcw className="w-4 h-4" /> Activate Team
+                            </button>
+                          )}
+
+                          {role !== "member" && isActive && (
+                            <button
+                              disabled={loading}
+                              onClick={() => {
+                                if (!loading) {
+                                  dispatch(updateTeamStatusService(team._id, "ARCHIVED", token, statusFilter));
+                                  setOpenMenuId(null);
+                                }
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                            >
+                              <Archive className="w-4 h-4" /> Archive Team
+                            </button>
+                          )}
                         </div>
-
-                        <div className="px-1.5 pb-1.5 space-y-0.5">
-                          <button
-                            disabled={loading}
-                            onClick={() => {
-                              if (!loading) {
-                                dispatch(setSelectedTeamId(team._id));
-                                dispatch(
-                                  fetchSingleTeamService(team._id, token),
-                                );
-                                dispatch(
-                                  fetchTeamMembersService(team._id, token),
-                                );
-                                setOpenMenuId(null);
-                              }
-                            }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 cursor-pointer"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Team
-                          </button>
-
-                          {role !== "member" &&
-                            (team.status || "").toUpperCase() !==
-                              "ARCHIVED" && (
-                              <button
-                                disabled={loading}
-                                onClick={() => {
-                                  if (!loading) {
-                                    dispatch(
-                                      updateTeamStatusService(
-                                        team._id,
-                                        "ARCHIVED",
-                                        token,
-                                        statusFilter,
-                                      ),
-                                    );
-                                    setOpenMenuId(null);
-                                  }
-                                }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-colors duration-150 cursor-pointer"
-                              >
-                                <Archive className="w-4 h-4" />
-                                Archive Team
-                              </button>
-                            )}
-
-                          {role !== "member" &&
-                            (team.status || "").toUpperCase() ===
-                              "ARCHIVED" && (
-                              <button
-                                disabled={loading}
-                                onClick={() => {
-                                  if (!loading) {
-                                    dispatch(
-                                      updateTeamStatusService(
-                                        team._id,
-                                        "ACTIVE",
-                                        token,
-                                        statusFilter,
-                                      ),
-                                    );
-                                    setOpenMenuId(null);
-                                  }
-                                }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150 cursor-pointer"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                                Activate Team
-                              </button>
-                            )}
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <h2 className="text-xl font-bold text-gray-900 mt-5 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">
-                  {team.teamName}
-                </h2>
-                <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed grow">
-                  {team.description || "No description provided"}
-                </p>
+                  <h2 className="text-base font-bold text-gray-900 group-hover:text-violet-600 transition-colors line-clamp-1 mb-1">
+                    {team.teamName}
+                  </h2>
 
-                <div className="mt-6 space-y-5">
-                  <div>
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
-                      Team Lead
-                    </p>
-                    {findTeamLeadName(team) ? (
+                  <p className="text-gray-400 text-xs leading-relaxed line-clamp-2 flex-1 mb-4">
+                    {team.description || "No description provided"}
+                  </p>
+
+                  {leadName && (
+                    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-violet-50 border border-violet-100 rounded-xl">
+                      <Crown size={13} className="text-violet-500 shrink-0" />
+                      <Avatar user={lead} className="w-5 h-5 text-[9px] shadow-sm" />
+                      <span className="text-xs font-semibold text-violet-700 truncate">{leadName}</span>
+                      <span className="ml-auto text-[10px] text-violet-400 font-medium">Team Lead</span>
+                    </div>
+                  )}
+
+                  <div className="border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Avatar
-                          user={findTeamLeadUser(team)}
-                          className="w-6 h-6 text-[10px] shadow-sm border md:border-white"
-                        />
-                        <span className="text-sm font-bold text-gray-700">
-                          {findTeamLeadName(team)}
+                        {team.members.length > 0 ? (
+                          <>
+                            <div className="flex -space-x-2">
+                              {visibleMembers.map((m, i) => (
+                                <Avatar
+                                  key={i}
+                                  user={m.user}
+                                  className="w-6 h-6 text-[9px] ring-2 ring-white shadow-sm"
+                                />
+                              ))}
+                              {extraMembers > 0 && (
+                                <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white ring-1 ring-gray-200 flex items-center justify-center text-[9px] font-bold text-gray-500">
+                                  +{extraMembers}
+                                </div>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-400 font-medium">
+                              {team.members.length} member{team.members.length !== 1 ? "s" : ""}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400 italic">No members</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {(team.projectsCount ?? 0) > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-600 border border-blue-200">
+                            <FolderKanban size={10} />
+                            {team.projectsCount}
+                          </span>
+                        )}
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${isActive
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : "bg-gray-100 text-gray-500 border-gray-200"
+                          }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-gray-400"}`} />
+                          {isActive ? "Active" : "Archived"}
                         </span>
                       </div>
-                    ) : (
-                      <span className="text-sm font-bold text-gray-500 italic">
-                        No team lead available
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm pt-5 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
-                      <UsersIcon className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs font-bold text-gray-700">
-                        {team.members.length}
-                      </span>
-                      <span className="text-xs font-medium text-gray-500">
-                        Members
-                      </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
-                      <FolderKanban className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs font-bold text-gray-700">
-                        {team.projectsCount ?? 0}
-                      </span>
-                      <span className="text-xs font-medium text-gray-500">
-                        Projects
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
-                    <span
-                      className={`px-3 py-1 text-xs font-bold rounded-full border ${
-                        (team.status || "").toUpperCase() === "ACTIVE"
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-gray-50 text-gray-600 border-gray-200"
-                      }`}
+                    <button
+                      onClick={() => {
+                        dispatch(setSelectedTeamId(team._id));
+                        dispatch(fetchSingleTeamService(team._id, token));
+                        dispatch(fetchTeamMembersService(team._id, token));
+                      }}
+                      className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-linear-to-r ${gradient} text-white opacity-0 group-hover:opacity-100 shadow-md hover:shadow-lg active:scale-95`}
                     >
-                      {(team.status || "").toUpperCase() === "ACTIVE"
-                        ? "Active"
-                        : "Archived"}
-                    </span>
-
-                    <span className="text-[11px] font-medium text-gray-400">
-                      Created{" "}
-                      {new Date(team.createdAt).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                      Created By
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-700">
-                        {findCreatedBy(team) || "Unknown"}
-                      </span>
-                    </div>
+                      View Team <ArrowRight size={13} />
+                    </button>
                   </div>
                 </div>
+
+                <div className="px-5 py-2.5 border-t border-gray-50 bg-gray-50/60 flex items-center gap-2">
+                  <span className="text-[10px] text-gray-400 uppercase font-semibold tracking-wide">By</span>
+                  <span className="text-xs font-semibold text-gray-600 truncate">
+                    {findCreatedBy(team) || "Unknown"}
+                  </span>
+                  <span className="ml-auto text-[10px] text-gray-400">
+                    {new Date(team.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
