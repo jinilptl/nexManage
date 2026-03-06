@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-//sub schema for members details
-
 const memberSubSchema = new mongoose.Schema(
   {
     user: {

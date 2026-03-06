@@ -79,7 +79,7 @@ const inviteUser = asyncHandler(async (req, res) => {
     isTempMember: isTempMember || false,
     isInvited: true,
     inviteToken: hashedToken,
-    inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000, 
     createdby: req.user?._id,
   });
 
@@ -293,28 +293,23 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  // Run all cascade removals in parallel for efficiency
   await Promise.all([
-    // 1. Remove from all Teams (members sub-array)
     Team.updateMany(
       { "members.user": userId },
       { $pull: { members: { user: userId } } }
     ),
 
-    // 2. Remove from all Projects (projectMembers sub-array — covers observers too)
     Project.updateMany(
       { "projectMembers.user": userId },
       { $pull: { projectMembers: { user: userId } } }
     ),
 
-    // 3. Unassign from all Tasks (assignees array)
     Task.updateMany(
       { assignees: userId },
       { $pull: { assignees: userId } }
     ),
   ]);
 
-  // Finally delete the user account itself
   await user.deleteOne();
 
   return res

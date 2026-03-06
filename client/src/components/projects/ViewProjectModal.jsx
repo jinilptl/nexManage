@@ -8,8 +8,12 @@ import {
   Trash2,
   UserPlus,
   Settings,
-  Archive,
   RefreshCw,
+  Crown,
+  ChevronDown,
+  Loader2,
+  LayoutGrid,
+  Shield,
 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProjectModal from "./ProjectModal";
 import ProjectMemberModal from "./ProjectMemberModal";
 import AddTeamToProjectModal from "./AddTeamToProjectModal";
+import Avatar from "../common/Avatar";
 
 import {
   activeProjectMemberService,
@@ -32,32 +37,64 @@ import ConfirmModal from "../modals/teamsModals/ConfirmModal";
 import toast from "react-hot-toast";
 import useScrollLock from "../../hooks/useScrollLock";
 
+const STATUS_CONFIG = {
+  ACTIVE: { label: "Active", dot: "bg-green-500", badge: "bg-green-50 text-green-700 border-green-200" },
+  ON_HOLD: { label: "On Hold", dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+  COMPLETED: { label: "Completed", dot: "bg-blue-500", badge: "bg-blue-50 text-blue-700 border-blue-200" },
+  ARCHIVED: { label: "Archived", dot: "bg-gray-400", badge: "bg-gray-50 text-gray-600 border-gray-200" },
+};
+
+const getStatus = (s) => STATUS_CONFIG[(s || "ACTIVE").toUpperCase()] ?? STATUS_CONFIG.ACTIVE;
+
+const ROLE_COLORS = {
+  "project-manager": "bg-purple-100 text-purple-700 border-purple-200",
+  developer: "bg-blue-100 text-blue-700 border-blue-200",
+  designer: "bg-pink-100 text-pink-700 border-pink-200",
+  tester: "bg-orange-100 text-orange-700 border-orange-200",
+  qa: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  reviewer: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  contributor: "bg-teal-100 text-teal-700 border-teal-200",
+  observer: "bg-gray-100 text-gray-600 border-gray-200",
+};
+const getRoleColor = (role) => ROLE_COLORS[role?.toLowerCase()] ?? "bg-gray-100 text-gray-600 border-gray-200";
+
+function StatCard({ icon: Icon, label, value, color = "blue" }) {
+  const colorMap = {
+    blue: "bg-blue-50 text-blue-600",
+    violet: "bg-violet-50 text-violet-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+    amber: "bg-amber-50 text-amber-600",
+  };
+  return (
+    <div className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl p-3.5 shadow-xs">
+      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${colorMap[color]}`}>
+        <Icon size={17} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide truncate">{label}</p>
+        <p className="text-sm font-bold text-gray-800 truncate">{value}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function ViewProjectModal({ open, onClose, project }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
   const UserRole = user?.role;
 
-  const selectedProject = useSelector(
-    (state) => state.projects.selectedProject,
-  );
+  const selectedProject = useSelector((state) => state.projects.selectedProject);
   const loadingProject = selectedProject.loading;
 
-  const allProjectMembers = useSelector(
-    (state) => state.projects.projectMembers.list,
-  );
-  const membersLoading = useSelector(
-    (state) => state.projects.projectMembers.loading,
-  );
+  const allProjectMembers = useSelector((state) => state.projects.projectMembers.list);
+  const membersLoading = useSelector((state) => state.projects.projectMembers.loading);
 
   const {
     updating: updatingProject,
     deleting: deletingProject,
     archiving,
     addingMember,
-    updatingMember,
-    removingMember,
-    activingMember,
   } = useSelector((state) => state.projects.actions);
 
   const [removingFor, setRemovingFor] = useState(null);
@@ -79,79 +116,30 @@ export default function ViewProjectModal({ open, onClose, project }) {
     }
   }, [project?._id]);
 
-  const getStatusColor = (status) => {
-    const s = (status || "").toUpperCase();
-    switch (s) {
-      case "ACTIVE":
-        return "bg-green-100 text-green-700";
-      case "ON_HOLD":
-        return "bg-yellow-100 text-yellow-700";
-      case "COMPLETED":
-        return "bg-blue-100 text-blue-700";
-      case "ARCHIVED":
-        return "bg-gray-200 text-gray-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const getStatusLabel = (status) =>
-    ({
-      ACTIVE: "Active",
-      COMPLETED: "Completed",
-      ON_HOLD: "On Hold",
-      ARCHIVED: "Archived",
-    })[(status || "ACTIVE").toUpperCase()] ||
-    status ||
-    "Active";
-
-  const handleDeleteProject = () => {
-    setConfirmType("deleteProject");
-    setConfirmOpen(true);
-  };
-
+  const handleDeleteProject = () => { setConfirmType("deleteProject"); setConfirmOpen(true); };
   const handleArchiveProject = () => {
-    if ((project.status || "").toUpperCase() === "ARCHIVED") {
-      toast.error("Project is already archived");
-      return;
-    }
+    if ((project.status || "").toUpperCase() === "ARCHIVED") { toast.error("Project is already archived"); return; }
     setConfirmType("archiveProject");
     setConfirmOpen(true);
   };
-
   const handleMemberAction = (memberId, type) => {
     setConfirmType(type);
     setSelectedMemberId(memberId);
     setConfirmOpen(true);
   };
-
   const handleConfirmAction = () => {
-    if (confirmType === "deleteProject") {
-      dispatch(deleteProjectService(selectedProject.id, token, onClose));
-    }
-
-    if (confirmType === "archiveProject") {
-      dispatch(
-        archiveProjectService(selectedProject.id, "ARCHIVED", token, ""),
-      );
-    }
-
+    if (confirmType === "deleteProject") dispatch(deleteProjectService(selectedProject.id, token, onClose));
+    if (confirmType === "archiveProject") dispatch(archiveProjectService(selectedProject.id, "ARCHIVED", token, ""));
     if (confirmType === "removeMember") {
       setRemovingFor(selectedMemberId);
-      dispatch(
-        removeProjectMemberService(project._id, selectedMemberId, token),
-      );
+      dispatch(removeProjectMemberService(project._id, selectedMemberId, token));
       setRemovingFor(null);
     }
-
     if (confirmType === "activateMember") {
       setActivatingFor(selectedMemberId);
-      dispatch(
-        activeProjectMemberService(project._id, selectedMemberId, token),
-      );
+      dispatch(activeProjectMemberService(project._id, selectedMemberId, token));
       setActivatingFor(null);
     }
-
     setConfirmOpen(false);
     setConfirmType(null);
     setSelectedMemberId(null);
@@ -162,268 +150,271 @@ export default function ViewProjectModal({ open, onClose, project }) {
   if (loadingProject) {
     return (
       <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter" />
-        <div className="relative modal-content-enter">
-          <ModalSmallLoader />
-        </div>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="relative"><ModalSmallLoader /></div>
       </div>
     );
   }
 
   if (!open || !project) return null;
 
+  const status = getStatus(project.status);
+  const isAdmin = UserRole !== "member";
+  const activeMembers = allProjectMembers?.filter((m) => m.status === "active") ?? [];
+  const removedMembers = allProjectMembers?.filter((m) => m.status !== "active") ?? [];
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm modal-backdrop-enter"
-        onClick={onClose}
-      />
+        className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        style={{ maxHeight: "92vh" }}
+        onClick={(e) => e.stopPropagation()}
+      >
 
-      <div className="relative bg-white w-full max-w-3xl rounded-xl shadow-2xl p-4 sm:p-6 modal-content-enter max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
+        <div className="bg-linear-to-br from-blue-600 via-blue-700 to-indigo-800 px-6 pt-6 pb-5 shrink-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-11 h-11 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center shrink-0">
+                <LayoutGrid className="w-5 h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-xl font-bold text-white truncate leading-tight">
+                  {project.projectName}
+                </h2>
+                <p className="text-blue-200 text-xs mt-0.5 line-clamp-1">
+                  {project.description || "No description provided"}
+                </p>
+              </div>
+            </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-1">
-          {project.projectName}
-        </h2>
-        <p className="text-gray-600 text-sm">
-          {project.description || "No description provided"}
-        </p>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition-colors cursor-pointer shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <span
-            className={`px-3 py-1 text-xs rounded-md ${getStatusColor(
-              project.status,
-            )}`}
-          >
-            {getStatusLabel(project.status)}
-          </span>
-          {UserRole !== "member" && (
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="project-status-select"
-                className="text-sm text-gray-600"
-              >
-                Change status:
-              </label>
-              <select
-                id="project-status-select"
-                value={(project.status || "ACTIVE").toUpperCase()}
-                onChange={(e) => {
-                  const newStatus = e.target.value;
-                  if (
-                    newStatus &&
-                    newStatus !== (project.status || "").toUpperCase()
-                  ) {
-                    dispatch(
-                      archiveProjectService(project._id, newStatus, token, ""),
-                    );
-                  }
-                }}
-                disabled={archiving}
-                className="text-sm border border-gray-300 rounded-md px-3 py-1.5 cursor-pointer focus:ring-2 ring-blue-500 outline-none disabled:opacity-50"
-              >
-                <option value="ACTIVE">Active</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="ON_HOLD">On Hold</option>
-                <option value="ARCHIVED">Archived</option>
-              </select>
+          <div className="mt-4 flex items-center flex-wrap gap-2">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${status.badge}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+              {status.label}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 capitalize">
+              <FolderKanban size={11} />
+              {project.projectType || "team"} project
+            </span>
+            {project.projectManager?.name && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20">
+                <Crown size={11} />
+                {project.projectManager.name}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatCard icon={Users} label="Members" value={allProjectMembers?.length ?? 0} color="blue" />
+            <StatCard icon={FolderKanban} label="Teams" value={project.teams?.length ?? 0} color="violet" />
+            <StatCard icon={Calendar} label="Created" value={new Date(project.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} color="emerald" />
+            <StatCard icon={Shield} label="Type" value={(project.projectType || "team").charAt(0).toUpperCase() + (project.projectType || "team").slice(1)} color="amber" />
+          </div>
+
+          {isAdmin && (
+            <div className="flex items-center gap-3 p-3.5 bg-gray-50 border border-gray-200 rounded-xl">
+              <p className="text-sm font-semibold text-gray-700 shrink-0">Project Status</p>
+              <div className="relative flex-1 max-w-[180px]">
+                <select
+                  id="project-status-select"
+                  value={(project.status || "ACTIVE").toUpperCase()}
+                  onChange={(e) => {
+                    const newStatus = e.target.value;
+                    if (newStatus && newStatus !== (project.status || "").toUpperCase()) {
+                      dispatch(archiveProjectService(project._id, newStatus, token, ""));
+                    }
+                  }}
+                  disabled={archiving}
+                  className="w-full appearance-none text-sm bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer disabled:opacity-50 transition-all"
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ON_HOLD">On Hold</option>
+                  <option value="ARCHIVED">Archived</option>
+                </select>
+                <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
               {archiving && (
-                <span className="text-xs text-gray-500">Updating...</span>
+                <span className="flex items-center gap-1 text-xs text-gray-500">
+                  <Loader2 size={12} className="animate-spin" /> Updating...
+                </span>
               )}
             </div>
           )}
-        </div>
 
-        {UserRole !== "member" && (
-          <div className="mt-5 flex flex-wrap gap-2">
-            <button
-              onClick={() => setEditModal(true)}
-              disabled={updatingProject}
-              className="px-3 py-1 text-sm bg-blue-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-blue-700 disabled:opacity-50"
-            >
-              {updatingProject ? (
-                <ButtonLoader />
-              ) : (
-                <Settings className="w-4 h-4" />
-              )}
-              Edit
-            </button>
+          {isAdmin && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setEditModal(true)}
+                disabled={updatingProject}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {updatingProject ? <ButtonLoader /> : <Settings size={14} />}
+                Edit Project
+              </button>
 
-            <button
-              onClick={() => {
-                setMemberModalMode("add");
-                setAddMemberModal(true);
-              }}
-              disabled={addingMember}
-              className="px-3 py-1 text-sm bg-green-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-green-700 disabled:opacity-50"
-            >
-              {addingMember ? (
-                <ButtonLoader />
-              ) : (
-                <UserPlus className="w-4 h-4" />
-              )}
-              Add Member
-            </button>
+              <button
+                onClick={() => { setMemberModalMode("add"); setAddMemberModal(true); }}
+                disabled={addingMember}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {addingMember ? <ButtonLoader /> : <UserPlus size={14} />}
+                Add Member
+              </button>
 
-            <button
-              onClick={() => setAddTeamModal(true)}
-              disabled={updatingProject}
-              className="px-3 py-1 text-sm bg-purple-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-purple-700 disabled:opacity-50"
-            >
-              <Users className="w-4 h-4" />
-              Add Team
-            </button>
+              <button
+                onClick={() => setAddTeamModal(true)}
+                disabled={updatingProject}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <Users size={14} />
+                Add Team
+              </button>
 
-            <button
-              onClick={handleDeleteProject}
-              disabled={deletingProject}
-              className="px-3 py-1 text-sm bg-red-600 text-white cursor-pointer rounded-md flex items-center gap-1 hover:bg-red-700 disabled:opacity-50"
-            >
-              {deletingProject ? (
-                <ButtonLoader />
-              ) : (
-                <Trash2 className="w-4 h-4" />
-              )}
-              Delete
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-          <div className="flex items-start gap-3">
-            <Calendar className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Created At</p>
-              <p className="text-sm text-gray-900">
-                {new Date(project.createdAt).toLocaleDateString("en-IN")}
-              </p>
+              <button
+                onClick={handleDeleteProject}
+                disabled={deletingProject}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ml-auto"
+              >
+                {deletingProject ? <ButtonLoader /> : <Trash2 size={14} />}
+                Delete
+              </button>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-start gap-3">
-            <Users className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Project Manager</p>
-              <p className="text-sm text-gray-900">
-                {project.projectManager?.name || "Not Assigned"}
-              </p>
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Project Members</h3>
+                <p className="text-xs text-gray-500 mt-0.5">People working on this project</p>
+              </div>
+              <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                {allProjectMembers?.length ?? 0} total
+              </span>
             </div>
-          </div>
 
-          <div className="flex items-start gap-3">
-            <Users className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Members</p>
-              <p className="text-sm text-gray-900">
-                {allProjectMembers?.length || 0} Members
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <FolderKanban className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Teams</p>
-              <p className="text-sm text-gray-900">
-                {project.teams?.length || 0}{" "}
-                {project.teams?.length === 1 ? "Team" : "Teams"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold">Members</h3>
-          <p className="text-gray-600 text-sm mb-3">
-            People working on this project
-          </p>
-
-          {membersLoading ? (
-            <ModalSmallLoader />
-          ) : allProjectMembers?.length === 0 ? (
-            <p className="text-gray-500 text-sm">No members found.</p>
-          ) : (
-            <div className="space-y-3">
-              {allProjectMembers.map((member, index) => {
-                if (!member.user) return null;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center">
-                        {member.user?.name?.[0]?.toUpperCase()}
+            {membersLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <ModalSmallLoader />
+              </div>
+            ) : allProjectMembers?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 py-10 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Users size={18} className="text-gray-400" />
+                </div>
+                <p className="text-sm font-medium text-gray-500">No members yet</p>
+                <p className="text-xs text-gray-400">Add team members to get started</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {activeMembers.map((member, index) => {
+                  if (!member.user) return null;
+                  return (
+                    <div
+                      key={member.user._id ?? index}
+                      className="flex items-center justify-between gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar user={member.user} className="w-9 h-9 shrink-0 ring-2 ring-white shadow-sm" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{member.user?.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{member.user?.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold">
-                          {member.user?.name}
-                        </p>
-                        <p className="text-xs text-gray-500 capitalize">
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border capitalize ${getRoleColor(member.roleInProject)}`}>
                           {member.roleInProject}
-                        </p>
+                        </span>
+
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-50 text-green-700 border border-green-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                          Active
+                        </span>
+
+                        {isAdmin && (
+                          <>
+                            <button
+                              onClick={() => { setMemberModalMode("edit"); setEditMemberModal(true); setEditmember(member); }}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                              title="Edit role"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleMemberAction(member.user._id, "removeMember")}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Remove member"
+                            >
+                              {removingFor === member.user._id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
+                  );
+                })}
 
-                    <div className="flex items-center gap-2">
-                      {UserRole !== "member" && member.status === "active" && (
-                        <button
-                          onClick={() => {
-                            setMemberModalMode("edit");
-                            setEditMemberModal(true);
-                            setEditmember(member);
-                          }}
-                          className="p-1 hover:bg-gray-200 rounded-md cursor-pointer"
+                {removedMembers.length > 0 && (
+                  <>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-2 pb-1">Removed</p>
+                    {removedMembers.map((member, index) => {
+                      if (!member.user) return null;
+                      return (
+                        <div
+                          key={member.user._id ?? index}
+                          className="flex items-center justify-between gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl opacity-70"
                         >
-                          <Pencil className="w-4 h-4 text-blue-600" />
-                        </button>
-                      )}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar user={member.user} className="w-9 h-9 shrink-0 ring-2 ring-white shadow-sm grayscale" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-700 truncate">{member.user?.name}</p>
+                              <p className="text-xs text-gray-400 truncate">{member.user?.email}</p>
+                            </div>
+                          </div>
 
-                      {UserRole !== "member" && (
-                        <button
-                          onClick={() =>
-                            handleMemberAction(
-                              member.user._id,
-                              member.status === "active"
-                                ? "removeMember"
-                                : "activateMember",
-                            )
-                          }
-                          className="p-1 hover:bg-gray-200 rounded-md cursor-pointer"
-                        >
-                          {member.status === "active" ? (
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          ) : (
-                            <RefreshCw className="w-4 h-4 text-green-600" />
-                          )}
-                        </button>
-                      )}
-
-                      <span
-                        className={`text-xs px-2 py-1 rounded ${member.status === "active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
-                      >
-                        {member.status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                              Removed
+                            </span>
+                            {isAdmin && (
+                              <button
+                                onClick={() => handleMemberAction(member.user._id, "activateMember")}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                                title="Re-activate"
+                              >
+                                {activatingFor === member.user._id ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="shrink-0 px-6 py-4 border-t border-gray-100 bg-gray-50/60 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-lg transition-colors"
+            className="px-5 py-2.5 text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -431,59 +422,30 @@ export default function ViewProjectModal({ open, onClose, project }) {
       </div>
 
       {addTeamModal && (
-        <AddTeamToProjectModal
-          open={addTeamModal}
-          onClose={() => setAddTeamModal(false)}
-          project={project}
-        />
+        <AddTeamToProjectModal open={addTeamModal} onClose={() => setAddTeamModal(false)} project={project} />
       )}
-
       {editModal && (
-        <ProjectModal
-          open={editModal}
-          onClose={() => setEditModal(false)}
-          mode="edit"
-          initialData={project}
-          teamsList={project.teams}
-        />
+        <ProjectModal open={editModal} onClose={() => setEditModal(false)} mode="edit" initialData={project} teamsList={project.teams} />
       )}
-
       {addMemberModal && (
-        <ProjectMemberModal
-          open={addMemberModal}
-          onClose={() => setAddMemberModal(false)}
-          mode={memberModalMode}
-        />
+        <ProjectMemberModal open={addMemberModal} onClose={() => setAddMemberModal(false)} mode={memberModalMode} />
       )}
-
       {editMemberModal && (
-        <ProjectMemberModal
-          open={editMemberModal}
-          onClose={() => setEditMemberModal(false)}
-          mode={memberModalMode}
-          member={editMemberData}
-        />
+        <ProjectMemberModal open={editMemberModal} onClose={() => setEditMemberModal(false)} mode={memberModalMode} member={editMemberData} />
       )}
 
       <ConfirmModal
         open={confirmOpen}
         title={
-          confirmType === "deleteProject"
-            ? "Delete Project"
-            : confirmType === "archiveProject"
-              ? "Archive Project"
-              : confirmType === "removeMember"
-                ? "Remove Member"
-                : "Activate Member"
+          confirmType === "deleteProject" ? "Delete Project" :
+            confirmType === "archiveProject" ? "Archive Project" :
+              confirmType === "removeMember" ? "Remove Member" : "Activate Member"
         }
         message={
-          confirmType === "deleteProject"
-            ? "This action cannot be undone. Delete this project?"
-            : confirmType === "archiveProject"
-              ? "Move this project to archive?"
-              : confirmType === "removeMember"
-                ? "Remove this member from the project?"
-                : "Reactivate this member?"
+          confirmType === "deleteProject" ? "This action cannot be undone. Delete this project?" :
+            confirmType === "archiveProject" ? "Move this project to archive?" :
+              confirmType === "removeMember" ? "Remove this member from the project?" :
+                "Reactivate this member?"
         }
         confirmText="Yes"
         cancelText="Cancel"

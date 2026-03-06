@@ -399,20 +399,16 @@ export default function Members() {
       )}
 
       {isDeleteModalOpen && deleteMember && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeDeleteModal}
           />
 
-          {/* Modal */}
           <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-            {/* Red top bar */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-red-600 to-orange-500" />
+            <div className="h-1.5 w-full bg-linear-to-r from-red-500 via-red-600 to-orange-500" />
 
             <div className="p-6">
-              {/* Header */}
               <div className="flex items-start justify-between mb-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
@@ -433,7 +429,6 @@ export default function Members() {
                 </button>
               </div>
 
-              {/* Member Card */}
               <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3 mb-5">
                 <Avatar user={deleteMember} className="w-10 h-10 ring-2 ring-white shadow" />
                 <div>
@@ -446,12 +441,10 @@ export default function Members() {
                 </span>
               </div>
 
-              {/* Warning Message */}
               <p className="text-sm text-gray-600 mb-4">
                 Deleting <span className="font-semibold text-gray-900">{deleteMember.name}</span> will immediately and permanently:
               </p>
 
-              {/* Consequences List */}
               <div className="space-y-2.5 mb-5">
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 border border-red-100">
                   <div className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
@@ -494,7 +487,6 @@ export default function Members() {
                 </div>
               </div>
 
-              {/* Confirmation checkbox */}
               <label className="flex items-start gap-2.5 cursor-pointer select-none mb-5 group">
                 <div className="relative mt-0.5">
                   <input
@@ -521,7 +513,6 @@ export default function Members() {
                 </span>
               </label>
 
-              {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
                   onClick={closeDeleteModal}

@@ -27,7 +27,6 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  // Check if user is project manager
   if (
     project.projectManager &&
     project.projectManager.toString() === userId.toString()
@@ -37,7 +36,6 @@ const isProjectMember = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  // Check active project member
   const projectMember = project.projectMembers.find(
     (member) =>
       member.user &&

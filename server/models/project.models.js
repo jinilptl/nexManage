@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-// SUB-SCHEMA: projectMembers
-
 const projectMembersSchema = new mongoose.Schema(
   {
     user: {
@@ -50,8 +48,6 @@ const projectMembersSchema = new mongoose.Schema(
   { _id: false },
 );
 
-// SUB-SCHEMA: taskStatus (for dynamic and dynamic identification)
-
 const taskStatusSchema = new mongoose.Schema(
   {
     key: {
@@ -81,8 +77,6 @@ const taskStatusSchema = new mongoose.Schema(
   },
   { _id: true },
 );
-
-// MAIN PROJECT SCHEMA
 
 const projectSchema = new mongoose.Schema(
   {

@@ -71,7 +71,6 @@ export default function TaskHeader({
 
   return (
     <div className="space-y-4">
-      {/* Top bar — Close + Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100 uppercase tracking-widest select-none">
@@ -115,22 +114,18 @@ export default function TaskHeader({
         </div>
       </div>
 
-      {/* Title */}
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight tracking-tight">
           {task.title}
         </h2>
       </div>
 
-      {/* Meta chips */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Priority badge */}
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${priority.bg} ${priority.text} ${priority.border}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
           {priority.label}
         </span>
 
-        {/* Due date */}
         {dueInfo && (
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${dueInfo.isOverdue
               ? "bg-red-50 text-red-600 border-red-200"

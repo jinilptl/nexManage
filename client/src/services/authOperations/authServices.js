@@ -133,7 +133,6 @@ export function getMyProfileService(token) {
     } catch (error) {
       const status = error?.response?.status;
 
-      // If the token is invalid/expired or user no longer exists, clear auth
       if (status === 401 || status === 404) {
         dispatch(clearAuth());
         toast.error("Session expired. Please log in again.");

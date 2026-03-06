@@ -188,7 +188,6 @@ export default function TaskDetailModal({ task, onClose }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 z-3000 flex justify-end items-stretch overflow-hidden">
-        {/* Backdrop */}
         <div
           className="task-detail-backdrop absolute inset-0"
           style={{ opacity: visible ? 1 : 0 }}
@@ -196,7 +195,6 @@ export default function TaskDetailModal({ task, onClose }) {
           onTouchMove={(e) => e.preventDefault()}
         />
 
-        {/* Panel */}
         <div
           className="task-detail-panel relative z-10 w-full h-full md:w-[85vw] lg:w-[75vw] max-w-6xl bg-white shadow-2xl flex flex-col md:overflow-hidden md:rounded-l-2xl"
           style={{
@@ -204,10 +202,8 @@ export default function TaskDetailModal({ task, onClose }) {
             opacity: visible ? 1 : 0,
           }}
         >
-          {/* Top accent gradient */}
           <div className="h-1 bg-linear-to-r from-indigo-500 via-violet-500 to-purple-500 shrink-0 md:rounded-tl-2xl" />
 
-          {/* Header */}
           <div className="flex-none bg-white z-20 px-5 py-4 sm:px-8 sm:py-5 border-b border-gray-100 sticky top-0 md:static">
             <TaskHeader
               task={task}
@@ -218,9 +214,7 @@ export default function TaskDetailModal({ task, onClose }) {
             />
           </div>
 
-          {/* Content area */}
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-            {/* Main content */}
             <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 task-detail-scroll bg-gray-50/30">
               <div className="space-y-8 pb-10 max-w-3xl">
                 <TaskDescription description={task.description} />

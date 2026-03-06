@@ -67,7 +67,6 @@ export default function TaskSubtasks({ subtasks, task, canManage = false }) {
         </h3>
       </div>
 
-      {/* Progress bar */}
       {totalCount > 0 && (
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1.5">

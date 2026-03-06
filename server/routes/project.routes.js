@@ -76,7 +76,6 @@ projectRouter
   .route("/update-project-manager/:projectId")
   .post(verifyToken, isProjectMember, isNotObserver, updateProjectManager);
 
-// members routes
 
 projectRouter
   .route("/add-members/:projectId")

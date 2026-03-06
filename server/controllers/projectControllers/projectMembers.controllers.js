@@ -82,7 +82,6 @@ const addProjectMember = asyncHandler(async (req, res) => {
       throw new ApiError(409, "This user is already a member of this project");
     }
 
-    // If previously removed, reactivate
     if (exists && exists.status === "removed") {
       exists.roleInProject = roleInProject;
       exists.status = "active";
@@ -180,7 +179,6 @@ const addProjectMember = asyncHandler(async (req, res) => {
     throw new ApiError(409, "This user is already a member of this project");
   }
 
-  // If previously removed, reactivate
   if (exists && exists.status === "removed") {
     exists.roleInProject = roleInProject;
     exists.status = "active";
