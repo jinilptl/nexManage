@@ -105,18 +105,15 @@ export default function TeamDetailModal({ open, onClose }) {
       />
 
       <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: "92vh" }}>
-        {/* Loading overlay */}
         {(fetchLoading || membersLoading) && (
           <div className="absolute inset-0 z-50 bg-white/70 flex items-center justify-center rounded-2xl">
             <ModalSmallLoader />
           </div>
         )}
 
-        {/* Gradient Hero Header */}
         <div className={`bg-linear-to-br ${gradient} px-6 py-5 shrink-0`}>
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-4">
-              {/* Team icon */}
               <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shadow-md shrink-0">
                 <span className="text-2xl font-black text-white">{initial}</span>
               </div>
@@ -141,7 +138,6 @@ export default function TeamDetailModal({ open, onClose }) {
               </div>
             </div>
 
-            {/* Close */}
             <button
               disabled={updating || deleting}
               onClick={closeAndReset}
@@ -151,7 +147,6 @@ export default function TeamDetailModal({ open, onClose }) {
             </button>
           </div>
 
-          {/* Admin actions row */}
           {isAdmin && (
             <div className="flex flex-wrap gap-2 mt-4">
               <button
@@ -174,7 +169,6 @@ export default function TeamDetailModal({ open, onClose }) {
           )}
         </div>
 
-        {/* Body — Members list */}
         <div className="overflow-y-auto flex-1 px-6 py-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -196,7 +190,6 @@ export default function TeamDetailModal({ open, onClose }) {
             )}
           </div>
 
-          {/* Empty state */}
           {(!members || members.length === 0) && (
             <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
               <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mb-3">
@@ -207,7 +200,6 @@ export default function TeamDetailModal({ open, onClose }) {
             </div>
           )}
 
-          {/* Member cards */}
           <div className="space-y-2">
             {members?.map((m) => {
               const isLead = (m.roleInTeam || "").toLowerCase() === "team lead";
@@ -216,7 +208,6 @@ export default function TeamDetailModal({ open, onClose }) {
                   key={m.user?._id}
                   className="group flex items-center justify-between gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm transition-all"
                 >
-                  {/* Left: avatar + name */}
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative shrink-0">
                       <Avatar user={m.user} className="w-9 h-9 text-[12px] shadow-sm" />
@@ -232,13 +223,11 @@ export default function TeamDetailModal({ open, onClose }) {
                     </div>
                   </div>
 
-                  {/* Right: role badge + actions */}
                   <div className="flex items-center gap-2 shrink-0">
                     <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border capitalize ${getRoleCls(m.roleInTeam)}`}>
                       {m.roleInTeam}
                     </span>
 
-                    {/* Status dot */}
                     <span className={`w-2 h-2 rounded-full ${m.status === "active" ? "bg-emerald-500" : "bg-gray-300"}`} title={m.status} />
 
                     {isAdmin && (
@@ -268,7 +257,6 @@ export default function TeamDetailModal({ open, onClose }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="shrink-0 px-6 py-3.5 border-t border-gray-100 bg-gray-50/60 flex items-center justify-between">
           {team?.createdAt && (
             <span className="flex items-center gap-1.5 text-xs text-gray-400">
@@ -285,7 +273,6 @@ export default function TeamDetailModal({ open, onClose }) {
         </div>
       </div>
 
-      {/* Sub-modals */}
       <CreateTeamModal open={modalOpen} setOpen={setModalOpen} mode="update" />
       <MemberModal
         open={memberModalOpen}

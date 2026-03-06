@@ -67,7 +67,6 @@ export default function MemberModal({ open, mode = "add", onClose, member, setMe
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !loading && onClose(false)} />
 
       <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: "92vh" }}>
-        {/* Header */}
         <div className={`bg-linear-to-br ${isAdd ? "from-emerald-600 via-emerald-700 to-teal-700" : "from-blue-600 via-blue-700 to-indigo-700"} px-5 py-4 shrink-0`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

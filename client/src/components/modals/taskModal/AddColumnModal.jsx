@@ -75,7 +75,6 @@ export default function AddColumnModal({ onClose, projectId, token }) {
             <p className="text-[11px] text-gray-400 mt-1">Displayed in the Kanban board</p>
           </div>
 
-          {/* Footer */}
           <div className="flex gap-3 pt-2">
             <button
               type="button"
