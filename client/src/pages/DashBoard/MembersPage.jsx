@@ -171,7 +171,7 @@ export default function Members() {
 
         <button
           onClick={() => navigate("/dashboard/invite-members")}
-          className="flex items-center  gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 font-medium"
+          className="flex items-center cursor-pointer gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 font-medium"
         >
           <Plus size={20} />
           <span>Invite Member</span>

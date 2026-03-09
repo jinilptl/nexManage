@@ -140,14 +140,14 @@ const InviteMembers = () => {
                   <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
+                    className="px-5 py-2.5 text-sm cursor-pointer font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-6 py-2.5 cursor-pointer text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     <MailCheck className="w-4 h-4" />
                     {loading ? "Sending..." : "Send Invitation"}
