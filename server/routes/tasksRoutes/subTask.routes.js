@@ -37,7 +37,6 @@ subTaskRouter
     roleChecker(["admin", "member", "super_admin"]),
     attachTaskToRequest,
     isProjectMember,
-    isAssigneeOrProjectManager,
     getAllSubtask,
   );
 
