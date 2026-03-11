@@ -71,70 +71,74 @@ export default function TaskHeader({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100 uppercase tracking-widest select-none">
-            <span className="w-1 h-1 rounded-full bg-gray-300" />
-            Task-{task._id.slice(-6).toUpperCase()}
-          </span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-3 w-full">
+            <div className="flex flex-wrap items-center gap-2 pr-8 sm:pr-0">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100 uppercase tracking-widest select-none">
+                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                Task-{task._id.slice(-6).toUpperCase()}
+              </span>
 
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border capitalize ${statusClasses}`}>
-            {task.status}
-          </span>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border capitalize ${statusClasses}`}>
+                {task.status}
+              </span>
+            </div>
+            
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight tracking-tight">
+                {task.title}
+              </h2>
+            </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          {canManage && (
-            <>
-              <button
-                onClick={onEdit}
-                className="group inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 hover:border-indigo-200 cursor-pointer transition-all duration-200"
-              >
-                <Pencil size={13} className="group-hover:rotate-[-8deg] transition-transform duration-200" />
-                Edit
-              </button>
-
-              <button
-                onClick={onDelete}
-                className="group inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 cursor-pointer transition-all duration-200"
-              >
-                <Trash2 size={13} className="group-hover:scale-110 transition-transform duration-200" />
-                Delete
-              </button>
-            </>
-          )}
-
-          <button
-            onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 cursor-pointer transition-all duration-200 ml-1"
-            aria-label="Close task details"
-          >
-            <X size={18} />
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="rounded-lg p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 cursor-pointer transition-all duration-200 shrink-0"
+          aria-label="Close task details"
+        >
+          <X size={18} />
+        </button>
       </div>
 
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight tracking-tight">
-          {task.title}
-        </h2>
-      </div>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0 w-full sm:w-auto">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${priority.bg} ${priority.text} ${priority.border}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
+              {priority.label}
+            </span>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${priority.bg} ${priority.text} ${priority.border}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
-          {priority.label}
-        </span>
+            {dueInfo && (
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${dueInfo.isOverdue
+                  ? "bg-red-50 text-red-600 border-red-200"
+                  : "bg-gray-50 text-gray-600 border-gray-200"
+                }`}>
+                <Calendar size={12} />
+                {dueInfo.text}
+              </span>
+            )}
+          </div>
 
-        {dueInfo && (
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-lg border ${dueInfo.isOverdue
-              ? "bg-red-50 text-red-600 border-red-200"
-              : "bg-gray-50 text-gray-600 border-gray-200"
-            }`}>
-            <Calendar size={12} />
-            {dueInfo.text}
-          </span>
-        )}
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            {canManage && (
+              <>
+                <button
+                  onClick={onEdit}
+                  className="flex-1 sm:flex-none justify-center group inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 hover:border-indigo-200 cursor-pointer transition-all duration-200"
+                >
+                  <Pencil size={13} className="group-hover:rotate-[-8deg] transition-transform duration-200" />
+                  Edit
+                </button>
+
+                <button
+                  onClick={onDelete}
+                  className="flex-1 sm:flex-none justify-center group inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 cursor-pointer transition-all duration-200"
+                >
+                  <Trash2 size={13} className="group-hover:scale-110 transition-transform duration-200" />
+                  Delete
+                </button>
+              </>
+            )}
+          </div>
       </div>
     </div>
   );

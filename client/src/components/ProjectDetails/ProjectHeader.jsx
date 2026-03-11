@@ -103,7 +103,7 @@ export default function ProjectHeader({ project }) {
         </div>
 
         {confirmedMembers.length > 0 && (
-          <div className="flex flex-col items-end gap-2 md:self-center shrink-0">
+          <div className="flex flex-col items-start md:items-end gap-2 md:self-center shrink-0">
             <div className="flex -space-x-3">
               {confirmedMembers.slice(0, 5).map((m, index) => (
                 <Avatar

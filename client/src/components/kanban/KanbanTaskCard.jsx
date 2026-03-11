@@ -89,7 +89,7 @@ export default function KanbanTaskCard({
         `}
       >
         {!isObserver && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 cursor-grab">
             <GripVertical size={18} className="text-gray-400" />
           </div>
         )}

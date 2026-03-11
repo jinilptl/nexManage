@@ -49,7 +49,7 @@ export default function AddTeamToProjectModal({ open, onClose, project }) {
     dispatch(updateProjectService(project._id, { teams: [...currentTeamIds, ...selectedTeams] }, token, onClose));
   };
 
-  const GRADIENTS = ["from-violet-500 to-purple-600", "from-blue-500 to-indigo-600", "from-emerald-500 to-teal-600", "from-rose-500 to-pink-600", "from-amber-500 to-orange-600", "from-cyan-500 to-sky-600"];
+  const GRADIENTS = ["from-blue-400 to-blue-600", "from-blue-500 to-blue-700", "from-sky-500 to-blue-600", "from-cyan-600 to-blue-700", "from-indigo-400 to-blue-500", "from-blue-600 to-indigo-600"];
   const getGrad = (name = "") => GRADIENTS[name.charCodeAt(0) % GRADIENTS.length];
 
   return (

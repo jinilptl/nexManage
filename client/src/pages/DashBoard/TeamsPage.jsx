@@ -252,12 +252,12 @@ export default function TeamsPage() {
         <div className="grid md:mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filterTeams.map((team) => {
             const GRADIENTS = [
-              "from-violet-500 to-purple-600",
-              "from-blue-500 to-indigo-600",
-              "from-emerald-500 to-teal-600",
-              "from-rose-500 to-pink-600",
-              "from-amber-500 to-orange-600",
-              "from-cyan-500 to-sky-600",
+              "from-blue-400 to-blue-600",
+              "from-blue-500 to-blue-700",
+              "from-sky-500 to-blue-600",
+              "from-cyan-600 to-blue-700",
+              "from-indigo-400 to-blue-500",
+              "from-blue-600 to-indigo-600",
             ];
             const gradient = GRADIENTS[(team.teamName || "").charCodeAt(0) % GRADIENTS.length];
             const initial = (team.teamName || "T")[0].toUpperCase();
@@ -334,7 +334,7 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  <h2 className="text-base font-bold text-gray-900 group-hover:text-violet-600 transition-colors line-clamp-1 mb-1">
+                  <h2 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1 mb-1">
                     {team.teamName}
                   </h2>
 
@@ -343,11 +343,11 @@ export default function TeamsPage() {
                   </p>
 
                   {leadName && (
-                    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-violet-50 border border-violet-100 rounded-xl">
-                      <Crown size={13} className="text-violet-500 shrink-0" />
+                    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-blue-50 border border-blue-100 rounded-xl">
+                      <Crown size={13} className="text-blue-500 shrink-0" />
                       <Avatar user={lead} className="w-5 h-5 text-[9px] shadow-sm" />
-                      <span className="text-xs font-semibold text-violet-700 truncate">{leadName}</span>
-                      <span className="ml-auto text-[10px] text-violet-400 font-medium">Team Lead</span>
+                      <span className="text-xs font-semibold text-blue-700 truncate">{leadName}</span>
+                      <span className="ml-auto text-[10px] text-blue-400 font-medium">Team Lead</span>
                     </div>
                   )}
 
@@ -402,7 +402,7 @@ export default function TeamsPage() {
                         dispatch(fetchSingleTeamService(team._id, token));
                         dispatch(fetchTeamMembersService(team._id, token));
                       }}
-                      className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-linear-to-r ${gradient} text-white opacity-0 group-hover:opacity-100 shadow-md hover:shadow-lg active:scale-95`}
+                      className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-linear-to-r ${gradient} text-white opacity-100 lg:opacity-0 lg:group-hover:opacity-100 shadow-md hover:shadow-lg active:scale-95`}
                     >
                       View Team <ArrowRight size={13} />
                     </button>

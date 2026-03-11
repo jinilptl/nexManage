@@ -80,12 +80,15 @@ export default function Navigation({
     <>
       <div className="md:hidden  fixed top-0 left-0 right-0 z-50 bg-slate-900 text-white border-b border-slate-700">
         <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-2">
+          <Link to="/dashboard" className="flex items-center gap-2 group cursor-pointer transition-colors">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <FolderKanban className="w-5 h-5" />
             </div>
-            <span className="font-semibold">NexManage</span>
-          </div>
+            <span className="font-bold text-lg tracking-tight">
+              <span className="text-blue-500 transition-colors duration-300">Nex</span>
+              <span className="text-white group-hover:text-blue-500 transition-colors duration-300">Manage</span>
+            </span>
+          </Link>
 
           <button
             onClick={() => setMobileOpen(true)}
@@ -104,12 +107,15 @@ export default function Navigation({
       >
         <div className="p-4 flex items-center justify-between border-b border-slate-700">
           {!collapsed && (
-            <div className="flex items-center gap-2">
+            <Link to="/dashboard" className="flex items-center gap-2 group cursor-pointer transition-colors">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <FolderKanban className="w-5 h-5" />
               </div>
-              <span className="font-semibold text-base">NexManage</span>
-            </div>
+              <span className="font-bold text-xl tracking-tight leading-none pt-0.5">
+                <span className="text-blue-500 transition-colors duration-300">Nex</span>
+                <span className="text-white group-hover:text-blue-500 transition-colors duration-300">Manage</span>
+              </span>
+            </Link>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -209,12 +215,15 @@ export default function Navigation({
         }`}
       >
         <div className="p-4 flex items-center justify-between border-b border-slate-700">
-          <div className="flex items-center gap-2">
+          <Link to="/dashboard" className="flex items-center gap-2 group cursor-pointer transition-colors">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <FolderKanban className="w-5 h-5" />
             </div>
-            <span className="font-semibold">NexManage</span>
-          </div>
+            <span className="font-bold text-lg tracking-tight">
+              <span className="text-blue-500 transition-colors duration-300">Nex</span>
+              <span className="text-white group-hover:text-blue-500 transition-colors duration-300">Manage</span>
+            </span>
+          </Link>
           <button
             onClick={() => setMobileOpen(false)}
             aria-label="Close navigation menu"

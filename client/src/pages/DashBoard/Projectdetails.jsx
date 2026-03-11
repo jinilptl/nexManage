@@ -200,9 +200,9 @@ export default function ProjectDetails() {
   }
 
   return (
-    <div className=" py-6 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 mx-6 rounded-xl border border-gray-100 shadow-sm w-fit">
+    <div className="py-6 px-4 md:px-8 bg-gray-50 min-h-screen overflow-x-hidden min-w-0">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+        <nav className="flex items-center text-sm text-gray-500 bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-sm w-fit max-w-full">
           <Link
             to="/dashboard/projects"
             className="hover:text-blue-600 transition-colors"
@@ -215,7 +215,7 @@ export default function ProjectDetails() {
           </span>
         </nav>
 
-        <div className="flex items-center gap-3 mr-6">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
           {isObserver && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs font-medium">
               <Eye className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export default function ProjectDetails() {
       </div>
 
       {isProjectManagerOrAdmin && showObserversList && observers.length > 0 && (
-        <div className="mx-6 mb-4 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="mb-4 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-gray-500" />

@@ -32,12 +32,12 @@ const ROLE_COLORS = {
 const getRoleCls = (r = "") => ROLE_COLORS[(r || "").toLowerCase()] ?? "bg-gray-100 text-gray-600 border-gray-200";
 
 const GRADIENTS = [
-  "from-violet-500 to-purple-600",
-  "from-blue-500 to-indigo-600",
-  "from-emerald-500 to-teal-600",
-  "from-rose-500 to-pink-600",
-  "from-amber-500 to-orange-600",
-  "from-cyan-500 to-sky-600",
+  "from-blue-400 to-blue-600",
+  "from-blue-500 to-blue-700",
+  "from-sky-500 to-blue-600",
+  "from-cyan-600 to-blue-700",
+  "from-indigo-400 to-blue-500",
+  "from-blue-600 to-indigo-600",
 ];
 const getGradient = (name = "") => GRADIENTS[name.charCodeAt(0) % GRADIENTS.length];
 
@@ -231,7 +231,7 @@ export default function TeamDetailModal({ open, onClose }) {
                     <span className={`w-2 h-2 rounded-full ${m.status === "active" ? "bg-emerald-500" : "bg-gray-300"}`} title={m.status} />
 
                     {isAdmin && (
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button
                           disabled={updatingMember}
                           onClick={() => { setSelectedMember(m); setMemberModalMode("update"); setMemberModalOpen(true); }}

@@ -19,12 +19,12 @@ import {
 import Avatar from "../common/Avatar";
 
 const GRADIENTS = [
-  "from-blue-500 to-indigo-600",
-  "from-violet-500 to-purple-600",
-  "from-emerald-500 to-teal-600",
-  "from-rose-500 to-pink-600",
-  "from-amber-500 to-orange-600",
-  "from-cyan-500 to-sky-600",
+  "from-blue-400 to-blue-600",
+  "from-blue-500 to-blue-700",
+  "from-sky-500 to-blue-600",
+  "from-cyan-600 to-blue-700",
+  "from-indigo-400 to-blue-500",
+  "from-blue-600 to-indigo-600",
 ];
 const getGradient = (name = "") =>
   GRADIENTS[name.charCodeAt(0) % GRADIENTS.length];
@@ -192,7 +192,7 @@ export default function ProjectCard({ project, onView, onArchive, onDelete, load
 
           <button
             onClick={openProjectDetails}
-            className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-linear-to-r ${gradient} text-white opacity-0 group-hover:opacity-100 shadow-md hover:shadow-lg active:scale-95`}
+            className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-linear-to-r ${gradient} text-white opacity-100 lg:opacity-0 lg:group-hover:opacity-100 shadow-md hover:shadow-lg active:scale-95`}
           >
             Open Project <ArrowRight size={13} />
           </button>

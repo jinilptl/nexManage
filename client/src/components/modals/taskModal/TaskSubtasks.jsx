@@ -133,7 +133,7 @@ export default function TaskSubtasks({ subtasks, task, canManage = false }) {
             {canManage && (
               <button
                 onClick={() => handleDeleteSubTask(sub)}
-                className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg cursor-pointer transition-all duration-200 opacity-0 group-hover:opacity-100"
+                className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg cursor-pointer transition-all duration-200 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
               >
                 <Trash2 size={14} />
               </button>
