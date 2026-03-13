@@ -64,7 +64,7 @@ const addProjectMember = asyncHandler(async (req, res) => {
     userDoc = await UserModel.create({
       name: email.split("@")[0],
       email,
-      role: "member",
+      role: isObserverRole ? "observer" : "member",
       isTempMember: isObserverRole,
       isObserver: isObserverRole,
       isInvited: true,

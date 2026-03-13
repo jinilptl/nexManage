@@ -36,7 +36,8 @@ const inviteUser = asyncHandler(async (req, res) => {
   if (existingUser && existingUser.isInvited) {
     existingUser.name = name;
     existingUser.role = role || "member";
-    existingUser.isTempMember = isTempMember || false;
+    existingUser.isTempMember = (isTempMember || role === "observer") || false;
+    existingUser.isObserver = (role === "observer") || false;
     existingUser.inviteToken = hashedToken;
     existingUser.inviteTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
     existingUser.isInvited = true;
@@ -77,7 +78,8 @@ const inviteUser = asyncHandler(async (req, res) => {
     name,
     email,
     role: role || "member",
-    isTempMember: isTempMember || false,
+    isTempMember: (isTempMember || role === "observer") || false,
+    isObserver: (role === "observer") || false,
     isInvited: true,
     inviteToken: hashedToken,
     inviteTokenExpire: Date.now() + 24 * 60 * 60 * 1000,
@@ -223,16 +225,14 @@ const allUsers = asyncHandler(async (req, res) => {
 
   let filter = {
     _id: { $ne: currentUserId },
-    isTempMember: { $ne: true },
-    isObserver: { $ne: true },
   };
 
   if (currentUserRole === "admin") {
-    filter.role = "member";
+    filter.role = { $in: ["member", "observer"] };
   }
 
   if (currentUserRole === "super_admin") {
-    filter.role = { $in: ["admin", "member"] };
+    filter.role = { $in: ["admin", "member", "observer"] };
   }
 
   const users = await UserModel.find(filter).select(

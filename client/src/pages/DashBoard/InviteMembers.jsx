@@ -10,6 +10,7 @@ import {
   Send,
   Clock,
   KeyRound,
+  Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { inviteMemberService } from "../../services/authOperations/authServices";
@@ -98,6 +99,7 @@ const InviteMembers = () => {
                       >
                         <option value="member">Member</option>
                         <option value="admin">Admin</option>
+                        <option value="observer">Observer</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">
                         <svg
@@ -254,6 +256,19 @@ const InviteMembers = () => {
                 <p className="text-xs text-gray-500">
                   Full access to project settings, team management, and user
                   roles.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <Eye className="w-4 h-4 text-amber-600" />
+                  <span className="font-medium text-gray-900 text-sm">
+                    Observer
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Read-only access to projects. Cannot create or edit tasks.
+                  Hidden from team selection.
                 </p>
               </div>
             </div>

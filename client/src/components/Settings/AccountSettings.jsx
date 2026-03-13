@@ -9,7 +9,7 @@ export default function AccountSettings() {
   const { user, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const role = user?.role === "member" ? "User" : "Administrator";
+  const role = user?.role === "admin" ? "Administrator" : user?.role === "observer" ? "Observer" : "User";
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
