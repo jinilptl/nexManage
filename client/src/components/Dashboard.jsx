@@ -8,6 +8,7 @@ import {
   Users,
   Flame,
   CalendarClock,
+  PieChart,
 } from "lucide-react";
 import { formatRelativeTime } from "../utils/formatRelativeTime";
 import DashboardHearderCard from "./DashboardHearderCard";
@@ -38,8 +39,8 @@ export default function Dashboard() {
 
   const tasks = [
     { label: "To Do", bar: "bg-slate-400", count: data?.todoCount || 0 },
-    { label: "In Progress", bar: "bg-blue-500", count: data?.inProgressCount || 0 },
-    { label: "Review", bar: "bg-orange-500", count: data?.pendingReviews || 0 },
+    { label: "In Progress", bar: "bg-indigo-500", count: data?.inProgressCount || 0 },
+    { label: "Review", bar: "bg-amber-500", count: data?.pendingReviews || 0 },
     { label: "Done", bar: "bg-emerald-500", count: data?.completedThisWeek || 0 },
   ];
   const totalTasks = tasks.reduce((s, t) => s + t.count, 0);
@@ -151,36 +152,88 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <h2 className="text-base font-bold text-gray-900 mb-0.5">
-            {isAdmin ? "All Tasks Overview" : "My Tasks Overview"}
-          </h2>
-          <p className="text-xs text-gray-500 mb-4">Quick snapshot of task status distribution</p>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-base font-bold text-gray-900 mb-0.5">
+                {isAdmin ? "All Tasks Overview" : "My Tasks Overview"}
+              </h2>
+              <p className="text-xs text-gray-500 font-medium tracking-tight">Snapshot of your task distribution</p>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-indigo-100 shadow-sm">
+              <PieChart size={12} />
+              {totalTasks} Total
+            </div>
+          </div>
 
-          <div className="space-y-3.5">
-            {tasks.map((task) => {
-              const pct = totalTasks > 0 ? Math.round((task.count / totalTasks) * 100) : 0;
-              return (
-                <div key={task.label}>
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${task.bar}`} />
-                      <span className="text-sm font-medium text-gray-700">{task.label}</span>
+          <div className="flex flex-col sm:flex-row items-center gap-10">
+            {/* Efficiency Doughnut Chart */}
+            <div className="relative group shrink-0">
+              <div className="absolute inset-0 bg-indigo-500/5 blur-2xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-500" />
+              <svg className="w-32 h-32 -rotate-90 relative" viewBox="0 0 100 100">
+                <circle
+                  cx="50" cy="50" r="42"
+                  fill="transparent"
+                  stroke="#F3F4F6"
+                  strokeWidth="8"
+                />
+                <circle
+                  cx="50" cy="50" r="42"
+                  fill="transparent"
+                  stroke="url(#taskGradient)"
+                  strokeWidth="8"
+                  strokeDasharray={263.8}
+                  strokeDashoffset={263.8 - (263.8 * (data?.completedThisWeek || 0)) / (totalTasks || 1)}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000 ease-out"
+                />
+                <defs>
+                  <linearGradient id="taskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#6366F1" />
+                    <stop offset="100%" stopColor="#10B981" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center mt-1">
+                <span className="text-2xl font-black text-gray-900 leading-none tracking-tighter">
+                  {totalTasks > 0 ? Math.round(((data?.completedThisWeek || 0) / totalTasks) * 100) : 0}%
+                </span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Efficiency</span>
+              </div>
+            </div>
+
+            {/* Task Breakdown Bars */}
+            <div className="flex-1 w-full space-y-4">
+              {tasks.map((task) => {
+                const pct = totalTasks > 0 ? Math.round((task.count / totalTasks) * 100) : 0;
+                return (
+                  <div key={task.label} className="group cursor-default">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-2 h-2 rounded-full ${task.bar} group-hover:ring-4 group-hover:ring-${task.bar.split('-')[1]}-100 transition-all duration-300`} />
+                        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide group-hover:text-gray-900 transition-colors">
+                          {task.label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold text-gray-400 group-hover:text-gray-600">{pct}%</span>
+                        <div className="min-w-[24px] text-right">
+                          <span className="text-xs font-black text-gray-900">{task.count}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-400">{pct}%</span>
-                      <span className="text-sm font-bold text-gray-800 w-5 text-right">{task.count}</span>
+                    <div className="w-full h-1.5 bg-gray-50 rounded-full overflow-hidden border border-gray-100/50 relative">
+                      <div
+                        className={`h-full rounded-full ${task.bar} transition-all duration-[1500ms] ease-in-out opacity-85 group-hover:opacity-100 shadow-sm`}
+                        style={{ width: `${pct}%` }}
+                      >
+                        <div className="absolute inset-0 bg-linear-to-r from-white/10 to-transparent pointer-events-none" />
+                      </div>
                     </div>
                   </div>
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${task.bar} transition-all duration-500`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
