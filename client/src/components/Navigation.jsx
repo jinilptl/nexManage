@@ -15,7 +15,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Link, NavLink, useLocation, useParams } from "react-router-dom";
-import LogoutModal from "./modals/authModal/LogOutModal";
+import LogoutModal from "./modals/authModal/LogoutModal";
 import { useSelector } from "react-redux";
 import Avatar from "./common/Avatar";
 
